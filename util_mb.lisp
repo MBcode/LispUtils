@@ -1,4 +1,4 @@
-;collected utilities some during work@ucsf4NLM  bobak@computer.org  tested w/sbcl
+;threec utilities
 (defun km-seqp+ (s)
   (km-seqp (list+ s)))
  ;====start of sys.lisp
@@ -393,9 +393,11 @@ pathnames as well."
     (run-ext "ls"))))
 ;==start=
 ;(defun head (l) (subseq l 0 4))
-(defun head (l &optional (n 4)) (subseq l 0 n))
+;(defun head (l &optional (n 4)) (subseq l 0 n))
+(defun head (l &optional (n 4)) (subseq l 0 (min n (len l))))
 ;(defun tail (l) (last l 4))
-(defun tail (l &optional (n 4)) (last l n))
+;(defun tail (l &optional (n 4)) (last l n))
+(defun tail (l &optional (n 4)) (last l (min n (len l))))
 (defun last3 (l) (last l 3)) 
 ;==> /Users/bobak/Documents/downloads/lang/lsp/ai/ut/mfkb/km/run/two/ut/util-mb.cl <==
 ;utils collected/written by m.bobak
@@ -431,6 +433,18 @@ pathnames as well."
     (let ((p (position by str)))
       (cons (subseq str 0 p) 
             (subseq str (+ p 1)))))) 
+(defun last-str2by (str by) 
+  (let ((p (position by str)))
+    (when p (subseq str p ))))
+(defun first-str2by-end (str by) 
+  (let ((p (positions by str)))
+    (when p (subseq str 0 (1+ (last_lv p))))))
+(defun between-str2by (str by by2) 
+  "between first by and last by2"
+  (first-str2by-end (last-str2by str by) by2))
+(defun last-str2by-end (str by) 
+  (let ((p (positions by str)))
+    (when p (subseq str (last_lv p)))))
 ;or for now   ;oh could mv let up
 (defun split-strs2at (strs by) 
   (when (position by strs :test #'string-equal)
@@ -440,6 +454,7 @@ pathnames as well."
 ;(defun split-at (seq by) 
 ;  (let ((p (position by seq :test #'equal)))
 ;    (when p (list (subseq seq 0 p) (subseq seq (+ p 1))))))
+#+ignore-w-km
 (defun split-at (seq by) 
   (let ((p (position by seq :test #'equal)))
     (when p (values (list (subseq seq 0 p) (subseq seq (+ p 1))) p))))
@@ -484,10 +499,9 @@ pathnames as well."
   (if (fulll lv) (first lv) lv))
 (defun rest-lv (lv)
   (if (fulll lv) (rest lv) lv))
-(defun second-lv (lv)
-  (if (fulll lv) (second lv) lv))
-(defun third-lv (lv)
-  (if (fulll lv) (third lv) lv))
+(defun second-lv (lv) (if (fulll lv) (second lv) lv))
+(defun third-lv (lv) (if (fulll lv) (third lv) lv))
+(defun fourth-lv (lv) (if (fulll lv) (fourth lv) lv)) 
 (defun nth-lv (n lv)
   (if (fulll lv) (if (>= n (len lv)) (progn (format t "nth-lv:~a ~a" n lv) (last-lv lv))
 		    (nth n lv)) 
@@ -496,10 +510,20 @@ pathnames as well."
   (if (fulll lv) (last lv) lv))
 (defun last_lv (lv) ;so not a list
   (first-lv (last-lv lv)))
-(defun cdr-lv (lv)
-  (if (consp lv) (cdr lv) lv))
+(defun car_lv (lv) (when (consp lv) (car lv))) 
+(defun car-lv (lv) (if (consp lv) (car lv) lv))
+(defun car_eq (l v) (when (consp l) (when (eq (car l) v) l))) 
+(defun cdr-lv (lv) (if (consp lv) (cdr lv) lv))
 ;
+;(defun assoc-v (k a)  (let ((v (assoc k a))) (when (consp v) (cdr v))))
+;(defun assoc-v (k a)  (let ((v (assoc k a :test #'equal))) (when (consp v) (cdr v))))
+(defun assoc-v (k a)  (let ((v (assoc k a :test #'equal))) (if (consp v) (cdr v) v))) ;or assoc_v
+;mk more gen vers of:
 (defun mapcar- (f l) (when (fulll l) (mapcar f l)))
+(defun mapcar_ (f l) (if (fulll l) (mapcar f l)
+		       (funcall f l)))
+(defun mapcar_2 (f l l2) (if (and (fulll l) (fulll l2)) (mapcar f l l2)
+		       (funcall f l l2)))
 ;
 (defun list+ (ml)
     (if (listp ml) ml (list ml)))
@@ -527,6 +551,9 @@ pathnames as well."
   (intern (str-trim s)))
 (defun str_trim (s)
   (if (stringp s) (str-trim s) s))
+
+(defun safe-trim (s)
+      (string-trim '( #\( #\) #\tab #\newline #\space #\; ) s)) 
  
 ;;; with apologies to christophe rhodes ...
 (defun split (string &optional max (ws '(#\Space #\Tab)))
@@ -549,6 +576,13 @@ pathnames as well."
         (cons (subseq string 0 pos)
               (explode- (subseq string (1+ pos))
                        delimiter)))))
+(defun explode-2 (string &optional (delimiter #\Space) (offset nil))
+  (let ((pos (position delimiter string)))
+    (if (or (null pos) (eq pos 0)) (list string)
+	(let ((npos (if (integerp offset) (+ pos offset) pos)))
+	  (cons (subseq string 0 npos)
+		(explode-2 (subseq string (1+ npos))
+			  delimiter offset))))))
 (defun str-cat2 (a b)
     (format nil "~a~a" a b))
 (defun str-cat (&rest args)
@@ -695,8 +729,13 @@ pathnames as well."
 
 ;(defun len (l) (when (listp l) (length l)))
 ;(defun len (l) (when (or (listp l) (stringp l)) (length l)))
-(defun len (l) (if (or (listp l) (stringp l)) (length l)
-		 (when (arrayp l) (first (array-dimensions l)))))
+;(defun len (l) (if (or (listp l) (stringp l)) (length l)
+;		 (when (arrayp l) (first (array-dimensions l)))))
+(defun len (l) (typecase l 
+                 (list  (length l))
+                 (string  (length l))
+                 (symbol  (length (symbol-name l)))
+                 (array  (first (array-dimensions l)))))
 (defun nnlen (l) 
   "0 vs nil, if can't get length"
   (nn (len l)))
@@ -783,6 +822,10 @@ pathnames as well."
       )
     ))
 ;--
+(defun has-date-p (s) (len-gt (positions #\: s) 1))
+(defun numstr- (s) 
+  (if (has-date-p s) (prs-univ-time- s)  (numstr s)))
+;--
 ;I'd like to be able to rm a : at the end of what is read..
 ;--
   ;whish I could READ-FROM-STRING w/a format ;look@ make-string-input-stream
@@ -830,7 +873,8 @@ pathnames as well."
     :finally (return res)))  
 ;---(read-from-string " 1 3 5" t nil :start 2)
 ;==new==
-(defun csv-parse-str (string &key (separator #\t) (whitespace +whitespace+))
+;defun csv-parse-str (string &key (separator #\t) (whitespace +whitespace+))
+(defun csv-parse-str (string &key (separator #\Tab) (whitespace +whitespace+))
   "Parse a string, returning a vector of strings."
   (loop :with num = (count separator string :test #'char=)
     :with res = (make-array (1+ num))
@@ -926,7 +970,7 @@ when FROM-END is non-null, the string is scanned backward."
            `(let ((string ,string))
               (char-position-2-case ,char ,string ,start (length string) ,from-end)))))
   ) 
-(defconstant +white-space_chars+ '(#\space #\tab)
+(defconstant +white-space_chars+ '(#\Space #\Tab)
 	     )
 (defmacro with-fast-array-references (bindings &body body)
   "Declares the arrays in bindings (var value &optional type)
@@ -1040,16 +1084,17 @@ If HEADER-VALUE-PARSER return multiple values, they are concatenated together in
 
 ;(defglobal *separator* #\;)
 ;(defglobal *separator* #\t)
-(defvar *separator* #\t)
+(defvar *separator* #\Tab)
 
-(defun read-csv (file)
+;defun read-csv (file &optional (cfnc #'convert-to-list))
+(defun read-csv (file &optional (cfnc #'prs-csv-nums))
    ;; read a CVS into a list of lines.
    ;with-open-input-file (si file)
-   (with-open-file (si file)
+   (with-open-file (si file) 
 	 (let ((tree nil))
 	      (do ((line (read-line si () 'eof) (read-line si () 'eof)))
 		   ((eq line 'eof))
-		   (push (convert-to-list line) tree))
+		   (push (funcall cfnc line) tree)) ;broken?
 	      (nreverse tree))))
 
 ;(defun format-fresh-line (strm) ;when couldn't find
@@ -1076,7 +1121,8 @@ If HEADER-VALUE-PARSER return multiple values, they are concatenated together in
   (if (< a b) (subseq seq a b)
               (subseq seq b a)))
   ;check this!
-(defun convert-to-list (line)
+;defun convert-to-list (line) ;still finding problem w/this
+(defun convert-to-list (line &optional (sep *separator*))
    ;; convert  a  single  line with CSV into a list.  Empty items are
    ;; set to nil.
    (let ((len (length line))
@@ -1084,7 +1130,7 @@ If HEADER-VALUE-PARSER return multiple values, they are concatenated together in
 	 (res nil))
 	(do ((i 0 (1+ i)))
 	     ((= i len))
-	     (when (char= (char line i) *separator*)
+	     (when (char= (char line i) sep) ;*separator*
 		   (if (= i last-)
 		       (push nil res)
 		       (push 
@@ -1094,7 +1140,8 @@ If HEADER-VALUE-PARSER return multiple values, they are concatenated together in
 	(nreverse res))) 
 ;====================================================
 ;"int/ffi/cl-objc/src/utils.lisp" 104 lines --33%--     35,8-15       72%
-(defun split-string (string separator &key (test-fn #'char-equal))
+;defun split-string (string separator &key (test-fn #'char-equal))
+(defun split-string (string &optional (separator " ") &key (test-fn #'char-equal)) ;soCanReplace other
   "Split STRING containing items separated by SEPARATOR into a list."
   (let ((ret)
         (part))
@@ -1112,14 +1159,16 @@ If HEADER-VALUE-PARSER return multiple values, they are concatenated together in
 ;
 (defun search-str (a b) (search a b :test #'string-equal))
 ;
+;should have save version &send fnc in
 (defun len-gt (l n) (> (len l) n)) ;make sure safe to access
+(defun len-lt (l n) (< (len l) n)) ;make sure safe to access
 ;
 (defun len> (a b) (> (len a) (len b)))
 (defun sort-len-lol (lol) (sort lol #'len>))
 ;(defun max-len (&rest lol) (sort lol #'len>))
 (defun max-len (&rest lol) (first-lv (sort-len-lol lol)))
 ;
-(defun simple-replace-string (old new string)
+(defun simple-replace-string (old new string) ;some replacements could be get it stuck/?
   "Replace OLD with NEW into STRING."
   (loop
      with changed = t
@@ -1135,6 +1184,19 @@ If HEADER-VALUE-PARSER return multiple values, they are concatenated together in
                         string
                       (setf changed nil)))))
        finally (return string)))
+;--- 
+(defun simple-replace-strings (alst str)
+  "alst(old . new) "
+ (if (not (full alst)) str
+  (let* ((aon1 (first alst))
+	 (old (car aon1))
+	 (new (cdr aon1))
+	 (nstr (replace-substrings str old new)))
+    (when *dbg-ut* (format t "~%~a" nstr))
+    (simple-replace-strings (rest-lv alst) nstr))))
+;(simple-replace-strings '((":" . ": ") ("\"{" . "{") ("}\"" . "}")) str)
+;defun replace-substrings (string substring replacement) ;replace-string
+    	 
 ;--- 
 (defun rm-str (rs s)
   (simple-replace-string rs "" s)) 
@@ -1197,7 +1259,7 @@ If HEADER-VALUE-PARSER return multiple values, they are concatenated together in
 (defun replace-w-hyphens (sl txt) 
   (let ((hsl (mapcar #'hyphenate sl)))
     (mapcar #'(lambda (o n) (simple-replace-string o n txt)) sl hsl)))
- 
+    ;shouldn't it be reduced though/?
 (trace replace-w-hyphens) 
 ;--- 
 ;defun hyphens (s)
@@ -1303,13 +1365,15 @@ If HEADER-VALUE-PARSER return multiple values, they are concatenated together in
  
  ;from sr-init.lisp
 (defun list-lines (filename)
+  "file2list of lines"
  (when (file-exists-p filename)
   (with-open-file (stream filename :direction :input)
     (loop for line = (read-line stream nil)
         while line
         collect line))))
 (defun list_lines (filename)  ;see if can get unicode
-  (with-open-file (stream filename :direction :input :external-format :iso-8859-)
+  ;with-open-file (stream filename :direction :input :external-format :iso-8859-)
+  (with-open-file (stream filename :direction :input :element-type '(unsigned-byte 8))
     (loop for line = (read-line stream nil)
         while line
         collect line)))
@@ -1361,7 +1425,10 @@ If HEADER-VALUE-PARSER return multiple values, they are concatenated together in
 (defun flatten1 (vals)
     (apply #'append (mapcar (lambda (x) (if (listp x) x (list x))) vals))) 
 
-(defun flat1 (vals) (flatten1 vals))
+;(defun flat1 (vals) (flatten1 vals))
+(defun flat1 (vals) 
+  (if (full vals) (flatten1 vals)
+    (progn (warn "flat1 ~a" vals) vals)))
 
 (defun shuffle (x y)
   "Interleave two lists."   ; LMH
@@ -1370,7 +1437,8 @@ If HEADER-VALUE-PARSER return multiple values, they are concatenated together in
         (t (list* (car x) (car y)
                   (shuffle (cdr x) (cdr y)))))) 
 ;
-(defun r-find (s tree)
+;defun r-find (s tree)
+(defun r_find (s tree)
   (if (fulll tree) 
     (let ((f1 (find s tree :test #'member)))
       (if f1 f1 (mapcar- #'(lambda (tr) (r-find s tr)) tree))))) 
@@ -1437,7 +1505,7 @@ If HEADER-VALUE-PARSER return multiple values, they are concatenated together in
 (defun symbol_name (s) (string-downcase (symbol-name s)))
 
 ;;; from Pierre R. Mai
-(defun replace-substrings (string substring replacement)
+(defun replace-substrings (string substring replacement) ;replace-string
   (declare (optimize (speed 3))
            (type simple-string string substring replacement))
   (assert (> (length substring) 0) (substring)
@@ -1467,6 +1535,7 @@ If HEADER-VALUE-PARSER return multiple values, they are concatenated together in
 (defun safer-read-from-string (s)
   (read-from-string (string-trim '( #\( #\) #\newline #\space #\; ) s)))
  
+;(string s) ;does the same thing
 (defun to-str (s)  ;could have symbolp then symbol-name, but this ok
   (if (stringp s) s
     (format nil "~a" s)))
@@ -1866,6 +1935,7 @@ the command has printed on stdout as string."
          )
 (remove-duplicates ret :test #'string=)))
  
+(defun mklist (l) (list+ l))
 ;; (insert-into-seq 'new '((1 2) 'a ((5 6))) 1)
 ;; => ((1 2) NEW ((5 6)))
 ;; (insert-into-seq 'new '((1 2) 'a ((5 6))) 1 :replace-existing t)
@@ -1935,9 +2005,11 @@ the command has printed on stdout as string."
       (> td1 td2))))
 
 (defun collect-if (predicate sequence) 
-  (remove-if-not predicate sequence))
+  (when (full sequence)
+    (remove-if-not predicate sequence)))
 (defun collect-if-not (predicate sequence) 
-  (remove-if predicate sequence))
+  (when (full sequence)
+    (remove-if predicate sequence)))
 
 (defun collect-if-eq (to seq &key (key #'nop)) 
   (collect-if #'(lambda (it) (equal (funcall key it) to)) seq))
@@ -2007,6 +2079,22 @@ the command has printed on stdout as string."
            (numstr (second (explode- ps)))))
 (defun first2num-in-str (l) (first_num-in-str (first l))) 
 ;-
+(defun prs-datetime (dts)
+    (let* ((dt2 (explode- dts))
+           (ds (first dt2))
+           (ts (second dt2))
+           (dl (split-at-2nums ds))
+           (tl (split-at-2nums ts ":"))
+           )
+      (append dl tl)))
+(defun univ-time (l)
+  (apply #'encode-universal-time (reverse l)))
+(defun prs-univ-time (dts)
+  (univ-time (prs-datetime dts)))
+(defun prs-univ-time- (dts &optional (off 3155702400))
+  (let ((ut (prs-univ-time dts)))
+    (if (numberp off) (- ut off) ut)))
+;-
 (defun countInAlst (n alst)
   "fraction w/n"
   (let ((ncnct (sum-l (mapcar #'(lambda (l) (count n l)) alst)))
@@ -2072,6 +2160,7 @@ the command has printed on stdout as string."
   (let ((p (position key l :test #'equal)))
     (when (numberp p) (elt l (+ p 2)))))
 ;-http://groups.google.com/group/comp.lang.lisp/browse_thread/thread/f127c58d9ae193f2/770eb1ec95f606a5?hl=en&lnk=raot#770eb1ec95f606a5
+;(show-tree '(animal (pet (cat (siamese) (tabby))  (dog (chihuahua)))(farm (horse (2)) (cow (2)))))
 (defun show-tree (node) 
    (labels ((show (node prefix) 
               (format t "~S~%" (car node)) 
@@ -2087,7 +2176,7 @@ the command has printed on stdout as string."
      (show node "") 
      (values)))  
 (defun alst2 (al)
-  "alist into 2 lists"
+  "alist into 2 lists" ;op of pairlis
   (loop for e in al
 	collect (car e) into a
 	collect (cdr e) into b
@@ -2108,7 +2197,7 @@ the command has printed on stdout as string."
 (defun range_1 (end &optional (start 0))
   (range_ (1+ end) (1+ start)))
 ;-
-(defun date () (run-ext "date"))
+(defun date- () (run-ext "date"))
 ;-
 ;http://groups.google.com/group/comp.lang.lisp/browse_thread/thread/917ec8f0a3fe30c7?hl=en# 
 (defun print-subclasses (root &optional (indent 0)) 
@@ -2163,4 +2252,192 @@ the command has printed on stdout as string."
 '(#\a #\b #\c #\d #\e #\f #\h #\i #\j #\k #\l #\m #\n #\o #\p #\q #\r #\s #\t #\u #\v #\w #\x #\y #\z))
 (defvar *alphs* 
 '("a" "b" "c" "d" "e" "f" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" "y" "z"))
-;-eof
+;-
+(defun equals (&rest l) (apply #'equal (mapcar_ #'(lambda (x) (under_ (to-str x))) l))) 
+;-
+(defun assocs (key alst &optional (ef #'equals))
+  "assoc that can handle a str key, ret value, when it exists"
+  (let ((v (assoc key alst :test ef))) ;was #'equalp
+    (when v (cdr v))))
+(defun assocs+ (s alst) (list+ (assocs s alst)))
+;-
+(defun assoc-w (l v)
+  "assoc lst w/value"
+  (mapcar_ #'(lambda (le) (cons le v)) l))
+;-
+(defun dash-p (s) (search "-" s))
+;-
+(defgeneric s2num (s))
+(defmethod s2num ((sym SYMBOL))
+  (s2num (symbol-name sym)))
+(defmethod s2num ((str String))
+ ;(mapcar #'string-to-number (split-at-dash str))
+ (if (not (dash-p str)) (string-to-number str)
+   (let ((s (rm-dash str)))
+     ;(list (first-num s) (second-num s) 'pp)
+     (list (first-num s) (second-num s))
+     ))
+  )
+;(defmethod s2num (s)
+;  (when *dbg-ut* (format nil "~&warn:s2num:~a,~a" s (type-of s)))
+;  (s2num (to-str s)))
+(defmethod s2num ((n Number))
+  ;n
+  (list n)
+  )
+(defmethod s2num ((l List))
+  (mapcar_ #'s2num  l))
+;-
+(defun rm-nil (l)
+  (if (listp l) (remove 'nil l)
+    l))
+;-
+(defun range-list-p (l) 
+  (when (eq (len l) 2)  (rm-nil l)))
+(defun range-list2range (l)
+  (let ((rl (range-list-p l)))
+    (if (not rl) l
+      (if (eq (len rl) 1) rl ;if part of range nil, 
+	(loop for i from (first rl) to (second rl) collect i)))))
+;-
+(defun s2nums (s)
+ ;(range-list2range (s2num s))
+  (mapcar_ #'range-list2range (s2num s))
+  )
+;-
+(defgeneric split-at-dash (s))
+(defmethod split-at-dash ((sym SYMBOL))
+  (split-at-dash (symbol-name sym)))
+(defmethod split-at-dash ((str STRING))
+  (let ((r (split-at1 str "-")))
+    (if r (range-list2range r)  ;check:want ret ranges expanded
+      (list str) ;so can map over single or ranges
+      )))
+;defmethod split-at- ((str STRING))
+(defun split-at- (str)
+  (split-at1 str "-"))
+(defun split-at-2 (str &optional (by "-")) 
+  (let* ((fs (split-at1 str by)) 
+         (one (first fs)) 
+         (dd (second fs)) 
+         (lt (split-at1 dd by))) 
+    (cons one lt)))
+;USER(15): (split-at-2 "2010-08-18") ("2010" "08" "18")
+(defun split-at-2nums (str &optional (by "-")) 
+  (s2num (split-at-2 str by)))
+;moved rest to p2.lisp till it settles down
+(defun nth-eq (n l e)
+  (when (listp l) (eq (nth n l) e)))
+(defun first-eq (l e)
+  (when (listp l) (eq (first-lv l) e)))
+
+(defun list2alst (l)
+  "pairlis"
+  (when l 
+    (let ((ln (len l)))
+      (if (and (>= ln 2) (evenp ln))
+	(cons
+	  (cons (first l) (second l))
+	  (list2alst (rest (rest l))))
+	(warn "no alst of")))))
+
+(defun s-num-str (s) (when s (num-str s)))
+(defun s-to-str (s) (when s (to-str s)))
+
+(defun csv_parse-str (string &key (separator #\Tab) (whitespace +whitespace+))
+  "Parse a string, returning a vector of strings."
+  (loop :with num = (count separator string :test #'char=)
+    :with res = '() ;(make-array (1+ num))
+    :for ii :from 0 :to num
+    :for beg = 0 :then (1+ end)
+    :for end = (or (position separator string :test #'char= :start beg)
+                   (length string))
+        ;setf (aref res ii)
+    :do (push ;ref res ii
+              (when (> end beg) ; otherwise NIL = missing
+                (csv-trim whitespace (subseq string beg end)))
+              res
+              )
+    :finally (return (nreverse res))))
+
+(defun prs-csv (str) (csv_parse-str str  :separator #\Comma))
+(defun prs-csv-nums (str) 
+  (mapcar- #'numstr- (prs-csv str)))
+ 
+(defun under_f (str) ;better than cache version ;see m16_
+  (let* ((wrds (string-to-words str))
+         (iname (str-cat_l wrds)))
+    iname))
+ 
+(defgeneric s2num (s))
+(defmethod s2num ((sym SYMBOL))
+  (s2num (symbol-name sym)))
+(defmethod s2num ((str String))
+ ;(mapcar #'string-to-number (split-at-dash str))
+ (if (not (dash-p str)) (string-to-number str)
+   (let ((s (rm-dash str)))
+     ;(list (first-num s) (second-num s) 'pp)
+     (list (first-num s) (second-num s))
+     ))
+  )
+;(defmethod s2num (s)
+;  (when *dbg-ut* (format nil "~&warn:s2num:~a,~a" s (type-of s)))
+;  (s2num (to-str s)))
+(defmethod s2num ((n Number))
+  ;n
+  (list n)
+  )
+(defmethod s2num ((l List))
+  (mapcar_ #'s2num  l))
+ 
+(defun slot->defclass-slot (spec)
+  (let ((name (first spec)))
+    `(,name :initarg ,(as-keyword name) :accessor ,name))) 
+
+(defun len-eq (l n) (and (listp l) (eq (len l) n)))
+(defun len_gt (l n) (when (fulll l) (len-gt l n)))
+(defun len_ge (l n) (when (fulll l) (len-gt l (1- n))))
+(defun rm-nils (l) (collect-if #'full l))
+(defun run-ext2s (s s2)
+  "input1str&it breaks4you"
+  (apply #'run-ext (append (tokens s) (list s2))))
+ 
+(defun prefix-bar (s) (prefix-p #\| s)) 
+
+;defun iso-time (&optional (time (get-universal-time)))
+(defun iso-time- (&optional (time (get-universal-time)))
+  "Returns the universal time TIME as a string in full ISO format."
+  (multiple-value-bind (second minute hour date month year)
+      (decode-universal-time time)
+    ;format nil "~4,'0d-~2,'0d-~2,'0d ~2,'0d:~2,'0d:~2,'0d"
+    (format nil "~4,'0d-~2,'0d-~2,'0d-~2,'0d-~2,'0d"
+            year month date hour minute ;second
+	    )))
+;prs-univ-time does the opposite 
+
+;;from: http://www.cs.ut.ee/~isotamm/PKeeled/AllarOja_LISP/LISP/HangMan.cl
+;USER(1): (explode "abc") -> (|a| |b| |c|) ;w/small cleaning 
+(defun goexplode (word cur last fword)
+   (cond ((equal cur last)
+          (append fword
+                  (list (prog1 (intern (string (char (string word) (1- cur)))))) ))
+         (t  (goexplode word (+ cur 1) last
+                        (append fword
+                                (list (prog1 (intern (string (char (string word) (1- cur))))))) ))))
+
+(defun explode2s (word &key (upper t))
+   (let ((lenword (length (string word))))
+    (cond ((null word) nil)
+          (t (goexplode (if upper (string-upcase word) word) 
+                        1 lenword '())))))
+ 
+;set-difference reorders so
+;need set_diff that doesn't reorder, picked small collect only if not memeber of it
+(defun set_diff (a b)
+  "set-difference that doesn't unorder the list"
+  (collect-if-not #'(lambda (e) (member e b)) a))
+;explode2s str2 list of symbol/letters
+(defun implode2s (l)
+  "l of sym/letters->str"
+  (implode-l l nil))
+ 
