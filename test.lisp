@@ -1,5 +1,5 @@
-;;;a test use of util_mb.lisp
-;;;======================================> play.lisp <==
+;;;;;;a test use of util_mb.lisp
+;;=======================================> play.lisp <==
 ;all the strategy is here
 ;(defvar *words* (map-lines "w10" #'(lambda (wl) (intern (string-upcase wl))))) ;change to w10
 (defvar *words* (map-lines "w10" #'(lambda (wl) (string-upcase wl)))) ;regex this/?
@@ -11,7 +11,8 @@
 ;s3/pdt stuff in p1.cl, use s4 now
 ;-
 (defvar *lg* nil)
-
+(defvar *lm* nil)
+;-
 (defun ltr-ocr-in (ltrs &optional (words *wordls*))
   (mapcar #'(lambda (l) (cons l (sum-l (mapcar #'(lambda (w) (count l w)) words)))) ltrs))
 
@@ -20,7 +21,19 @@
     ;(loop for p in lc-alst maximize (cdr p) finally (return p))
     (sort lc-alst #'> :key #'cdr)
     ))
+;-
+(defun rm-if-member (m lol)
+  (remove-if #'(lambda (l) (member m l)) lol)) 
+;-
+(defun no-nils (l) 
+  (not (member nil l)))
 
+(defun mpc (m ps lol)
+  "m@position/s constraint"  ;need all to be true so reject if any nils
+  (collect-if #'(lambda (l) (no-nils (mapcar #'(lambda (p) (nth-eq p l m)) ps))) 
+                 ;a  word  has no occurences of m @ positions p   
+              lol)) ;from wordls
+;-
 ;well game will have picked until player actually makes choice
 ; so@1st assume taking our suggestions
 (defvar *picked* '()) 
@@ -28,15 +41,20 @@
   "given current's constraints, find max occurance of possible words"
   (let* ((pick-l (set_diff  *alphaw10* *picked*)) ;lst2pick from&use2get freq/max-let-occur
         ;(pick (first pick-l)) ;will reorder by count of each in cur wordls
-         (missed (set_diff *picked* current))
-         (got (set_diff *picked* missed))
-         (lg (set_diff got *lg*))
+         (missed (set_diff *picked* current)) ;use2fileter wordls
+         (got (set_diff *picked* missed)) ;every correct pick
+         (lg (set_diff got *lg*)) ;latest 'got'/found letter
          (lg1 (first-lv lg)) ;cnstr letter
          (lgp (when lg (positions (first-lv lg) current)))
-         (lgp1 (first-lv lgp)) ;cnstr position
+         ;(lgp1 (first-lv lgp)) ;cnstr position
          (wll (len *wordls*))
+         (lm (set_diff missed *lm*)) ;latest 'missed'/found letter
         ;(nwl (when (and lg lgp) (collect-if #'(lambda (w) (eq (nth lgp1 w) lg1)) *wordls*)))
-         (nwl (when (and lg lgp) (collect-if #'(lambda (w) (nth-eq lgp1 w lg1)) *wordls*)))
+        ;do for each position it is found in/finish-this
+        ;(nwl (when (and lg lgp) (collect-if #'(lambda (w) (nth-eq lgp1 w lg1)) *wordls*)))
+         (nwl (if (and lg lgp) ;(collect-if #'(lambda (w) (nth-eq lgp1 w lg1)) *wordls*)
+                (mpc lg1 lgp *wordls*)
+                (when lm (rm-if-member lm *wordls*)))) ;rm last missed letter from wordlist
          (pick-from (if nwl (mapcar #'car (mx-ltr-ocr pick-l nwl)) pick-l))
          (pick (first pick-from)) ;will reorder by count of each in cur wordls
          )
@@ -54,11 +72,12 @@
     (format t "~%wl~a->~a" wll (len *wordls*))
     ;now get max occur letter, &suggest that now
     )
-    (format t "~%m:~a,g:~a,lg:~a,~a,~a,suggest(~a)4:~a" missed got lg lgp (len nwl) pick current)
-  (setf *lg* got))
-  )
-
-;;;======================================> hang.lisp <==
+   ;(format t "~%m:~a,g:~a,lg:~a,~a,~a,suggest(~a)4:~a" missed got lg lgp (len nwl) pick current)
+    (format t "~%m:~a,lm:~a,g:~a,lg:~a,~a,~a,suggest(~a)4:~a" 
+            missed lm got lg lgp (len nwl) pick current)
+    (setf *lm* missed)
+    (setf *lg* got))) 
+;;=======================================> hang.lisp <==
 ;a quick hangman game to play; start w/1test word and have play/strategy give suggestions; then expand MB
 ;status{GAME_WON, GAME_LOST, KEEP_GUESSING}
 ;load: uts.cl or util_mb.lisp
@@ -75,12 +94,13 @@
                 (format t "Nope, sorry~%"))
       current))
 
-(defun hangman ()
-   "Simple hangman game.  The player has to keep track of letters
-    he/she has already guessed."
-   (let ((maxtries 15)
-         (word    '(a r t i f i c i a l ))
-         (current '(- - - - - - - - - -)) 
+
+(defun hangman (&optional (word  '(a r t i f i c i a l )) (mxWg 4))
+   "Simple hangman game.  The player has to keep track of letters he/she has already guessed."
+   (let* ((maxtries 15)
+         ;(word    '(a r t i f i c i a l ))
+         (mx-current '(- - - - - - - - - - - - - - - - - - - - - - - - -)) 
+         (current (subseq mx-current 0 (len word)))
          (letterGuesses 0)
          (wordGuesses 0) ;if this maxes then letterGuesses goes to 25
          (guess nil))
@@ -93,7 +113,9 @@
          (setf current (update-word word current guess))
          ;if (equal word current)
          (if (or (if (and (eq (len guess) 1) (equal word current)) t (progn (incf letterGuesses) nil))
-                 (if (equal word (explode2s guess))                  t (progn (incf wordGuesses) nil)))
+                 (if (equal word (explode2s guess))t (progn (incf wordGuesses) 
+                                                    (when (>= wordGuesses mxWg) (setf letterGuesses 25))
+                                                                               nil)))
              (progn                                    ;   Here is something new
                 (print current)
                 (terpri)
@@ -103,3 +125,5 @@
              (if (equal i (- maxtries 1))
                  (format t "You lost this time.  Try again!")
                  nil)))))
+
+(defun tst2 () (hangman '(r e m e m b e r e d))) ;in 5 letter trys &default in 10
