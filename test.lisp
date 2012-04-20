@@ -1,41 +1,53 @@
-;;;;;;a test use of util_mb.lisp
-;;=======================================> play.lisp <==
+;;;a test use of util_mb.lisp
+;;======================================> play.lisp <==
 ;all the strategy is here
 ;;(defvar *words* (map-lines "w10" #'(lambda (wl) (intern (string-upcase wl))))) ;change to w10
 ;(defvar *words* (map-lines "w10" #'(lambda (wl) (string-upcase wl)))) ;regex this/?
 ;(defvar *wordls* (map-lines "w10" #'(lambda (wl) (explode2s (string-upcase wl))))) 
 (defvar *wordls* nil)
 (defvar *alphaw10* '(E S I R A N T O L C D U G M P H B Y F V K W Z X Q J)) ;use4now/finish
+(defvar *alphaw-n* nil)
 ;can gen from init words /ofCurrentLen ;from http://www.datagenetics.com/blog/april12012/index.html
 ;can index all/some or since will re-get freq just go down list till contin2fall4a bit
 ;set_diff&implode2s added2utils   ;set_diff =complement?
 ;s3/pdt stuff in p1.cl, use s4 now
 ;-
-(defun useWordsOfLen (n)  
-  "set once know length of word using"
-  (len 
-   (setf *wordls* (map-lines (str-cat "w" n) #'(lambda (wl) (explode2s (string-upcase wl)))))))
-(defun initGame (cur)  
-  (let ((cl (len cur)))
-    (format t "~%Have a game of ~a letters,~a~%" cl (useWordsOfLen cl))))
-;-
 (defvar *lg* nil)
 (defvar *lm* nil)
+(defvar *picked* '()) 
+(defun positivep (n) (> n 0))
 ;-
 (defun ltr-ocr-in (ltrs &optional (words *wordls*))
+  "ret alst of letters w/occurance counts in present word set"
   (mapcar #'(lambda (l) (cons l (sum-l (mapcar #'(lambda (w) (count l w)) words)))) ltrs))
 
 (defun mx-ltr-ocr (ltrs &optional (words *wordls*))
+  "ret most likely letter to choose from current word list"
   (let ((lc-alst (ltr-ocr-in ltrs words)))
     ;(loop for p in lc-alst maximize (cdr p) finally (return p))
-    (sort lc-alst #'> :key #'cdr)
-    ))
+    (let* ((sl (sort lc-alst #'> :key #'cdr))
+           (sl- (collect-if #'(lambda (pr) (positivep (cdr pr))) sl)))
+      (format t "~%New pick-l:~a~%" (head sl- 8)) ;when all the same reorder2more like init distrib 
+      sl-)))
 ;-
+(defun useWordsOfLen (n)  
+  "set once know length of word using"
+  (let ((file (str-cat "w" n))) ;replace w/word-len filtered list from words.txt
+    (setf *wordls* (map-lines file #'(lambda (wl) (explode2s (string-upcase wl)))))) 
+  (setf *alphaw-n* (mapcar #'first (ltr-ocr-in *alphaw10* *wordls*)))
+  (cons (len *wordls*) (head *alphaw-n*))) 
+
+(defun initGame (cur)  
+  (let ((cl (len cur)))
+    (format t "~%Have a game of ~a letters,~a~%" cl (useWordsOfLen cl))))
+
+;-for missed letter word removal:
 (defun rm-if-member (m lol)
   (remove-if #'(lambda (l) (member m l)) lol)) 
-;-
-(defun no-nils (l) 
-  (not (member nil l)))
+ 
+;-for got-letter word filtering
+(defun no-nils (l) (not (member nil l))) ;need each letter/position combo to keep that word
+(defun any-t (l) (len-gt (rm-nil l) 0))
 
 (defun mpc (m ps lol)
   "m@position/s constraint"  ;need all to be true so reject if any nils
@@ -45,7 +57,6 @@
 ;-
 ;well game will have picked until player actually makes choice
 ; so@1st assume taking our suggestions
-(defvar *picked* '()) 
 (defun suggest (current) ;includes len, which is set to 10 on 1st pass
   "given current's constraints, find max occurance of possible words"
   (unless *wordls* (initGame current))
@@ -79,7 +90,7 @@
              (format t "~%try:~a" pick)
              )
       (format t "~%GUESS:~a" nwl))
-    (format t "~%wl~a->~a" wll (len *wordls*))
+    (format t "~%wl~a->~a,~a" wll (len *wordls*) (head *wordls* 6))
     ;now get max occur letter, &suggest that now
     )
    ;(format t "~%m:~a,g:~a,lg:~a,~a,~a,suggest(~a)4:~a" missed got lg lgp (len nwl) pick current)
@@ -89,7 +100,7 @@
     (setf *lg* got))
   )
 
-;;=======================================> hang.lisp <==
+;;======================================> hang.lisp <==
 ;a quick hangman game to play; start w/1test word and have play/strategy give suggestions; then expand MB
 ;status{GAME_WON, GAME_LOST, KEEP_GUESSING}
 ;load: uts.cl or util_mb.lisp
@@ -140,23 +151,23 @@
 
 (defun tst2 () (hangman '(r e m e m b e r e d))) ;in 5 letter trys &default in 10
 
-;;=======================================> tst.lisp <==
+;;======================================> tst.lisp <==
 (defvar *tsts* '(;my-score in comments sometimes doing better than original game maker's
  ("COMAKER" 25) ;14  ;(was not able to guess the word before making more than 5 mistakes)
  ("CUMULATE" 9) ;8
  ("ERUPTIVE" 5) ;9
  ("FACTUAL" 9)  ;9
- ("MONADISM" 8) ;11
+ ("MONADISM" 8) ;8
  ("MUS" 25) ;9 ;(was not able to guess the word before making more than 5 mistakes)
  ("NAGGING" 7) ;7
  ("OSES" 5)    ;3
- ("REMEMBERED" 5) ;5
- ("SPODUMENES" 4) ;10
- ("STEREOISOMERS" 2) ;7
- ("TOXICS" 11) ;11
- ("TRICHROMATS" 5) ;10
- ("TRIOSE" 5) ;7
- ("UNIFORMED" 5))) ;13 
+ ("REMEMBERED" 5)   ;5
+ ("SPODUMENES" 4)   ;5
+ ("STEREOISOMERS" 2);7
+ ("TOXICS" 11)      ;11
+ ("TRICHROMATS" 5)  ;6
+ ("TRIOSE" 5)       ;7
+ ("UNIFORMED" 5)))  ;9 
 
 (defun hang ()
   "test hangman"
