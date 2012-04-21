@@ -103,7 +103,8 @@
 ;a quick hangman game to play;start w/1test word and have play/strategy give suggestions; then expand MB
 ;status{GAME_WON, GAME_LOST, KEEP_GUESSING}
 ;load: uts.cl or util_mb.lisp
-;when I started to rewrite the game I got rid of things the game didn't use;&only have it in player.lisp now
+;when I started to rewrite the game I got rid of things the game didn't use; in play.lisp now
+(defvar *status* nil) ;game had different way of printing
 ;started from: http://lyle.smu.edu/~mhd/5320sp02/hang.lisp
 (defun update-word (word current guess)
    "Update the current guess.  We can assume that the input is always a list."
@@ -111,29 +112,39 @@
       (if (and (len-gt guess 1) (equal (explode2s guess) word)) 
         (progn (when *dbg* (format t "~%GOT IT HERE~%"))
                (setf current (explode2s guess))
+               (setf *status* 'GAME_WON)
                (setf found 'GAME_WON))
         (dotimes (i (length word) current) ; Word and Current have the same length
           (if (equal (nth i word) guess)
-            (progn (setf found 'KEEP_GUESSING) (setf (nth i current) guess))
+            (progn (setf found 'KEEP_GUESSING) 
+                   (setf *status* 'KEEP_GUESSING) 
+                   (setf (nth i current) guess))
             nil)))
-      (if found (when (eq found 'KEEP_GUESSING) (format t "~a Good try, keep guessing" guess))
-                (format t "~a Nope, sorry~%" guess))
+      (when *dbg* ;new
+        (if found (when (eq found 'KEEP_GUESSING) (format t "~a Good try, keep guessing" guess))
+          (format t "~a Nope, sorry~%" guess)))
       current))
 
+(defun print-current (current score)
+  (format t "~%~a; score=~a; status=~a" (implode2s current) score *status*)) 
 
 (defun hangman (&optional (word  '(a r t i f i c i a l )) (mxWg 4))
    "Simple hangman game.  The player has to keep track of letters he/she has already guessed."
-   (let* ((maxtries 15)
+   (let* ((maxtries 25)
           (mx-current '(- - - - - - - - - - - - - - - - - - - - - - - - -)) 
-           (current (subseq mx-current 0 (len word)))
+          (current (subseq mx-current 0 (len word)))
           (letterGuesses 0)
           (wordGuesses 0) ;if this maxes then letterGuesses goes to 25
           (guess nil))
       (dotimes (i maxtries)
-        (let ((sug (suggest current))) ;does: (print current)
-          (unless *dbg* (print current)) ;unless dbg off
+        (let ((sug (suggest current)) ;does: (print current)
+              (score (+ letterGuesses wordGuesses)))
+         ;(unless *dbg* (print current)) ;unless dbg off
+         ;(unless *dbg* (format t "~%~a; score=~a; status=~a" current score status)) 
+         (unless *dbg* (print-current current score)) 
          (terpri)
-         (format t "What is your guess?  ")  ;start by calling play.lisp to get a suggestion
+         (when  *dbg* ;new
+          (format t "What is your guess?  "))  ;start by calling play.lisp to get a suggestion
          (setf guess 
                (if *auto* sug
                  (read)))
@@ -148,12 +159,15 @@
              (progn (print current) (terpri)
                ;(format t "Congratulations!  You have won the game:~a~%" word)
                 (format t "Congratulations!  You have won the game w/~a in:~a+~a=~a~%" 
-                        word letterGuesses wordGuesses (+ letterGuesses wordGuesses))
+                                                    word letterGuesses wordGuesses score)
                 (return nil))  ;guess letter/word in fncs &ret status2use here
              (if (or (>= letterGuesses 25) (> wordGuesses mxWg)) ;only have to test for 1st
-                 (format t "You lost this time:~a,~a  Try again!" letterGuesses wordGuesses)
+               (progn (setf *status* 'GAME_LOST)
+                      (unless *dbg* (print-current current score)) 
+                      (format t "You lost this time:~a,~a  Try again!" letterGuesses wordGuesses))
                  nil) ;why nil
-             )))))
+             ) 
+         score))))
 
 (defun tst2 () (hangman '(r e m e m b e r e d))) ;in 5 letter trys &default in 10
 
@@ -175,14 +189,53 @@
  ("TRIOSE" 5)       ;7
  ("UNIFORMED" 5)))  ;13 
 
-(defun hang ()
+(defun hang (&optional (r nil)) ;run fnc
   "test hangman"
   (format t "~%TestHangman w/word or nth of~%~a" *tsts*)
   (setf *wordls* nil) ;now that in 1file, to reset
-  (let* ((choice (read))
+  (let* ((choice (if r r (read)))
          (word (if (numberp choice) 
                  (let ((cp  (nth (min choice (len *tsts*)) *tsts*)))
                    (format t "~%Try to get it in:~a~%" (second cp))
                    (first cp))
                  (string choice))))
-    (hangman (explode2s word))))
+    (when (len-gt word 1)
+      (hangman (explode2s word)))))
+
+(defun run (&optional (n nil))
+  "run 1 or all tests"
+  (if n (hang n)
+    (loop for i from 1 to (len *tsts*) do (hang i))))
+
+;;===========================================end of hangman game
+;;===========================================start of word reach
+;;;;;;https://github.com/mikaelj/snippets/blob/master/lisp/spellcheck/spellcheck.lisp
+;;could have ignore as optional, but if !dfs/etc might want as global
+#+ignore (progn
+(defvar *ignore* nil) ;(defvar *in* nil) ;just get length of *ignore*
+(defvar *tmp* 0)
+;defun edit1reach (wrd  &optional (ignore nil))
+(defun edit1reach (wrd)
+  "find all words connected by 1 edit from the 1st"
+ (when (and (> (length wrd) 0) (not (member wrd *ignore* :test #'equal))) ;shouldn't need here
+  (let* ((nw1-l (known (edits-1 wrd)))
+         ;(try-l (set_diff nw1-l *ignore*))
+         (try-l nw1-l))
+    (pushnew wrd *ignore* :test #'equal) ;new-ignore
+    (format t "[~a]~a" wrd (incf *tmp*))
+    ;if try-l (cons wrd (mapcar #'(lambda (w) (edit1reach w )) try-l)) ;only# not graph
+    (if try-l ;(mapcar #'(lambda (w) (edit1reach w)) try-l)
+    (loop for w in try-l do (funcall  #'(lambda (w) (edit1reach w)) w))
+      wrd))))
+
+(defun answer () (length *ignore*))
+(defun get-answer (&optional (word "causes"))
+  (edit1reach word)
+  (format t "~%social network for ~a is ~a~%" word (answer)))
+);to run:
+;USER(1): (in-package :spellcheck)
+;
+;#<PACKAGE "SPELLCHECK">
+;SPELLCHECK(2): (get-answer) 
+;..[guttles]39961[cuttles]39962[cuttoes]39963[scuttles]39964[scuttle]39965[shuttle]39966
+;then for now I run out of memory
