@@ -88,7 +88,7 @@
              (when *dbg* (format t "~%try:~a" pick))
              ) ;else only 1 word left so pick it
       (progn (setf pick (implode2s (first-lv nwl)))
-             (format t "~%GUESS:~a" nwl)))
+             (when (not *auto*) (format t "~%GUESS:~a" nwl))))
     (when *dbg* (format t "~%wl~a->~a,~a" wll (len *wordls*) (head *wordls* 6)))
     ;now get max occur letter, &suggest that now
     )
@@ -142,13 +142,13 @@
          ;(unless *dbg* (print current)) ;unless dbg off
          ;(unless *dbg* (format t "~%~a; score=~a; status=~a" current score status)) 
          (unless *dbg* (print-current current score)) 
-         (terpri)
+         ;(terpri)
          (when  *dbg* ;new
           (format t "What is your guess?  "))  ;start by calling play.lisp to get a suggestion
          (setf guess 
                (if *auto* sug
                  (read)))
-         (terpri)
+         ;(terpri)
          (if (len-gt guess 1)  ;incr word or letter guess count
            (progn (incf wordGuesses)
                   (when (> wordGuesses mxWg) (setf letterGuesses 25)
@@ -156,8 +156,7 @@
            (incf letterGuesses)) 
          (setf current (update-word word current guess)) ;update/check if correct
          (if (equal word current)  
-             (progn (print current) (terpri)
-               ;(format t "Congratulations!  You have won the game:~a~%" word)
+             (progn (print current) ;(terpri)
                 (format t "Congratulations!  You have won the game w/~a in:~a+~a=~a~%" 
                                                     word letterGuesses wordGuesses score)
                 (return nil))  ;guess letter/word in fncs &ret status2use here
@@ -209,38 +208,43 @@
 
 ;;===========================================end of hangman game
 ;;===========================================start of word reach
-;;;;;;https://github.com/mikaelj/snippets/blob/master/lisp/spellcheck/spellcheck.lisp
-;;could have ignore as optional, but if !dfs/etc might want as global
-;#+ignore (progn (in-package :spellcheck)
-;(defvar *ignore* nil) ;(defvar *in* nil) ;just get length of *ignore*
-;(defvar *tmp* 0)
-;(defvar *wq* nil)
-;(defun useablep (wrd) (and (> (length wrd) 0) (not (member wrd *ignore* :test #'equal))))
-;
+;;use:https://github.com/mikaelj/snippets/blob/master/lisp/spellcheck/spellcheck.lisp
+;;&my: https://github.com/MBcode/LispUtils/blob/master/util_mb.lisp
+;(in-package :spellcheck)
+;;Instead of pushnew ignore-l, hashnew, then useablep will be faster 
 ;(defun edit1ql (word)
-;  (push word *wq*) ;start it off
-;  (labels ((editq- ()
-;                 (let ((wrd (pop *wq*)))
-;                   (when (useablep wrd) ;shouldn't need here
-;                     (pushnew wrd *ignore* :test #'equal) 
-;                     (when *dbg* (format t "[~a]~a" wrd (incf *tmp*)))
-;                     (let ((try-l (known (edits-1 wrd))))  
-;                       (when try-l
-;                         ;(mapcar #'(lambda (tl) (when (useablep tl) (pushnew tl *wq* :test #'equal))) try-l)
-;                          (loop for w in try-l do (funcall #'(lambda (tl) (when (useablep tl) (pushnew tl *wq* :test #'equal))) w))
-;                         ))))
-;                 ))
-;    (while *wq* (editq-)))
-;  *tmp*)
-;;
+;  "get full foaf count where f=1letter edit in word"
+; (let ((wq (list word)) ;start it off
+;      ;(ignore-l nil)
+;       (ignore-h (make-hash-table :test #'equal :size 50000))
+;       (n 0))
+;   (labels 
+;     ((useablep (uw) 
+;                (and (> (length uw) 0) (not 
+;                                        ;(member uw ignore-l :test #'equal)
+;                                         (gethash uw ignore-h)
+;                                         )))
+;      (known (i) t) (edits-1 (i) t) ;stubs till spellcheck loaded
+;      (ignore-w (iw) (setf (gethash iw ignore-h) t)) 
+;      (editq- ()
+;            (let ((wrd (pop wq)))
+;              (when (useablep wrd) ;shouldn't need here
+;                ;(pushnew wrd ignore-l :test #'equal) 
+;                (ignore-w wrd)
+;                (incf n)
+;                (when *dbg* (format t "[~a]~a" wrd n))
+;                (let ((try-l (known (edits-1 wrd))))  
+;                  (when try-l
+;                     (loop for w in try-l do 
+;                           (funcall #'(lambda (tl) 
+;                                        (when (useablep tl) (pushnew tl wq :test #'equal))) w))))))))
+;    (while wq (editq-)))
+;  n))
 ;
-;(defun answer () (length *ignore*))
 ;(defun get-answer (&optional (word "causes"))
-;  (format t "~%social network for ~a is ~a~%" word (edit1ql word))
-;  ) 
+;  (format t "~%social network for ~a is ~a~%" word (edit1ql word))) 
 ;;to run:
 ;;USER(1): (in-package :spellcheck)
-;;
 ;;#<PACKAGE "SPELLCHECK">
 ;;SPELLCHECK(2): (get-answer)
 ;;social network for causes is 78768
