@@ -2440,4 +2440,16 @@ the command has printed on stdout as string."
 (defun implode2s (l)
   "l of sym/letters->str"
   (implode-l l nil))
+
+(defun positivep (n) (> n 0)) ;put in utils
+
+(defun rm-if-member (m lol)
+  (remove-if #'(lambda (l) (member m l)) lol)) 
+
+(defun no-nils (l) (not (member nil l))) 
+(defun any-t (l) (len-gt (rm-nil l) 0))
  
+(defmacro while (test &body body)
+  `(do ()
+     ((not ,test))
+     ,@body))

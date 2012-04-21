@@ -12,7 +12,7 @@
 (defvar *lg* nil)
 (defvar *lm* nil)
 (defvar *picked* '()) 
-(defun positivep (n) (> n 0)) ;put in utils
+;(defun positivep (n) (> n 0)) ;put in utils
 ;-
 (defun ltr-ocr-in (ltrs &optional (words *wordls*))
   "ret alst of letters w/occurance counts in present word set"
@@ -43,12 +43,12 @@
     (when *dbg* (format t "~%Have a game of ~a letters,~a~%" cl fininit))))
 
 ;-for missed letter word removal:
-(defun rm-if-member (m lol)
-  (remove-if #'(lambda (l) (member m l)) lol)) 
+;(defun rm-if-member (m lol)
+;  (remove-if #'(lambda (l) (member m l)) lol)) 
  
 ;-for got-letter word filtering
-(defun no-nils (l) (not (member nil l))) ;need each letter/position combo to keep that word
-(defun any-t (l) (len-gt (rm-nil l) 0))
+;(defun no-nils (l) (not (member nil l))) ;need each letter/position combo to keep that word
+;(defun any-t (l) (len-gt (rm-nil l) 0))
 
 (defun mpc (m ps lol)
   "m@position/s constraint"  ;need all to be true so reject if any nils
@@ -211,31 +211,36 @@
 ;;===========================================start of word reach
 ;;;;;;https://github.com/mikaelj/snippets/blob/master/lisp/spellcheck/spellcheck.lisp
 ;;could have ignore as optional, but if !dfs/etc might want as global
-#+ignore (progn
-(defvar *ignore* nil) ;(defvar *in* nil) ;just get length of *ignore*
-(defvar *tmp* 0)
-;defun edit1reach (wrd  &optional (ignore nil))
-(defun edit1reach (wrd)
-  "find all words connected by 1 edit from the 1st"
- (when (and (> (length wrd) 0) (not (member wrd *ignore* :test #'equal))) ;shouldn't need here
-  (let* ((nw1-l (known (edits-1 wrd)))
-         ;(try-l (set_diff nw1-l *ignore*))
-         (try-l nw1-l))
-    (pushnew wrd *ignore* :test #'equal) ;new-ignore
-    (format t "[~a]~a" wrd (incf *tmp*))
-    ;if try-l (cons wrd (mapcar #'(lambda (w) (edit1reach w )) try-l)) ;only# not graph
-    (if try-l ;(mapcar #'(lambda (w) (edit1reach w)) try-l)
-    (loop for w in try-l do (funcall  #'(lambda (w) (edit1reach w)) w))
-      wrd))))
-
-(defun answer () (length *ignore*))
-(defun get-answer (&optional (word "causes"))
-  (edit1reach word)
-  (format t "~%social network for ~a is ~a~%" word (answer)))
-);to run:
-;USER(1): (in-package :spellcheck)
+;#+ignore (progn (in-package :spellcheck)
+;(defvar *ignore* nil) ;(defvar *in* nil) ;just get length of *ignore*
+;(defvar *tmp* 0)
+;(defvar *wq* nil)
+;(defun useablep (wrd) (and (> (length wrd) 0) (not (member wrd *ignore* :test #'equal))))
 ;
-;#<PACKAGE "SPELLCHECK">
-;SPELLCHECK(2): (get-answer) 
-;..[guttles]39961[cuttles]39962[cuttoes]39963[scuttles]39964[scuttle]39965[shuttle]39966
-;then for now I run out of memory
+;(defun edit1ql (word)
+;  (push word *wq*) ;start it off
+;  (labels ((editq- ()
+;                 (let ((wrd (pop *wq*)))
+;                   (when (useablep wrd) ;shouldn't need here
+;                     (pushnew wrd *ignore* :test #'equal) 
+;                     (when *dbg* (format t "[~a]~a" wrd (incf *tmp*)))
+;                     (let ((try-l (known (edits-1 wrd))))  
+;                       (when try-l
+;                         ;(mapcar #'(lambda (tl) (when (useablep tl) (pushnew tl *wq* :test #'equal))) try-l)
+;                          (loop for w in try-l do (funcall #'(lambda (tl) (when (useablep tl) (pushnew tl *wq* :test #'equal))) w))
+;                         ))))
+;                 ))
+;    (while *wq* (editq-)))
+;  *tmp*)
+;;
+;
+;(defun answer () (length *ignore*))
+;(defun get-answer (&optional (word "causes"))
+;  (format t "~%social network for ~a is ~a~%" word (edit1ql word))
+;  ) 
+;;to run:
+;;USER(1): (in-package :spellcheck)
+;;
+;;#<PACKAGE "SPELLCHECK">
+;;SPELLCHECK(2): (get-answer)
+;;social network for causes is 78768
