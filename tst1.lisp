@@ -13,13 +13,17 @@
 ;in KM, put in utils in case km not loaded
 ;defun split-at1 (string substring &key from-end)
 ;defun string-to-number (string &key (fail-mode 'fail))
+
+;lisa: available for event driven rules, if you ever wanted to get really fancy packaging suggestions/but not here/now
  
-;lhstat
-;defun linear-regression (points)
+;lhstat: ;defun linear-regression (points)
 ;;; sequence of points (each a list of two numbers, e.g. '((1.0 0.1) (2.0 0.2)))
 
 ;;; Start w/1product and one timeline since the last restock, @each use have a time-till-out estimate
 ;;; factor in restock time, and w/other products might bundle but if from diff vendors can ingnore
+
+;;; in ins will update burnRate, but should keep the one to generate data seperate  ;;assume persists
+(defvar *prods* '((p1 800 0.5) (p2 700 0.6) (p3 750 0.45) (p4 500 0.4)))  ;init for generation
 
 ;instance will have lastRestockTime(as start), that stockingLevel, & (restock)R-eta which will be put in terms of days out from present time
 ;sL - burnRate * time = timeOut
@@ -31,7 +35,16 @@
 (defun rn (&optional (m 0) (s 4)) (statistics:random-normal :mean m :sd s))
 ;(loop for h from 2 to 700 by 8 collect (list  (rn h 2)  (rn (curStock-h h) ))) ;to gen cached values below
 ;(loop for h from 2 to 700 by 8 collect (list  (floor (rn h 2))  (floor (rn (curStock-h h))))) ;to gen cached values below
-(defvar *p1-utslr* '( ;could have drop a little faster, but fine for now
+(defun curStock-s-m-h (s m h) (- s (* m h))) 
+(defun gen-prod-data (p-s-m)
+  "given ProdName StartStock BurnRate, gen usage data, to later pre-guess eta for outage"
+  (let ((p (first p-s-m))
+        (s (second p-s-m))
+        (m (third p-s-m)))
+    (loop for h from 2 to 700 by 8 collect 
+          (list  (floor (rn h 2))  (floor (rn (curStock-s-m-h s m h)))))))
+(defvar *p-utslr* (mapcar #'gen-prod-data *prods*))
+(defvar *p1-utslr* '( ;could have drop a little faster, but fine for now ;;after this gen each time for each of *prods*
  (1 794) (9 799) (18 790) (27 792) (35 783) (41 783) (49 779) (58 770) (64 770)
  (72 768) (79 758) (90 747) (99 746) (105 733) (113 738) (120 737) (128 730)
  (135 728) (142 731) (154 720) (158 721) (168 718) (176 703) (184 702)
@@ -52,9 +65,11 @@
 ;(defun t1 () (statistics:linear-regression *p1-utslr*))
 ;(defun t1 () (statistics:lin-regression *p1-utslr*))
 (defun t1 () (statistics:x-int *p1-utslr*))
+(defun tn (n) (nth n *p-utslr*))
+(defun tx (n) (* 1.0 (statistics:x-int (tn n))))
 
 #+ignore ;in statistics pkg right now
-(defun x-int (points) ;a version of lin-regression (points)
+(defun lin-regression (points) ;a version of lin-regression (points)
   (test-variables (points sequence))
   (let  ((xs (map 'list #'first points))
          (ys (map 'list #'second points)))
@@ -72,18 +87,43 @@
            (res-ms (/ (- Lyy reg-ss) (- n 2)))
            (r (/ Lxy (sqrt (* Lxx Lyy))))
            (r2 (/ reg-ss Lyy))
-           (t-test (/ b (sqrt (/ res-ms Lxx))))
+           (t-test (/ b (sqrt (/ res-ms Lxx)))) 
           ;(t-significance (t-significance t-test (- n 2) :tails :both))
            (x-int (- (/ a b)))
            )
       ;format t "~%Intercept = ~f, slope = ~f, r = ~f, R^2 = ~f, p = ~f"
-      (format t "~%Intercept = ~f, slope = ~f, r = ~f, R^2 = ~f"
-              a b r r2 )
-     ;(values a b r r2 )
-     x-int)))
-;USER(1): (t1)
-;Intercept = 798.605, slope = -0.4998287, r = -0.9991366, R^2 = 0.998274
+      ;format t "~%Intercept = ~f, slope = ~f, r = ~f, R^2 = ~f"
+      (format t "~%Intercept = ~f, slope = ~f, x-int = ~f, r = ~f, R^2 = ~f"
+              a b x-int r r2 )
+    ;(values a b x-int r r2 ) ;x-int 
+     (values x-int a b r r2 ) ;x-int 
+      )))           ;m
+;will want m as well, as each product should store burn-rate, so can predict how much to buy
+#+ignore ;in statistics pkg right now
+(defun x-int (points)
+  (lin-regression points))
+;USER(1):  (t1)
+;Intercept = 798.605, slope = -0.4998287, x-int = 1597.7573, r = -0.9991366, R^2 = 0.998274
 ;23247687494/14550199
+;255724562434/320214087
+;-160052189/320214087
+;-0.9991366
+;2328791200335611/2332817582544747
 ;USER(2): (* 1.0 *)
 ;1597.7573
 ;USER(3): 
+;==now can guess when (in hrs) that you will run out of any number(presently 4)of products
+;USER(1): (tx 0) 
+;Intercept = 800.5004, slope = -0.50247264, x-int = 1593.1224, r = -0.99915904, R^2 = 0.9983187
+;1593.1224
+;USER(2): (tx 1) 
+;Intercept = 698.6234, slope = -0.5977067, x-int = 1168.8398, r = -0.9995435, R^2 = 0.9990873
+;1168.8398
+;USER(3): (tx 2) 
+;Intercept = 749.0641, slope = -0.44990206, x-int = 1664.9492, r = -0.9991216, R^2 = 0.99824387
+;1664.9492
+;USER(10): (tx 3) 
+;Intercept = 499.9664, slope = -0.40089267, x-int = 1247.1328, r = -0.9985216, R^2 = 0.9970454
+;1247.1328
+;USER(4): 
+ 
