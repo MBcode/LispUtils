@@ -49,3 +49,41 @@
 (defun ff (n) (* 1.0 (floor n)))
 ;or(loop for h from 2 to 700 by 8 collect (list (ff (rn h 2))  (ff (rn (curStock-h h))))) 
 ;then (STATISTICS:LINEAR-REGRESSION *P1-UTSLR*) to get zero-crossing, &calc eta
+;(defun t1 () (statistics:linear-regression *p1-utslr*))
+;(defun t1 () (statistics:lin-regression *p1-utslr*))
+(defun t1 () (statistics:x-int *p1-utslr*))
+
+#+ignore ;in statistics pkg right now
+(defun x-int (points) ;a version of lin-regression (points)
+  (test-variables (points sequence))
+  (let  ((xs (map 'list #'first points))
+         (ys (map 'list #'second points)))
+    (test-variables (xs :numseq) (ys :numseq))
+    (let* ((x-bar (mean xs))
+           (y-bar (mean ys))
+           (n (length points))
+           (Lxx (reduce #'+ (mapcar (lambda (xi) (square (- xi x-bar))) xs)))
+           (Lyy (reduce #'+ (mapcar (lambda (yi) (square (- yi y-bar))) ys)))
+           (Lxy (reduce #'+ (mapcar (lambda (xi yi) (* (- xi x-bar) (- yi y-bar)))
+                                    xs ys)))
+           (b (/ Lxy Lxx))
+           (a (- y-bar (* b x-bar)))
+           (reg-ss (* b Lxy))
+           (res-ms (/ (- Lyy reg-ss) (- n 2)))
+           (r (/ Lxy (sqrt (* Lxx Lyy))))
+           (r2 (/ reg-ss Lyy))
+           (t-test (/ b (sqrt (/ res-ms Lxx))))
+          ;(t-significance (t-significance t-test (- n 2) :tails :both))
+           (x-int (- (/ a b)))
+           )
+      ;format t "~%Intercept = ~f, slope = ~f, r = ~f, R^2 = ~f, p = ~f"
+      (format t "~%Intercept = ~f, slope = ~f, r = ~f, R^2 = ~f"
+              a b r r2 )
+     ;(values a b r r2 )
+     x-int)))
+;USER(1): (t1)
+;Intercept = 798.605, slope = -0.4998287, r = -0.9991366, R^2 = 0.998274
+;23247687494/14550199
+;USER(2): (* 1.0 *)
+;1597.7573
+;USER(3): 
