@@ -68,7 +68,16 @@
     (format t "~%~a hrs till need to refill" (floor tr))
     tr))
 
-;pull in data-lib so everything doesn't have to be hrs since last restock
+;pull in date-lib so everything doesn't have to be hrs since last restock
+(defun iso-time+ (&optional (h 0) (time (get-universal-time))) ;put in utils
+  "Returns the universal time TIME as a string in full ISO format."
+  (multiple-value-bind (second minute hour date month year)
+      (decode-universal-time (+ time (* h 3600))) 
+    (format nil "~4,'0d-~2,'0d-~2,'0d-~2,'0d-~2,'0d" year month date hour minute ))) 
+(defun tr+ (n) 
+  "print eta in hrs &clock time"
+  (iso-time+ (floor (tr n))))
+
 #+ignore ;in statistics pkg right now
 (defun lin-regression (points) ;a version of lin-regression (points)
   (test-variables (points sequence))
@@ -114,21 +123,20 @@
 ;1597.7573
 ;USER(3): 
 ;==now can guess when (in hrs) that you will run out of any number(presently 4)of products, but can do any#
-;USER(1): (tr 0)
+;USER(4): (tr+ 0)
 ;Intercept = 800.5004, slope = -0.50247264, x-int = 1593.1224, r = -0.99915904, R^2 = 0.9983187
 ;1543 hrs till need to refill
-;1543.1224
-;USER(2): (tr 1)
+;"2012-07-06-07-08"
+;USER(5): (tr+ 1)
 ;Intercept = 698.6234, slope = -0.5977067, x-int = 1168.8398, r = -0.9995435, R^2 = 0.9990873
 ;1118 hrs till need to refill
-;1118.8398
-;USER(3): (tr 2)
+;"2012-06-18-14-08"
+;USER(6): (tr+ 2)
 ;Intercept = 749.0641, slope = -0.44990206, x-int = 1664.9492, r = -0.9991216, R^2 = 0.99824387
 ;1614 hrs till need to refill
-;1614.9492
-;USER(4): (tr 3)
+;"2012-07-09-06-08"
+;USER(7): (tr+ 3)
 ;Intercept = 499.9664, slope = -0.40089267, x-int = 1247.1328, r = -0.9985216, R^2 = 0.9970454
 ;1197 hrs till need to refill
-;1197.1328
-;USER(5): 
- 
+;"2012-06-21-21-08"
+;USER(8): 
