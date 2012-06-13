@@ -7,3 +7,9 @@ https://docs.google.com/present/view?id=dfppzgjw_33fttsj6dm
 use http://www.quicklisp.org/ it even has KM now 
 
 http://mike.bobak.googlepages.com/clmath.txt on why cl has better intrinsic math ability 
+
+ 
+;upcoming:
+;http://www.sbcl.org/manual/#sb_002dconcurrency
+;;use sb-concurrency:mailbox maybe something pregel like
+;&try http://storm-project.net/ about/multi-language.html  

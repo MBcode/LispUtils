@@ -13,3 +13,8 @@
 ;could have used cl-json to parse out, but cut works during a streaming job as well
 ;mongo> cat zips.json | cut -d',' -f5 | cut -d':' -f2 | sbcl --core km.core --script ts.cl 
 ;tot=248709873 
+ 
+;upcoming:
+;http://www.sbcl.org/manual/#sb_002dconcurrency
+;;use sb-concurrency:mailbox maybe something pregel like
+;&try http://storm-project.net/ about/multi-language.html 
