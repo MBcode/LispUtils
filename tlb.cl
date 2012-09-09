@@ -159,3 +159,48 @@
 ;file17 node9
 ;file14 node9
 ;file8 node9 
+=1st typing of a C version
+ 
+//a bit in C w/o looking much up yet
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+/* Define an array of name&sized entities to sort. */
+//struct sn { const char *name; int size}; //add so files can pnt2nodes
+struct sn { const char *name; int size;  struct *sn};
+	//need to get so has ptr to self, might subclass a version w/that added
+//alloc later //check if can reuse struct name&global var
+struct sn files[99];
+struct sn nodes[99];
+
+int read_sn (FILE *fp, struct sn *c) { readline(fp,"%c %d", ns->name , ns->size); } 
+
+int read_sn-file(FILE *fp,struct sn **sa)
+{   int i=0;
+	while ((ns=read_sn(fp,sa[i++]))!=EOF); }
+
+int sn_cmp (const struct sn *c1, const struct sn *c2) { return (c1->size > c2->size); } 
+
+void print2sn (const struct sn *c1, const struct sn *c2) { printf ("%s, the %s\n", c1->name, c2->name); } 
+void print-sn (const struct sn *c3) { print2sn (c3, c3->node); }
+
+struct sn **gather-adapt-f2n(struct sn **sf, struct sn **sn)
+{
+   if(sf[0]=='\0' || sn[0]=='\0') 
+   //could skip rec mk list &iterate over twice here
+	   //use sn_cmp ..
+}
+
+int main (int argc, char *argv[])
+{
+FILE *file-fp, *node-fp;
+	int nf=0;nn=0,i;
+	file-fp=open("r", argv[1]);
+	node-fp=open("r", argv[2]);
+	nf = read_sn-file(file-fp);
+	nn = read_sn-file(node-fp);
+	qsort (files, nf, sizeof (struct sn), sn_cmp); 
+	qsort (nodes, nn, sizeof (struct sn), sn_cmp); 
+	gather-adapt-f2n(*files, *nodes);
+	for(i=0; i<nf; i++) print-sn(files[i]);
+}
