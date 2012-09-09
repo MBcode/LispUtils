@@ -1,4 +1,4 @@
-;test of distributing files among nodes, to be redone in C;  mike.bobak
+;test of distributing files among nodes, to be redone in C&maybe Python;  mike.bobak
 (defun split2n (txt2)
   "split txt-pair, change str->num on 2nd"
   (let ((tl (split txt2)))
@@ -13,7 +13,7 @@
 (defun txtfile2srt-alst (fn)
   (sort (txtfile2alst fn) #'> :key #'second))
 
-(defun round-up (x) ;from lhstats
+(defun round-up (x) ;from lhstats  ;not needed now
     (multiple-value-bind (rounded ignore) (ceiling x)
           (declare (ignore ignore))
               rounded))
@@ -58,7 +58,7 @@
 ;should at least pick largest/best fit for last2put in; can use gn(frac)for ave num/bin
 ; consider a best1st,..
 ; consider(recording)pct full on each bin
-; rest-below
+; rest-below  ;&get best fit in the bin  ;;didn't even have2read bin-packing
 ; next pass could just be, largest2largest then best fitting of what is left
 
 (defun sum-2nd (l) (reduce #'+ (mapcar #'second l)))
@@ -80,20 +80,21 @@
             (if easy 'fewer 'more) lf ln (if easy 'easy 'gather))
     (if easy (f-per-n sf sn) 
       (let* ((sna (gather-adapt-f2n sf sn))
-             ;(sna (butlast sna2)) (sf2 (last sna2))
-             ) ;check that altered lists so can w/them again directly
+             (sna2 (gather-adapt-f2n *out1* sn))
+             ) 
        ;(format t "~%get:~a" (gather-adapt-f2n sf sn))
         (format t "~%get1:~a" sna)
         ;could go back over w/smaller ones to see if they would fit now
         ;nodes always there(w/smaller sizes), but file list is smaller now
-      (format t "~%get2:~a" (gather-adapt-f2n *out1* sn))
-      ;final answer would be append get2 get1
-      )
-      )))
+        ;(format t "~%get2:~a" (gather-adapt-f2n *out1* sn))
+        (format t "~%get2:~a" sna2)
+      ;final answer would be append get2 get1  ;print out as requested below:
+      (mapcar #'(lambda (fn-pr) (format t "~%~a ~a" (first fn-pr) (rest fn-pr))) (append sna sna2))
+      ))))
 
 ;(trace gather-adapt-f2n)
 ;(trace gather-ln round-up name size)
-;;;=get rid of these lines
+;;;=get rid of these lines ;1st exploratory code ..
 ;(defvar *files* (txtfile2alst "files"))
 ;(defvar *nodes* (txtfile2alst "nodes"))
 ;;could just sort right away; in fact will do all in the 1main fnc
@@ -134,3 +135,27 @@
 ;      (file10 . node9) (file17 . node9) (file14 . node9) (file8 . node9))
 ;NIL
 ;USER(2):  ;final output is the combination of get1+get2 
+;file16 node5
+;file6 node5
+;file21 node0
+;file3 node0
+;file0 node6
+;file1 node6
+;file13 node9
+;file4 node9
+;file20 node7
+;file7 node7
+;file23 node8
+;file19 node8
+;file2 node4
+;file22 node4
+;file12 node1
+;file5 node3
+;file18 node5
+;file11 node0
+;file15 node6
+;file9 node6
+;file10 node9
+;file17 node9
+;file14 node9
+;file8 node9 
