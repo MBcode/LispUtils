@@ -40,15 +40,18 @@
 ;(trace f-per-n assign-f2n)
 (defvar *out1* nil) ;tmp
 (defun gather-adapt-f2n (sf sn)
+  "take a pass a doling files2nodes"
   (let* ((f1 (first sf))
          (n1 (first sn))
          )
+    (setf *out1* nil) ;so only reset w/files if run out of nodes, &still files2go
     (cond
       ((null f1) nil)   ;make >1 pass now, so it now just what wasn't place on this pass
-      ((null n1) (setf *out1* sf) (format t "~%this distribution ran out of nodes:~%~a" sf) nil)
+      ((null n1) (setf *out1* sf)  ;or ret values, or ..
+                 (format t "~%this distribution ran out of nodes:~%~a" sf) nil) ;so make another pass w sf
      ;((null n1) (format t "~%this distribution ran out of nodes:~%~a" sf) (list sn)) ;so can try again
       (t
-        (if (< (size f1) (size n1)) ;maybe also pop/ (remove f1 sf)
+        (if (<= (size f1) (size n1)) ;maybe also pop/ (remove f1 sf)
           (cons (assign-f2n f1 n1) (gather-adapt-f2n (rest sf) sn))
           (gather-adapt-f2n sf (rest sn))) ;try other nodes 
         ;could go back over w/smaller ones to see if they would fit now
@@ -66,12 +69,18 @@
 
 ;I did code up another pass at this, but it over/re distr some files, caught both in a ;check-warn &output check
 ;so will revert to this messy file for a bit
-#+ignore 
+;#+ignore 
 (defun distr-pass (sf sn)  ;make the 2 /or more if needed later/ passes at doling out the files
   "make passes at gathering assignments , need to pop files off though, or ret list of present files"
+ (setf *out1* sf)  ;;could start w/go till empty, then deal w/leftover inf rec later
+  (let* (;(out1 sf) ;tried flet to avoid the global
+         (ret nil))
   ;while sf
+  ;(while (full *out1*) collect (gather-adapt-f2n *out1* sn))
+  (while (full *out1*) (push (gather-adapt-f2n *out1* sn) ret))
     ;(sna2 (gather-adapt-f2n *out1* sn))
-  ) ;could flet so sf doesn't have to be ret, but is a local pop of as files taken off
+   ;could flet so sf doesn't have to be ret, but is a local pop of as files taken off
+  (flat1 ret)))
 
 (defun distribute (f-fn n-fn)
   (let* ((sf (txtfile2srt-alst f-fn))
@@ -88,6 +97,9 @@
     (format t "~%~a ~d:files than ~d:nodes so ~a~%"
             (if easy 'fewer 'more) lf ln (if easy 'easy 'gather))
     (if easy (f-per-n sf sn) 
+      (mapcar #'(lambda (fn-pr) (format t "~%~a ~a" (first fn-pr) (rest fn-pr)) fn-pr) 
+          (distr-pass sf sn))
+      #+ignore
       (let* ((sna (gather-adapt-f2n sf sn))
              (sna2 (gather-adapt-f2n *out1* sn))
              ) 
@@ -97,9 +109,15 @@
         ;nodes always there(w/smaller sizes), but file list is smaller now
         ;(format t "~%get2:~a" (gather-adapt-f2n *out1* sn))
         (format t "~%get2:~a" sna2)
+        (format t "~%out:~a" *out1*) ;should be empty now ;but could continue if it wasn't
+        (format t "~%sn:~a" sn)
       ;final answer would be append get2 get1  ;print out as requested below:
-      (mapcar #'(lambda (fn-pr) (format t "~%~a ~a" (first fn-pr) (rest fn-pr))) (append sna sna2))
-      ))))
+      ;mapcar #'(lambda (fn-pr) (format t "~%~a ~a" (first fn-pr) (rest fn-pr))) 
+      (mapcar #'(lambda (fn-pr) (format t "~%~a ~a" (first fn-pr) (rest fn-pr)) fn-pr) 
+              (append sna sna2))
+      )
+      )))
+(trace distr-pass)
 
 ;did twice as expect 2or3/bin, but if much higher&didn't distribute well right away(nice zipf/etc distr?)then might need>2passes
 ;could be generalized/cleaned up, but there is a desire to see it in other language/s
