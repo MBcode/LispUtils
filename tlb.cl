@@ -230,7 +230,6 @@ int i;
 //	for(i=0; i<nf; i++) print_sn(files[i]);
 	for(i=0; i<nf; i++) print_f2n(f2n[i]);
 }
-#If I did more writing than reading of Python I'd do a nice translation w/it
 import csv
 def get_ns_file(fn):
     l = []
@@ -244,9 +243,9 @@ def get_ns_file(fn):
     fp.close()
     return l[1:]
 
-get_ns_file('files.txt')
-get_ns_file('nodes.txt')
-#then sort the files &write def distribute 
+fa=get_ns_file('files.txt')
+na=get_ns_file('nodes.txt')
+#then sort the files &write def distribute
 print 'now sort them'
 from operator import itemgetter, attrgetter
 fs=sorted(fa,key=itemgetter(1))
@@ -255,4 +254,22 @@ for i in fs:
     print i
 for i in ns:
     print i
-#&write def distribute 
+
+#and write def distribute
+def adapt_f2n_pass(sf,sn):
+    print sf
+    print sn
+
+def distr_pass(sf,sn):
+    count = 1
+    for fi in sf:
+        for ni in sn:
+            if(ni[1] > fi[1]):
+                count += 1
+                adapt_f2n_pass(ni,fi)
+    return count
+
+#give it a try
+cnt=distr_pass(fs,ns)
+print cnt
+ 
