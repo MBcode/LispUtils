@@ -1,4 +1,5 @@
-;test of distributing files among nodes, to be redone in C&maybe Python;  mike.bobak
+;test of distributing files among nodes, to be redone in C&maybe Python;  mike.bobak@gmail.com
+;this is another test of the use of my util_mb.lisp but can be loaded w/just a few of them
 (defun split2n (txt2)
   "split txt-pair, change str->num on 2nd"
   (let ((tl (split txt2)))
@@ -42,7 +43,7 @@
        (cond
          ((null f1) nil)   ;make >1 pass now, so it now just what wasn't place on this pass
          ((null n1)  (when (equal out sf) (format t "~%this distribution ran out of nodes:~%~a" sf)) 
-                     (setf out sf) (format t "~%this distrib-run ran out of nodes:~%~a" sf) nil)
+                     (setf out sf) (format t "~%this distrib-run ran out of nodes:~%~a" sf) nil) ;check
         (t    
           (if (< (size f1) (size n1)) ;maybe also pop/ (remove f1 sf)
             (cons (assign-f2n f1 n1) (adapt-f2n-pass (rest sf) sn))
@@ -61,6 +62,7 @@
 (defun pct (a b) (/ (- b a) (* 0.01 b)))
 
 (defun distribute (f-fn n-fn)
+  "get input &start doling out the files"
   (let* ((sf (txtfile2srt-alst f-fn))
          (sn (txtfile2srt-alst n-fn))
          (lf (len sf))
@@ -72,10 +74,10 @@
             (pct tf tn) tf tn (if (> tn tf) 'ok 'bad))
     (format t "~%~a ~d:files than ~d:nodes so ~a~%"
             (if easy 'fewer 'more) lf ln (if easy 'easy 'gather))
-    (if easy (f-per-n sf sn) 
-      (mapcar #'(lambda (fn-pr) (format t "~%~a ~a" (first fn-pr) (rest fn-pr)))
-          (flat1 (distribute2 sf sn)))
-      )))
+    (if easy (f-per-n sf sn) ;could get rid of this case, but ok to leave 
+      (let ((sna (flat1 (distribute2 sf sn))))
+       (mapcar #'(lambda (fn-pr) (format t "~%~a ~a" (first fn-pr) (rest fn-pr))) sna)
+       sna))))
 
 (defun tst () 
   "try it out"
@@ -143,5 +145,6 @@
 ;file17 node1
 ;file14 node1
 ;file8 node1 
-;=had the start of the C version in the last commit, &have a Python started offline
+;can easily (trace distribute2) to see the Size(of the)NodeAssignments, drop
+;=had the start of the C version in the last commit, &have a Python started offline ;lsp-like
 ;I will incl 1 or both after I clean up this file /getting rid of un-needed code/fncs above
