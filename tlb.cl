@@ -230,6 +230,7 @@ int i;
 //	for(i=0; i<nf; i++) print_sn(files[i]);
 	for(i=0; i<nf; i++) print_f2n(f2n[i]);
 }
+#If I did more writing than reading of Python I'd do a nice translation w/it
 import csv
 def get_ns_file(fn):
     l = []
@@ -255,21 +256,24 @@ for i in fs:
 for i in ns:
     print i
 
-#and write def distribute
-def adapt_f2n_pass(sf,sn):
-    print sf
-    print sn
+#and write def distribute &finish assign
+# print('try ' + fi + ' in ' + ni)
+def assign_f2n(fi,ni):
+    print 'try '
+    print fi
+    print ' in '
+    print ni
 
-def distr_pass(sf,sn):
+def adapt_f2n_pass(sf,sn):
     count = 1
     for fi in sf:
         for ni in sn:
             if(ni[1] > fi[1]):
                 count += 1
-                adapt_f2n_pass(ni,fi)
+                assign_f2n(fi,ni)
     return count
 
 #give it a try
-cnt=distr_pass(fs,ns)
+cnt=adapt_f2n_pass(fs,ns)
 print cnt
  
