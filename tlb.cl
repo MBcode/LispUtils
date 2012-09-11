@@ -146,3 +146,87 @@
 ;file17 node9
 ;file14 node9
 ;file8 node9 
+//a bit in C w/o looking much up yet  //only somewhat similar pass in C at lisp version;bobak
+//quick look@stella to dump to java/c++ vs recoding
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+/* Define an array of name&sized entities to sort. */
+//////struct sn { const char *name; int size}; //add so files can pnt2nodes
+//typedef struct sn { const char *name; int size;  struct sn *node;} //ptr for node
+// files[99],nodes[99];
+	//need to get so has ptr to self, might subclass a version w/that added
+//alloc later //check if can reuse struct name&global var
+//struct sn files[99]; struct sn nodes[99];
+
+//int read_sn (FILE *fp, struct sn *ns) 
+//{ fscanf(fp,"%c %d", ns->name , ns->size); } 
+int read_sn (FILE *fp, int **ns, int i) 
+{ 
+//	char name[20];
+//	fscanf(fp,"%c %d", name , ns[i]); 
+	char type[5];  //could readline & sscanf
+	fscanf(fp,"%4c%d %d\n", type , &ns[i][0],&ns[i][1]); 
+	printf("\n%s %d,%d", type, ns[i][0],ns[i][1]);
+} 
+
+//int read_sn_file(FILE *fp,struct sn **sa)
+int read_sn_file(FILE *fp,int **sn)
+{   int i=0;
+	while (read_sn(fp,sn,i++)!=EOF); 
+i;}
+
+//int sn_cmp (const struct sn *c1, const struct sn *c2) { return (c1->size > c2->size); } 
+int sn_cmp (int *c1, int *c2) { return (c1[1] > c2[1]); } 
+//void print2sn (struct sn *c1, struct sn *c2) { printf ("%s, the %s\n", c1->name, c2->name); } 
+void print_f2n(int *c2)
+{
+	printf("\nfile%d node%d", c2[0],c2[1]);
+}
+
+int  files[99][2],nodes[49][2];
+int f2n[99][2]; //assingments, 2:so could go w/str instead, of assume index was of file#
+int nf=0,nn=0;
+
+int assign_f2n(int fi,int ni)
+{
+	f2n[fi][0]=files[fi][0];
+	f2n[fi][1]=nodes[ni][0];
+} //now should pop off/mark some way as unavailable ;should have a queqe/or?
+
+//void print_sn (struct sn *c3) { print2sn(c3, c3->node); }
+//struct sn **gather_adapt_f2n(struct sn **sf, struct sn **sn)
+//{ if(sf[0]=='\0' || sn[0]=='\0') '\0'; 
+//   //could skip rec mk list &iterate over twice here
+	   //use sn_cmp ..  }
+int *adapt_f2n_pass(int **sf, int **sn)
+{
+	int fi=0,ni=0;
+	for(ni=0;ni<nn;ni++) 
+			for(fi=0;fi<nf;fi++) if(sn_cmp(sf[fi],sn[ni])) assign_f2n(fi,ni);
+}
+
+int main (int argc, char *argv[])
+{
+FILE *file_fp, *node_fp;
+//typedef struct sn { const char *name; int size;  struct sn *node;} files[99],nodes[99];
+//int file_fp, node_fp,i;
+int i;
+//int  files[99],nodes[49];
+//	file_fp=open(argv[1],"r");
+//	node_fp=open(argv[2],"r");
+	file_fp=(FILE *)open("files.txt","r");
+	node_fp=(FILE *)open("nodes.txt","r");
+	nf = read_sn_file(file_fp,files);
+	nn = read_sn_file(node_fp,nodes);
+	printf("\nGot,%d files and %d nodes", nf, nn);
+//	qsort(files, nf, sizeof(struct sn), sn_cmp); 
+//	qsort(nodes, nn, sizeof(struct sn), sn_cmp); 
+//	gather_adapt_f2n(*files, *nodes);
+	//need2sort names at same time
+	qsort(files, nf, 2*sizeof(int), &sn_cmp); 
+	qsort(nodes, nn, 2*sizeof(int), &sn_cmp); 
+	adapt_f2n_pass(*files, *nodes);
+//	for(i=0; i<nf; i++) print_sn(files[i]);
+	for(i=0; i<nf; i++) print_f2n(f2n[i]);
+}
