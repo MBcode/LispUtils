@@ -34,25 +34,22 @@
   (mapcar #'(lambda (f n) (assign-f2n f n) (list (name f) (name n))) sf sn)
   ) ;get rid of &easy test, as the more general should handle it
 
-;would be nice to pop off a sf and push on a (sf sn) sna assignment
 
-(defun distribute2 (sf2 sn2) ;consider this further generalization/being able to handle not yet seen data
+(defun distribute2 (sf2 sn2) 
   "all in one distribute helper, makes as many passes over the nodes as needed"
- (let ((out sf2)  ;;ran-out(not yet placed in a pass) sized-files ;set to sf2  for test below
+ (let ((out sf2)  ;;ran-out(not yet placed in a pass)sized-Files ;set to sf2  for test below
        (fstp 0)) ;files set this pass
    (labels ((adapt-f2n-pass (sf sn) ;flet doesn't allow rec calls
      (let* ((f1 (first sf)) ;try to match the 2 largest 1st
             (n1 (first sn))); from the sorted lists of files&nodes
-       (cond
-         ((null f1) (setf out nil)
-            nil)   ;make >1 pass now, so it now just what wasn't placed on this pass
+       (cond ;make >1 pass now, so it now just what wasn't placed on this pass
+         ((null f1) (setf out nil) ;no files w/o nodes
+            nil)   
          ((null n1)        ;went through all the nodes 
-            (if ;and (not (equal out sf2)) ;would be true on 1st pass;but want2kick off when hopeless
-              (eq fstp 0)  ;This will catch a pass that can't assign any files, w/the asked Warning
-                  ;(not (set-difference out sf))  ;fin nodes w/same files as last output=hopeless
-              (progn (format t "~%this distribution ran OUT of nodes:~%~a ~a" sf fstp) (setf out nil))
-              (progn (format t "~%this distrib-RUN ran out of nodes:~%~a ~a" sf fstp) (setf out sf)))
-            nil) ;check
+            (if (eq fstp 0)  ;This will catch a pass that can't assign any files, w/the asked Warning
+              (progn (format t "~%This Distribution Ran OUT of Nodes:~%~a ~a" sf fstp) (setf out nil))
+              (progn (format t "~%this distrib-PASS ran out of nodes:~%~a ~a" sf fstp) (setf out sf)))
+            nil) ;test data only has files left after run/pass, not in the end
         (t    
           (if (<= (size f1) (size n1)) ;maybe also pop/ (remove f1 sf)
             (progn (incf fstp) 
@@ -61,17 +58,15 @@
      ;go for a pass until either out is nil (=run out of files)
     (if (full out)   ;have some but not all assignments yet
      (let ((sna (adapt-f2n-pass out sn2))) ;generated node assignments for this pass
-      (format t "~%cur-sna:~a" sna) ;tmp ;(format t "~%cur-out:~a" out) ;tmp
+      (format t "~%cur-snAssigned:~a" sna) ;tmp ;(format t "~%cur-out:~a" out) ;tmp
       (if (> fstp 0)
           ;(and (full sna)  ;have some but not all assignments yet
           ;    (full out)) ;could have been reset in latest pass
         (cons sna (distribute2 out sn2))  ;so send undistributed files to another distribution pass
         sna))
      nil))))
-    ;need a way to know that not even 1 of the out=sf files could be put in any of the nodes
-    ; one bad way is to see that out hasn't changed ;well print above catches on 1st try
+    ;need a way to know that not even 1 of the out=sf files could be put in any of the nodes ;fstp
 
-;even in other ver w/global didn't reset the out1, but only did 2 passes
  
 (defun sum-2nd (l) (reduce #'+ (mapcar #'second l)))
 (defun pct (a b) (/ (- b a) (* 0.01 b)))
@@ -97,7 +92,7 @@
 (defun tst () 
   "try it out"
    (distribute "files" "nodes"))
-;
+ 
 ;can easily (trace distribute2) to see the Size(of the)NodeAssignments, drop
 ;=had the start of the C version in the last commit, &have a Python started offline ;lsp-like
 ;I will incl 1 or both after I clean up this file /getting rid of un-needed code/fncs above
@@ -111,16 +106,20 @@
 ;
 ;MORE 24:files than 10:nodes so GATHER
 ;
-;this distrib-RUN ran out of nodes:
+;this distrib-PASS ran out of nodes:
 ;((file18 6609806629 10) (file11 6348867697 10) (file15 5942107928 10)
 ; (file9 4495356117 10) (file10 3118866364 10) (file17 2424678728 10)
 ; (file14 1293428979 10) (file8 170858581 9)) 16
-;cur-sna:((file16 . node5) (file6 . node5) (file21 . node0) (file3 . node0)
-;         (file0 . node6) (file1 . node6) (file13 . node9) (file4 . node9)
-;         (file20 . node7) (file7 . node7) (file23 . node8) (file19 . node8)
-;         (file2 . node4) (file22 . node4) (file12 . node1) (file5 . node3))
-;cur-sna:((file18 . node5) (file11 . node0) (file15 . node6) (file9 . node6)
-;         (file10 . node9) (file17 . node9) (file14 . node9) (file8 . node9))
+;cur-snAssigned:((file16 . node5) (file6 . node5) (file21 . node0)
+;                (file3 . node0) (file0 . node6) (file1 . node6)
+;                (file13 . node9) (file4 . node9) (file20 . node7)
+;                (file7 . node7) (file23 . node8) (file19 . node8)
+;                (file2 . node4) (file22 . node4) (file12 . node1)
+;                (file5 . node3))
+;cur-snAssigned:((file18 . node5) (file11 . node0) (file15 . node6)
+;                (file9 . node6) (file10 . node9) (file17 . node9)
+;                (file14 . node9) (file8 . node9))
+;==those not assigned on 1st pass got assigned in the 2nd
 ;file16 node5
 ;file6 node5
 ;file21 node0
