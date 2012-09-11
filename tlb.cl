@@ -247,3 +247,12 @@ def get_ns_file(fn):
 get_ns_file('files.txt')
 get_ns_file('nodes.txt')
 #then sort the files &write def distribute 
+print 'now sort them'
+from operator import itemgetter, attrgetter
+fs=sorted(fa,key=itemgetter(1))
+ns=sorted(na,key=itemgetter(1))
+for i in fs:
+    print i
+for i in ns:
+    print i
+#&write def distribute 
