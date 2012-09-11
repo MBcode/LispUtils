@@ -230,3 +230,20 @@ int i;
 //	for(i=0; i<nf; i++) print_sn(files[i]);
 	for(i=0; i<nf; i++) print_f2n(f2n[i]);
 }
+#If I did more writing than reading of Python I'd do a nice translation w/it
+import csv
+def get_ns_file(fn):
+    l = []
+    fp = open(fn, "r")
+    rdr = csv.reader(fp, delimiter=' ')
+    for row in rdr:
+        print row
+        l.append(row)
+    for p in l[1:]:
+        p[1]=int(p[1])
+    fp.close()
+    return l[1:]
+
+get_ns_file('files.txt')
+get_ns_file('nodes.txt')
+#then sort the files &write def distribute 
