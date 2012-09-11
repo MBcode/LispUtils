@@ -36,25 +36,52 @@
   "file per node"
   ;(mapcar #'(lambda (f n) (list (name f) (name n))) sf sn)
   (mapcar #'(lambda (f n) (assign-f2n f n) (list (name f) (name n))) sf sn)
-  )
+  ) ;get rid of &easy test, as the more general should handle it
 ;(trace f-per-n assign-f2n)
 (defvar *out1* nil) ;tmp
 (defun gather-adapt-f2n (sf sn)
   (let* ((f1 (first sf))
-         (n1 (first sn))
-         )
+         (n1 (first sn)))
     (cond
-      ((null f1) nil)
+      ((null f1) nil)   ;make >1 pass now, so it now just what wasn't place on this pass
       ((null n1) (setf *out1* sf) (format t "~%this distribution ran out of nodes:~%~a" sf) nil)
      ;((null n1) (format t "~%this distribution ran out of nodes:~%~a" sf) (list sn)) ;so can try again
       (t
-        (if (< (size f1) (size n1)) ;maybe also (remove f1 sf)
+        (if (< (size f1) (size n1)) ;maybe also pop/ (remove f1 sf)
           (cons (assign-f2n f1 n1) (gather-adapt-f2n (rest sf) sn))
           (gather-adapt-f2n sf (rest sn))) ;try other nodes 
         ;could go back over w/smaller ones to see if they would fit now
         ;Or if doesn't fit instead of giving up on node, go down files looking4one that is small enough
       ))))
 
+(defun distribute2 (sf sn) ;consider this further generalization/being able to handle not yet seen data
+  "all in one distribute helper, makes as many passes over the nodes as needed"
+ (let ((out sf))  ;;ran-out(not yet placed in a pass) sized-files
+   (labels ((adapt-f2n-pass (sf sn) ;flet doesn't allow rec calls
+     (let* ((f1 (first sf))
+            (n1 (first sn)))
+       (cond
+         ((null f1) nil)   ;make >1 pass now, so it now just what wasn't place on this pass
+         ((null n1)  (when (equal out sf) (format t "~%this distribution ran out of nodes:~%~a" sf)
+                      ;(return sn) ;sna  ;;expect setting of out, to stay outside flet till end outter let
+                       ) 
+                     (setf out sf) (format t "~%this distrib-run ran out of nodes:~%~a" sf) nil)
+        (t    
+          (if (< (size f1) (size n1)) ;maybe also pop/ (remove f1 sf)
+            (cons (assign-f2n f1 n1) (adapt-f2n-pass (rest sf) sn))
+            (adapt-f2n-pass sf (rest sn)))))))) ;try other nodes 
+     ;go for a pass until either out is nil (=run out of files)
+    (let ((sna (adapt-f2n-pass out sn))) ;generated node assignments for this pass
+    ;(while (not out) (adapt-f2n-pass out sn))  ;have to cons up the assignments
+    ;(when (not out) (distribute2 out sn)) 
+      (format t "~%cur-sna:~a" sna) ;tmp
+      ;(format t "~%cur-out:~a" out) ;tmp
+      (if (and (full out) (full sna))  ;have some but not all assignments yet
+        (cons sna (distribute2 out sn))  ;so send undistributed files to another distribution pass
+        sna)
+    ;need a way to know that not even 1 of the out=sf files could be put in any of the nodes
+    ; one bad way is to see that out hasn't changed ;well print above catches on 1st try
+    ))))
 ;should at least pick largest/best fit for last2put in; can use gn(frac)for ave num/bin
 ; consider a best1st,..
 ; consider(recording)pct full on each bin
@@ -63,6 +90,13 @@
 
 (defun sum-2nd (l) (reduce #'+ (mapcar #'second l)))
 (defun pct (a b) (/ (- b a) (* 0.01 b)))
+
+#+ignore
+(defun distr-pass (sf sn)  ;make the 2 /or more if needed later/ passes at doling out the files
+  "make passes at gathering assignments , need to pop files off though, or ret list of present files"
+  ;while sf
+    ;(sna2 (gather-adapt-f2n *out1* sn))
+  ) ;could flet so sf doesn't have to be ret, but is a local pop of as files taken off
 
 (defun distribute (f-fn n-fn)
   (let* ((sf (txtfile2srt-alst f-fn))
@@ -79,6 +113,9 @@
     (format t "~%~a ~d:files than ~d:nodes so ~a~%"
             (if easy 'fewer 'more) lf ln (if easy 'easy 'gather))
     (if easy (f-per-n sf sn) 
+      (mapcar #'(lambda (fn-pr) (format t "~%~a ~a" (first fn-pr) (rest fn-pr)))
+          (flat1 (distribute2 sf sn)))
+      #+ignore
       (let* ((sna (gather-adapt-f2n sf sn))
              (sna2 (gather-adapt-f2n *out1* sn))
              ) 
@@ -90,8 +127,12 @@
         (format t "~%get2:~a" sna2)
       ;final answer would be append get2 get1  ;print out as requested below:
       (mapcar #'(lambda (fn-pr) (format t "~%~a ~a" (first fn-pr) (rest fn-pr))) (append sna sna2))
-      ))))
+      )
+      )))
 
+;did twice as expect 2or3/bin, but if much higher&didn't distribute well right away(nice zipf/etc distr?)then might need>2passes
+;could be generalized/cleaned up, but there is a desire to see it in other language/s
+;could also make small mods to get into STELLA &dump in both Java&C++
 ;(trace gather-adapt-f2n)
 ;(trace gather-ln round-up name size)
 ;;;=get rid of these lines ;1st exploratory code ..
@@ -120,21 +161,34 @@
    (distribute "files" "nodes"))
 
 ;;skip ;several lines deleted from 1st attempt ;as ;can't just go w/the 1st plan 
-;USER(1): (tst) 
-;11.175601 433984592140:file-sz than 488587138990:node-sz so OK 
-;MORE 24:files than 10:nodes so GATHER 
-;this distribution ran out of nodes:  ;on the 1st pass, but gets it on the second
+;;got rid of older file assignment as well
+;USER(1): (tst)
+;
+;11.175601 433984592140:file-sz than 488587138990:node-sz so OK
+;
+;MORE 24:files than 10:nodes so GATHER
+;
+;this distrib-run ran out of nodes:
 ;((file18 6609806629 10) (file11 6348867697 10) (file15 5942107928 10)
 ; (file9 4495356117 10) (file10 3118866364 10) (file17 2424678728 10)
 ; (file14 1293428979 10) (file8 170858581 9))
-;get1:((file16 . node5) (file6 . node5) (file21 . node0) (file3 . node0)
-;      (file0 . node6) (file1 . node6) (file13 . node9) (file4 . node9)
-;      (file20 . node7) (file7 . node7) (file23 . node8) (file19 . node8)
-;      (file2 . node4) (file22 . node4) (file12 . node1) (file5 . node3))
-;get2:((file18 . node5) (file11 . node0) (file15 . node6) (file9 . node6)
-;      (file10 . node9) (file17 . node9) (file14 . node9) (file8 . node9))
-;NIL
-;USER(2):  ;final output is the combination of get1+get2 
+;cur-sna:((file16 . node5) (file6 . node5) (file21 . node0) (file3 . node0)
+;         (file0 . node6) (file1 . node6) (file13 . node9) (file4 . node9)
+;         (file20 . node7) (file7 . node7) (file23 . node8) (file19 . node8)
+;         (file2 . node4) (file22 . node4) (file12 . node1) (file5 . node3))
+;cur-sna:((file18 . node5) (file11 . node0) (file15 . node6) (file9 . node6)
+;         (file10 . node9) (file17 . node9) (file14 . node9) (file8 . node9))
+;cur-sna:((file18 . node9) (file11 . node7) (file15 . node7) (file9 . node8)
+;         (file10 . node8) (file17 . node1) (file14 . node1) (file8 . node1))
+;this distribution ran out of nodes:
+;((file18 6609806629 10) (file11 6348867697 10) (file15 5942107928 10)
+; (file9 4495356117 10) (file10 3118866364 10) (file17 2424678728 10)
+; (file14 1293428979 10) (file8 170858581 9))
+;this distrib-run ran out of nodes:
+;((file18 6609806629 10) (file11 6348867697 10) (file15 5942107928 10)
+; (file9 4495356117 10) (file10 3118866364 10) (file17 2424678728 10)
+; (file14 1293428979 10) (file8 170858581 9))
+;cur-sna:NIL
 ;file16 node5
 ;file6 node5
 ;file21 node0
@@ -158,54 +212,14 @@
 ;file10 node9
 ;file17 node9
 ;file14 node9
-;file8 node9 
-=1st typing of a C version
-//a bit in C w/o looking much up yet
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-/* Define an array of name&sized entities to sort. */
-//struct sn { const char *name; int size}; //add so files can pnt2nodes
-typedef struct sn { const char *name; int size;  struct sn *node;} //ptr for node
- files[99],nodes[99];
-	//need to get so has ptr to self, might subclass a version w/that added
-//alloc later //check if can reuse struct name&global var
-//struct sn files[99]; struct sn nodes[99];
-
-//int read_sn (FILE *fp, struct sn *ns) 
-int read_sn (int fp, struct sn *ns) 
-{ readline(fp,"%c %d", ns->name , ns->size); } 
-
-//int read_sn_file(FILE *fp,struct sn **sa)
-int read_sn_file(int fp,struct sn **sa)
-{   int i=0;
-//while ((ns=read_sn(fp,sa[i++]))!=EOF); 
-	while (read_sn(fp,sa[i++])!=EOF); 
-i;}
-
-int sn_cmp (const struct sn *c1, const struct sn *c2) { return (c1->size > c2->size); } 
-
-void print2sn (struct sn *c1, struct sn *c2) { printf ("%s, the %s\n", c1->name, c2->name); } 
-void print_sn (struct sn *c3) { print2sn(c3, c3->node); }
-
-struct sn **gather_adapt_f2n(struct sn **sf, struct sn **sn)
-{
-   if(sf[0]=='\0' || sn[0]=='\0') '\0'; 
-   //could skip rec mk list &iterate over twice here
-	   //use sn_cmp ..
-}
-
-int main (int argc, char *argv[])
-{
-//FILE *file_fp, *node_fp;
-int file_fp, node_fp;
-	int nf=0,nn=0,i;
-	file_fp=open(argv[1],"r");
-	node_fp=open(argv[2],"r");
-	nf = read_sn_file(file_fp,files);
-	nn = read_sn_file(node_fp,nodes);
-	qsort(files, nf, sizeof(struct sn), sn_cmp); 
-	qsort(nodes, nn, sizeof(struct sn), sn_cmp); 
-	gather_adapt_f2n(*files, *nodes);
-	for(i=0; i<nf; i++) print_sn(files[i]);
-}
+;file8 node9
+;file18 node9
+;file11 node7
+;file15 node7
+;file9 node8
+;file10 node8
+;file17 node1
+;file14 node1
+;file8 node1 
+;=had the start of the C version in the last commit, &have a Python started offline
+;I will incl 1 or both after I clean up this file /getting rid of un-needed code/fncs above
