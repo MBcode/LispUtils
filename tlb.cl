@@ -230,6 +230,7 @@ int i;
 //	for(i=0; i<nf; i++) print_sn(files[i]);
 	for(i=0; i<nf; i++) print_f2n(f2n[i]);
 }
+
 #If I did more writing than reading of Python I'd do a nice translation w/it
 import csv
 def get_ns_file(fn):
@@ -244,6 +245,7 @@ def get_ns_file(fn):
     fp.close()
     return l[1:]
 
+assigned = []
 fa=get_ns_file('files.txt')
 na=get_ns_file('nodes.txt')
 #then sort the files &write def distribute
@@ -259,16 +261,15 @@ for i in ns:
 #and write def distribute &finish assign
 # print('try ' + fi + ' in ' + ni)
 def assign_f2n(fi,ni):
-    print 'try '
-    print fi
-    print ' in '
-    print ni
+    assigned.append(fi)
+    print('try ' + str(fi) + ' in ' + str(ni))
+    #need to decr size of node once assigned
 
 def adapt_f2n_pass(sf,sn):
     count = 1
-    for fi in sf:
+    for fi in sf: #should have already poped off fi's if assigned so don't loop over then in next pass
         for ni in sn:
-            if(ni[1] > fi[1]):
+            if(ni[1] > fi[1]):  #should also check that   not: fi in assigned
                 count += 1
                 assign_f2n(fi,ni)
     return count
@@ -276,4 +277,6 @@ def adapt_f2n_pass(sf,sn):
 #give it a try
 cnt=adapt_f2n_pass(fs,ns)
 print cnt
+for i in assigned:
+    print i
  
