@@ -239,13 +239,14 @@ def get_ns_file(fn):
     rdr = csv.reader(fp, delimiter=' ')
     for row in rdr:
         print row
-        l.append(row)
+        l.append(row) 
     for p in l[1:]:
-        p[1]=int(p[1])
+        p[1]=int(p[1]) 
     fp.close()
     return l[1:]
 
 assigned = []
+f2n = []
 fa=get_ns_file('files.txt')
 na=get_ns_file('nodes.txt')
 #then sort the files &write def distribute
@@ -262,14 +263,16 @@ for i in ns:
 # print('try ' + fi + ' in ' + ni)
 def assign_f2n(fi,ni):
     assigned.append(fi)
+    f2n.append(str(fi[0]) + ' ' + str(ni[0]))
+    ni[1] -= fi[1]  #decr node by size of file
     print('try ' + str(fi) + ' in ' + str(ni))
     #need to decr size of node once assigned
 
 def adapt_f2n_pass(sf,sn):
     count = 1
     for fi in sf: #should have already poped off fi's if assigned so don't loop over then in next pass
-        for ni in sn:
-            if(ni[1] > fi[1]):  #should also check that   not: fi in assigned
+        for ni in sn: #should also check that   not: fi in assigned
+            if(ni[1] > fi[1] and not(fi in assigned)):  
                 count += 1
                 assign_f2n(fi,ni)
     return count
@@ -279,4 +282,30 @@ cnt=adapt_f2n_pass(fs,ns)
 print cnt
 for i in assigned:
     print i
- 
+
+print 'final answer'
+for i in f2n:
+    print i
+final answer
+file8 node2
+file14 node2
+file17 node2
+file10 node3
+file9 node3
+file15 node1
+file11 node1
+file18 node1
+file5 node4
+file12 node4
+file22 node8
+file2 node8
+file19 node7
+file23 node7
+file7 node9
+file20 node9
+file4 node6
+file13 node6
+file1 node0
+file0 node0
+file3 node5
+file21 node5 
