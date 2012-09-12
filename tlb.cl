@@ -147,7 +147,7 @@
 ;file14 node9
 ;file8 node9 
 //a bit in C w/o looking much up yet  //only somewhat similar pass in C at lisp version;bobak
-//quick look@stella to dump to java/c++ vs recoding
+//quick look@ http://www.isi.edu/isd/LOOM/Stella to dump to java/c++ vs recoding
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -287,28 +287,32 @@ def assign_f2n(fi,ni):
     f2n.append(str(fi[0]) + ' ' + str(ni[0]))
     #need to decr size of node once assigned
     ni[1] -= fi[1]  #decr node by size of file
-    print('try ' + str(fi) + ' in ' + str(ni))
+    print('try-file ' + str(fi) + ' in ' + str(ni))
     #should just remove the file now
 
 def adapt_f2n_pass(sf,sn):
-    count = 1
+    count = 0
     for fi in sf: #should have already poped off fi's if assigned so don't loop over then in next pass
         for ni in sn: #should also check that   not: fi in assigned
-            if(ni[1] > fi[1] and not(fi in assigned)):  
+            if(ni[0] > fi[0] and not(fi in assigned)):  
                 count += 1
                 assign_f2n(fi,ni)
                 #sf.remove(fi) #remove file once assigned
     return count
 
-#mc=0 
+#mc=0 #if(len(sf)==0 or len(sn)==0):
+
 #more like the lisp version, to get that last file
 def adapt_f2n_rec_pass(sf,sn,c):
-    if(len(sf)==1 or len(sn)==1):
+    if(len(sf)==0 or len(sn)==0):
         print(str(len(sf)) + ' files and ' + str(len(sn)) + ' nodes')
         return c
-    if(sf[1][1] <= sn[1][1] and not(sf[1][1] in assigned)):
+    if(sf[0][1] <= sn[0][1] and not(sf[0][1] in assigned)):
         c += 1
-        assign_f2n(sf[1],sn[1])
+        assign_f2n(sf[0],sn[1])
+        #sf.remove(sf[0]) #remove file once assigned #pop from left sf.pop(0)
+        #print('popped off:' + str(sf[0])) 
+        print('popping off:' + str(sf.pop(0))) 
         if(len(sf)>1):
             adapt_f2n_rec_pass(sf[1:],sn,c)
     else:
@@ -318,20 +322,45 @@ def adapt_f2n_rec_pass(sf,sn,c):
 
 
 #give it a try
-#cnt=adapt_f2n_pass(fs,ns)  #this works but missed one
-cnt=adapt_f2n_rec_pass(fs,ns,0) #more like lisp version that works for all files
-#cnt += adapt_f2n_rec_pass(fs[cnt:],ns,0) #2nd pass
-print cnt
-for i in assigned:
-    print i
+cnt=adapt_f2n_pass(fs,ns)  #this works but missed one
+#cnt=adapt_f2n_rec_pass(fs,ns,0) #more like lisp version that works for all files
+#print cnt
+#for i in assigned:
+#    print i
+#cnt += adapt_f2n_rec_pass(fs[cnt:],ns,0) #2nd pass #need2rm if not popping off front
+#print cnt
+#for i in assigned:
+#    print i
+#cnt += adapt_f2n_rec_pass(fs[cnt:],ns,0) #2nd pass #need2rm if not popping off front
+#print cnt
+#for i in assigned:
+#    print i
+#do not start later if popping off files
 
+def distrib(fs,ns,cnt,tries):
+    print(str(len(fs)) + ' files')
+   #cnt += adapt_f2n_rec_pass(fs[cnt:],ns,0) #take a pass at
+    cnt += adapt_f2n_rec_pass(fs,ns,0) #take a pass at
+    if(cnt==nf):
+        print 'got them all'
+    else:
+        if(tries<4):
+            tries += 1
+            print('try again ' + str(tries))
+            #distrib(fs[cnt:],ns,cnt,tries) 
+            distrib(fs,ns,cnt,tries)
+        else: 
+            print('stop-at ' + str(tries))
+    cnt
+
+#cnt=distrib(fs,ns,0,0)
 print '----'
 print('set ' + str(cnt) + ' of ' + str(nf) + ' files')
-
+miss = nf - cnt
 if(cnt >= nf): 
     print 'ok' 
 else: 
-    print('missed ' + str((nf-cnt)))
+    print('missed ' + str(miss))
 
 print '----final answer'
 for i in f2n:
@@ -339,28 +368,31 @@ for i in f2n:
 
 #output:
 ----
-set 1 of 24 files
-missed 23
+set 24 of 24 files
+ok
 ----final answer
-file14 node3
-file17 node3
-file10 node3
-file9 node1
-file15 node1
-file11 node1
-file18 node4
-file5 node4
-file12 node4
-file22 node8
-file2 node8
-file19 node7
-file23 node7
-file7 node9
-file20 node9
-file4 node6
-file13 node6
-file1 node0
-file0 node0
-file3 node5
-file21 node5
+file8 node2
+file14 node2
+file17 node2
+file10 node2
+file9 node2
+file15 node2
+file11 node2
+file18 node2
+file5 node2
+file12 node2
+file22 node2
+file2 node2
+file19 node2
+file23 node2
+file7 node2
+file20 node2
+file4 node2
+file13 node2
+file1 node2
+file0 node2
+file3 node2
+file21 node2
+file6 node2
+file16 node2
  
