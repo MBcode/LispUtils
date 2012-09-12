@@ -251,6 +251,7 @@ int i;
 	for(i=0; i<nf; i++) print_f2n(f2n[i]);
 }
 #If I did more writing than reading of Python I'd do a nice translation w/it
+# https://github.com/MBcode/LispUtils/blob/master/tlb.cl has all versions
 import csv
 def get_ns_file(fn):
     l = []
@@ -284,9 +285,10 @@ for i in ns:
 def assign_f2n(fi,ni):
     assigned.append(fi)
     f2n.append(str(fi[0]) + ' ' + str(ni[0]))
+    #need to decr size of node once assigned
     ni[1] -= fi[1]  #decr node by size of file
     print('try ' + str(fi) + ' in ' + str(ni))
-    #need to decr size of node once assigned
+    #should just remove the file now
 
 def adapt_f2n_pass(sf,sn):
     count = 1
@@ -295,12 +297,30 @@ def adapt_f2n_pass(sf,sn):
             if(ni[1] > fi[1] and not(fi in assigned)):  
                 count += 1
                 assign_f2n(fi,ni)
+                #sf.remove(fi) #remove file once assigned
     return count
 
-#if i could remove the files, then could parallel map the files to nodes, till all files mapped /..
+#mc=0 
+#more like the lisp version, to get that last file
+def adapt_f2n_rec_pass(sf,sn,c):
+    if(len(sf)==1 or len(sn)==1):
+        print(str(len(sf)) + ' files and ' + str(len(sn)) + ' nodes')
+        return c
+    if(sf[1][1] <= sn[1][1] and not(sf[1][1] in assigned)):
+        c += 1
+        assign_f2n(sf[1],sn[1])
+        if(len(sf)>1):
+            adapt_f2n_rec_pass(sf[1:],sn,c)
+    else:
+        if(len(sn)>1):
+            adapt_f2n_rec_pass(sf,sn[1:],c)
+    return c #shouldn't need to get here/?
+
 
 #give it a try
-cnt=adapt_f2n_pass(fs,ns)
+#cnt=adapt_f2n_pass(fs,ns)  #this works but missed one
+cnt=adapt_f2n_rec_pass(fs,ns,0) #more like lisp version that works for all files
+#cnt += adapt_f2n_rec_pass(fs[cnt:],ns,0) #2nd pass
 print cnt
 for i in assigned:
     print i
@@ -319,17 +339,16 @@ for i in f2n:
 
 #output:
 ----
-set 23 of 24 files
-missed 1
+set 1 of 24 files
+missed 23
 ----final answer
-file8 node2
-file14 node2
-file17 node2
+file14 node3
+file17 node3
 file10 node3
-file9 node3
+file9 node1
 file15 node1
 file11 node1
-file18 node1
+file18 node4
 file5 node4
 file12 node4
 file22 node8
