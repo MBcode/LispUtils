@@ -249,6 +249,7 @@ assigned = []
 f2n = []
 fa=get_ns_file('files.txt')
 na=get_ns_file('nodes.txt')
+nf = len(fa)
 #then sort the files &write def distribute
 print 'now sort them'
 from operator import itemgetter, attrgetter
@@ -283,10 +284,22 @@ print cnt
 for i in assigned:
     print i
 
-print 'final answer'
+print '----'
+print('set ' + str(cnt) + ' of ' + str(nf) + ' files')
+
+if(cnt >= nf): 
+    print 'ok' 
+else: 
+    print('missed ' + str((nf-cnt)))
+
+print '----final answer'
 for i in f2n:
     print i
-final answer
+#
+----
+set 23 of 24 files
+missed 1
+----final answer
 file8 node2
 file14 node2
 file17 node2
