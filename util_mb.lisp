@@ -1780,6 +1780,21 @@ the command has printed on stdout as string."
 (defun eval-str (s) 
   (eval (read-from-string s))) 
 
+(defun string-list->keyword-vector (string-list)
+    (loop for string
+          in (copy-list string-list)
+          collect (intern (string-downcase string) :keyword)
+          into keywords
+          finally (return (apply #'vector keywords))))
+
+(defun record->list (delimiter seq)
+  (let ((end (length seq)))
+    (loop for left = 0 then (+ right 1)
+          for right = (or (position delimiter seq :start left) end)
+          if (< left right)
+          collect (subseq seq left right)
+          until (eq right end))))
+
 ;=look at using a bit more from: choice-params-ff3e-new.cl
 ;; (find-elt-in-string "Age greater than 18 years" *english-arithmetic-comparators-vector*)
 ;; (find-elt-in-string "pulmonary hypertension due to congenital heart disease" *semantic-connectors-vector*)
@@ -1798,6 +1813,11 @@ the command has printed on stdout as string."
                                        :test #'string-equal)
                                  s))))
                 (return res))))
+
+(defun find-elt-n-string (s v)
+  "if key-vect in str, ret (substr str)"
+  (let ((ps (find-elt-in-string s v)))
+    (when ps (list ps s))))
  
 (defun find-substring-in-string (string list)
   (loop with downcase-string = (string-downcase string)
