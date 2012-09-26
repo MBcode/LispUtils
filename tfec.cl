@@ -3,7 +3,7 @@
 ; https://github.com/akollegger/FEC_GRAPH &I coudn't get2boxIcompiled on, so rewrote
 ; Also wanted an excuse to try cl-neo4j, and compare w/say:allegrograph,vivace-graph-v2..&even KM
 ; so not only test of basic utils, but of the km utils as well.
-; (load "util_mb") (load "km_2-5-33") (load "u2") ;play w/
+; (load "util_mb") (load "km_2-5-33") (load "u2")or(load "utkm");w/sv-al edit
 (defvar *c2h* '(
  ("aic" (CONTRIBKEY commID contribDate contribSearchDate contribAmt CONTRIBTYPE CONTRIBID))
  ("can" (candidateID candidateNAME name candidatePARTY candidateELECTIONYEAR candidateOFFICESTATE candidateOFFICE candidateDISTRICT candidateICI candidateSTATUS candidatePCC candidateST1 candidateST2 candidateMAILCITY candidateMAILST candidateMAILPOSTAL))
@@ -58,6 +58,7 @@
             (sv-al i (mkhl h l))))
       n)))
 ;
+(trace sv-al)
 ;(trace csv-bar sv-al)
 ;(trace mkhl sv-al assoc2)
 ;
@@ -97,6 +98,15 @@
 ;I        *PRIORITIES_USA_ACTION
 ;I        *RESTORE_OUR_FUTURE_INC
 ;I        *WINNING_OUR_FUTURE
+;USER(2): (show "C00000885")
+;(*C00000885 has 
+;  (instance-of (aic))
+;  (COMMID (C00000885)) ;will make more ins refs
+;  (CONTRIBDATE (((4062012) && (5132011))))
+;  (CONTRIBSEARCHDATE (((20120406) && (20110513))))
+;  (CONTRIBAMT (250.0))
+;  (CONTRIBTYPE (15))
+;  (CONTRIBID (((34616053) && (33352920))))) 
 ;;Right now loading top of processed version of: 
 ;s24daedalus: /FEC_GRAPH/DATA> wc *.dta
 ;  419654 1283464 37892260 allIndivContrib1.dta
@@ -112,4 +122,4 @@
 ;       0  155134 2943020 superPacExpend.dta
 ;       0    7336   63880 superPacList.dta
 ; 3447586 16659985 340107699 total
- 
+;Note, I'm using ~100lines vs. the 2087    5727   76859 total for the java loader that didn't compile 
