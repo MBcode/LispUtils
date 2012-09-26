@@ -4,6 +4,7 @@
 ; Also wanted an excuse to try cl-neo4j, and compare w/say:allegrograph,vivace-graph-v2..&even KM
 ; so not only test of basic utils, but of the km utils as well.
 ; (load "util_mb") (load "km_2-5-33") (load "u2")or(load "utkm");w/sv-al edit
+;-was c2h.cl
 (defvar *c2h* '(
  ("aic" (CONTRIBKEY commID contribDate contribSearchDate contribAmt CONTRIBTYPE CONTRIBID))
  ("can" (candidateID candidateNAME name candidatePARTY candidateELECTIONYEAR candidateOFFICESTATE candidateOFFICE candidateDISTRICT candidateICI candidateSTATUS candidatePCC candidateST1 candidateST2 candidateMAILCITY candidateMAILST candidateMAILPOSTAL))
@@ -12,6 +13,7 @@
  ("spe" (SPENDING_COMM SPENDING_COMM_ID SUPERPAC ELECTION_TYPE CANDIDATE SUPPORT_OPPOSE CANDIDATE_ID CANDIDATE_PARTY CANDIDATE_OFFICE CANDIDATE_DISTRICT CANDIDATE_STATE EXPEND_AMT EXPENDITURE_STATE EXPEND_DATE ELE))
  ("spl" (SuperPacName CommitteeID Treasurer SuperPacAddr1 SuperPacAddr2 SuperPacCity SuperPacZip SuperPacState))
  )) ;could get headers right from csv file
+;-
 ;load&dump w/cl-neo4j &sv-al 2km &cmp ;mb
 ;(load "c2h.cl") ;has csv header info, incl above now
 (load-kb "c1.km") ;/FEC_GRAPH/DATA> wc c1.km 7      28     226 c1.km
@@ -32,8 +34,7 @@
 
  
 ;-redone, to give class.txt mkclskm
-;(defun 2l2alst (l1 l2) (mapcar #'cons l1 l2))
-;(defun mkhl (h l) (2l2alst h l))
+;(defun 2l2alst (l1 l2) (mapcar #'cons l1 l2)) ;(defun mkhl (h l) (2l2alst h l))
 (defun mkhl (h l) 
   "alst of:csv header&list of values for a line"
   (rm-nil (mapcar #'(lambda (a b) (when b (cons a b))) h l)))
@@ -44,8 +45,8 @@
   (let ((as (assoc a b :test #'equal)))
     (when as (second as))))
 
-(defun mkclskm (cls &optional (n 5)) ;make-class2km
-  "was prs-barfile cls.txt, &optional n, &map flet/lambda over it"
+(defun mkclskm (cls &optional (n 555)) ;w/clean cls.txt get 1772 ins now
+  "make-class2km:  was prs-barfile cls.txt, &optional n, &map flet/lambda over it"
   (let ((f (str-cat cls ".txt"))
        ;(h (assoc cls *c2h* :test #'equal))
         (h (assoc2 cls *c2h*))
@@ -67,6 +68,10 @@
  ;(mkclskm "aic") (mkclskm "can") (mkclskm "com")
  ;(mkclskm "spd") (mkclskm "spe") (mkclskm "spl")
   )
+(defun tst ()
+  "try it"
+  (init-fec)
+  (taxonomy))
 ;taxonomy to look at it
 ;Thing
 ;   fec
