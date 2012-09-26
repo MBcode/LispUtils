@@ -1,8 +1,9 @@
 ;Hack Night at Heroku, neo4j example, in Lisp, bobak@computer.org
 ;http://www.meetup.com/Data-Mining/events/80275492/t/cr1_grp/?rv=cr1 went over:
 ; https://github.com/akollegger/FEC_GRAPH &I coudn't get2boxIcompiled on, so rewrote
-; Also wanted an excuse to try cl-neo4j, and compare w/say:allegrograph &even KM
+; Also wanted an excuse to try cl-neo4j, and compare w/say:allegrograph,vivace-graph-v2..&even KM
 ; so not only test of basic utils, but of the km utils as well.
+; (load "util_mb") (load "km_2-5-33") (load "u2") ;play w/
 (defvar *c2h* '(
  ("aic" (CONTRIBKEY commID contribDate contribSearchDate contribAmt CONTRIBTYPE CONTRIBID))
  ("can" (candidateID candidateNAME name candidatePARTY candidateELECTIONYEAR candidateOFFICESTATE candidateOFFICE candidateDISTRICT candidateICI candidateSTATUS candidatePCC candidateST1 candidateST2 candidateMAILCITY candidateMAILST candidateMAILPOSTAL))
@@ -32,10 +33,13 @@
 ;-redone, to give class.txt mkclskm
 (defun 2l2alst (l1 l2) (mapcar #'cons l1 l2))
 ;(defun mkhl (h l) (2l2alst h l))
-(defun mkhl (h l) (rm-nil (mapcar #'(lambda (a b) (when b (cons a b))) h l)))
+(defun mkhl (h l) 
+  "alst of:csv header&list of values for a line"
+  (rm-nil (mapcar #'(lambda (a b) (when b (cons a b))) h l)))
 (defun first-nonnil (l) (first (rm-nil l)))
                ;(i (or (first l) (second l)))
 (defun assoc2 (a b) 
+  "val/2nd of assoc"
   (let ((as (assoc a b :test #'equal)))
     (when as (second as))))
 
@@ -48,9 +52,10 @@
     (apply-lines-n f
       #'(lambda (s)
          (let* ((l (csv-bar s))
-                (i (first-nonnil l)))
+                (i (first-nonnil l))) ;might pass in attr for ID
             (sv-cls i cls)
-            (sv-al i (mkhl h l)))) n)))
+            (sv-al i (mkhl h l))))
+      n)))
 ;
 ;(trace csv-bar sv-al)
 ;(trace mkhl sv-al assoc2)
@@ -61,3 +66,24 @@
   (mkclskm "com")
   )
 ;taxonomy to look at it
+;Thing
+;   fec
+;      aic
+;I        *C00000885
+;I        *C00000901
+;I        *C00000935
+;      can
+;I        *H0AK00089
+;I        *H0AK00097
+;I        *H0AL00016
+;I        *H0AL01030
+;I        *H0AL02087
+;      com
+;I        *C00000042
+;I        *C00000059
+;I        *C00000422
+;I        *C00000489
+;I        *C00000547
+;      spd
+;      spe
+ 
