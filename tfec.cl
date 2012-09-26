@@ -10,10 +10,11 @@
  ("com" (commID commNAME name commTREAS commADDR1 commADDR2 commCITY commSTATE commZIP commDSG commTYPE commPARTYAFFIL commFILING))
  ("spd" (RECEIPT_TYPE SUPER_PAC SUPER_PAC_ID DONATING_ORG DONOR_LAST DONOR_FIRST DONOR_CITY DONOR_STATE DONOR_OCCUPATION DONOR_EMPLOYER DONOR_AMOUNT DONATION_DATE TOTAL_AMT TRANS_ID)) ;lines w/^M
  ("spe" (SPENDING_COMM SPENDING_COMM_ID SUPERPAC ELECTION_TYPE CANDIDATE SUPPORT_OPPOSE CANDIDATE_ID CANDIDATE_PARTY CANDIDATE_OFFICE CANDIDATE_DISTRICT CANDIDATE_STATE EXPEND_AMT EXPENDITURE_STATE EXPEND_DATE ELE))
+ ("spl" (SuperPacName CommitteeID Treasurer SuperPacAddr1 SuperPacAddr2 SuperPacCity SuperPacZip SuperPacState))
  )) ;could get headers right from csv file
 ;load&dump w/cl-neo4j &sv-al 2km &cmp ;mb
 ;(load "c2h.cl") ;has csv header info, incl above now
-(load-kb "c1.km") ;/FEC_GRAPH/DATA> wc c1.km 6      24     194 c1.km
+(load-kb "c1.km") ;/FEC_GRAPH/DATA> wc c1.km 7      28     226 c1.km
 ;map&convert just n lines
 (defun i-lt-n-p (i n)
   (if (numberp n) (< i n)
@@ -90,3 +91,25 @@
 ;I        *PROSPERITY_FIRST_INC
 ;I        *Planned_Parenthood_Action_Fund_Inc.
 ;I        *RESTORE_AMERICA_S_VOICE_PAC 
+;      spl
+;I        *AMERICAN_CROSSROADS
+;I        *CLUB_FOR_GROWTH_ACTION
+;I        *PRIORITIES_USA_ACTION
+;I        *RESTORE_OUR_FUTURE_INC
+;I        *WINNING_OUR_FUTURE
+;;Right now loading top of processed version of: 
+;s24daedalus: /FEC_GRAPH/DATA> wc *.dta
+;  419654 1283464 37892260 allIndivContrib1.dta
+;  408164 1232079 37047002 allIndivContrib2.dta
+;  415655 1266317 37512091 allIndivContrib3.dta
+;  414320 1260903 37477088 allIndivContrib4.dta
+;  330351 1005863 29879819 allIndivContrib5.dta
+;    5400   46541  663755 candidate.dta
+;   13141  234574 2229492 committee.dta
+;  629736 4338122 66713912 indivContrib1.dta
+;  811165 5732726 85724442 indivContrib2.dta
+;       0   96926 1960938 superPacDonors.dta
+;       0  155134 2943020 superPacExpend.dta
+;       0    7336   63880 superPacList.dta
+; 3447586 16659985 340107699 total
+ 
