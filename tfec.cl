@@ -45,7 +45,7 @@
   (let ((as (assoc a b :test #'equal)))
     (when as (second as))))
 
-(defun mkclskm (cls &optional (n 555)) ;w/clean cls.txt get 1772 ins now
+(defun mkclskm (cls &optional (n 19555)) ;w/clean cls.txt get all ins from most files now
   "make-class2km:  was prs-barfile cls.txt, &optional n, &map flet/lambda over it"
   (let ((f (str-cat cls ".txt"))
        ;(h (assoc cls *c2h* :test #'equal))
@@ -59,7 +59,7 @@
             (sv-al i (mkhl h l))))
       n)))
 ;
-(trace sv-al)
+;(trace sv-al)
 ;(trace csv-bar sv-al)
 ;(trace mkhl sv-al assoc2)
 ;
@@ -72,7 +72,7 @@
   "try it"
   (init-fec)
   (taxonomy))
-;taxonomy to look at it
+;taxonomy to look at it, when limin n=5
 ;Thing
 ;   fec
 ;      aic
@@ -127,4 +127,7 @@
 ;       0  155134 2943020 superPacExpend.dta
 ;       0    7336   63880 superPacList.dta
 ; 3447586 16659985 340107699 total
+;defualts: u2 imports vals as strings, ans u2km as eval values; so some sed for this;could automate
+; incl attribID ins vals having *ins so will connect to ins; can save-kb&quickly edit for 1st shot
+;Wanted to try the hack-night's queries, but they still haven't posted them,&I'm tired of waiting.
 ;Note, I'm using ~100lines vs. the 2087    5727   76859 total for the java loader that didn't compile 
