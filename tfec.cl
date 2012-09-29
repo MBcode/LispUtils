@@ -53,6 +53,15 @@
 (defun mkhl (h l) 
   "alst of:csv header&list of values for a line"
   (rm-nil (mapcar #'(lambda (a b) (when b (cons a b))) h l)))
+
+(defun mkalst-n (a b n) 
+  "mk alst except for nth vals"
+  (loop for ia in a 
+        for ib in b 
+        for count = 0 then (+ count 1)
+        unless (= count n) collect (cons ia ib)))
+
+
 (defun first-nonnil (l) (first (rm-nil l)))
                ;(i (or (first l) (second l)))
 (defun assoc2 (a b) 
@@ -80,9 +89,11 @@
                ;;(i (first-nonnil l)) ;might pass in attr for ID
                ;(in (assoc2 cls *c2icn*))
                 (i (nth in l)) ;ins-named w/attrib of (usually 1st id-attrib)
-                )
+                ) ;rm in-th from alst 2 assert, as redundant
             (sv-cls i cls)
-            (sv-al i (mkhl h l))))
+           ;(sv-al i (mkhl h l))
+            (sv-al i (mkalst-n h l in))
+            ))
       n)))
 ;
 ;(trace sv-al)
@@ -97,7 +108,9 @@
 (defun tst ()
   "try it"
   (init-fec)
-  (taxonomy))
+  ;(taxonomy)
+  (save-kb "19555.km")
+  )
 ;taxonomy to look at it, when limin n=5
 ;Thing
 ;   fec
