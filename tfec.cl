@@ -9,11 +9,26 @@
  ("aic" (CONTRIBKEY commID contribDate contribSearchDate contribAmt CONTRIBTYPE CONTRIBID))
  ("can" (candidateID candidateNAME name candidatePARTY candidateELECTIONYEAR candidateOFFICESTATE candidateOFFICE candidateDISTRICT candidateICI candidateSTATUS candidatePCC candidateST1 candidateST2 candidateMAILCITY candidateMAILST candidateMAILPOSTAL))
  ("com" (commID commNAME name commTREAS commADDR1 commADDR2 commCITY commSTATE commZIP commDSG commTYPE commPARTYAFFIL commFILING))
+ ;swap 1st 2, or at least set 2nd as i: {$2 $1 $3 $4 $5 $6 $7 $8 $9 $10 $11 $12 $13 $14}
  ("spd" (RECEIPT_TYPE SUPER_PAC SUPER_PAC_ID DONATING_ORG DONOR_LAST DONOR_FIRST DONOR_CITY DONOR_STATE DONOR_OCCUPATION DONOR_EMPLOYER DONOR_AMOUNT DONATION_DATE TOTAL_AMT TRANS_ID)) ;lines w/^M
  ("spe" (SPENDING_COMM SPENDING_COMM_ID SUPERPAC ELECTION_TYPE CANDIDATE SUPPORT_OPPOSE CANDIDATE_ID CANDIDATE_PARTY CANDIDATE_OFFICE CANDIDATE_DISTRICT CANDIDATE_STATE EXPEND_AMT EXPENDITURE_STATE EXPEND_DATE ELE))
  ("spl" (SuperPacName CommitteeID Treasurer SuperPacAddr1 SuperPacAddr2 SuperPacCity SuperPacZip SuperPacState))
  )) ;could get headers right from csv file
-;-
+(defvar *c2i* '( ;what to mark as an ins ;1st one could be c2ic ;can do later
+ ("aic" (CONTRIBKEY commID CONTRIBID)) ;@some point other things could be ins
+ ("can" (candidateID))
+ ("com" (commID))
+ ("spd" (SUPER_PAC_ID TRANS_ID)) ;lines w/^M
+ ("spe" (SPENDING_COMM_ID  CANDIDATE_ID))
+ ("spl" (CommitteeID))
+ )) ;could get headers right from csv file
+(defvar *c2ic* '( ("aic" commID) ("can" candidateID) ("com" commID) ("spd" SUPER_PAC_ID)
+ ("spe" SPENDING_COMM_ID) ("spl" CommitteeID))) ;could get headers right from csv file
+(defvar *c2icn* (mapcar #'cons
+                        (mapcar #'first *c2h*)
+                        (mapcar #'position (mapcar #'second *c2ic*) (mapcar #'second *c2h*))
+                        ))
+;- shows which position is to be used for the ins name
 ;load&dump w/cl-neo4j &sv-al 2km &cmp ;mb
 ;(load "c2h.cl") ;has csv header info, incl above now
 (load-kb "c1.km") ;/FEC_GRAPH/DATA> wc c1.km 7      28     226 c1.km
@@ -43,18 +58,29 @@
 (defun assoc2 (a b) 
   "val/2nd of assoc"
   (let ((as (assoc a b :test #'equal)))
-    (when as (second as))))
+    (when as (cdr as)))) ;was second
+
+(defun assoc2nd (a b) 
+  "val/2nd of assoc"
+  (let ((as (assoc a b :test #'equal)))
+    (when as (second as)))) ;was second
 
 (defun mkclskm (cls &optional (n 19555)) ;w/clean cls.txt get all ins from most files now
   "make-class2km:  was prs-barfile cls.txt, &optional n, &map flet/lambda over it"
-  (let ((f (str-cat cls ".txt"))
-       ;(h (assoc cls *c2h* :test #'equal))
-        (h (assoc2 cls *c2h*))
+  (let* ((f (str-cat cls ".txt"))
+         (h (assoc2nd cls *c2h*))
+         (ial (assoc2nd cls *c2i*)) ;ins attr list ;mark each w/*  ;finish
+         (ina (first ial)) ;ins name attr, use to name it ;used to assume 1st attrib
+         (in (assoc2 cls *c2icn*)) ;num of ina more useful
         )
+    (format t "~%f=~a h=~a ~%ial=~a ina=~a in=~a" f h ial ina in)
     (apply-lines-n f
       #'(lambda (s)
-         (let* ((l (csv-bar s))
-                (i (first-nonnil l))) ;might pass in attr for ID
+         (let* ((l (csv-bar s)) ;the values for that line
+               ;;(i (first-nonnil l)) ;might pass in attr for ID
+               ;(in (assoc2 cls *c2icn*))
+                (i (nth in l)) ;ins-named w/attrib of (usually 1st id-attrib)
+                )
             (sv-cls i cls)
             (sv-al i (mkhl h l))))
       n)))
