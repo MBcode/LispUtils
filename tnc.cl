@@ -21,7 +21,7 @@
       (enconde-js2s l out))))
 
 ;(load "s.cl" :print t) ;now below
-;(load "cu.cl" :print t) ;domain specific /blogs
+(load "cu.cl" :print t) ;domain specific /blogs
 (lt) ;rest in t.cl for now
 ;blog-post scraper bobak@balisp.org 
 (defun hr (u)
@@ -29,28 +29,7 @@
   (drakma:http-request (if (s-prefixp "http" u) u (str-cat "http://" u))))
 
 ;git rid of unused from: ;http://codereview.stackexchange.com/questions/2277/simple-web-scraper-in-common-lisp-sbcl
-(defun scrape-row (row)
-  "Scrapes data from a table row into a list of values."
-  (if (equal 4 (stp:number-of-children row))
-      (let ((measurement-type (nth-child-data 0 row))
-        (measurement-date (nth-child-data 1 row))
-        (measurement-value (nth-child-data 2 row)))
-    (if (not (equal measurement-type "Measurement"))
-        (list measurement-date measurement-value)))))
-
-(defun nth-child-data (number row)
-  (stp:data (stp:nth-child 0 (stp:nth-child number row)))) 
-
-(defun scrape-xhtml (xhtml-tree)
-  "Scrapes data from an XHTML tree, returning a list of lists of values."
-  (let ((results nil))
-    (stp:do-recursively (element xhtml-tree)
-            (when (and (typep element 'stp:element)
-                   (equal (stp:local-name element) "tr"))
-              (if (scrape-row element)
-                  (setq results (append results (list (scrape-row element)))))))
-    results)) 
-
+;-now in s-.cl, found struct more difficult to dbg/get used2html struct/ures
 ;not scraping what I want right now, but can still study it
 (defun scrape-xhtml-type (xhtml-tree typ)
   "Scrapes data from an XHTML tree, returning a list of lists of values."
@@ -88,7 +67,8 @@
 
 (defun scrape-uri (uri)
   (scrape-body (hr uri)))
-
+;-prob won't use above scrape2structs
+; -moved2 chtml:parse list easier2debug than structs @1st
 ;(lt) ;rest in t.cl for now
 (defun s-crape-fn (fn)
   (chtml:parse (read-file-to-string fn) (chtml:make-lhtml-builder))) 
