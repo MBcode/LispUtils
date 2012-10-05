@@ -109,23 +109,34 @@
     (logjsonl l tl))) ;1st use work/but dbg/fix here
 
 ;use this one  ;will also parse each post more, &(km)assert interesting bits
+(defun lt-assert (lf tf fn)
+  ;will parse lf more too
+    (sv-cls tf "BlogPost")
+    (sv-al tf '((img i1) (i stuff))) ;make this part real/soon -finish
+    ;(logjsonl lf tf (str-cat "log/" fn) ;seperate&supercede now
+    )
+
 (defun gp-ff2 (fn pt) 
   "get post/s from file &log-js2sep files"
   (let* ((s (s-crape-fn fn))
          (la (loop for i from 1 to 99 
                   for p = (get-post i pt s)
                   while p collect (cons (str-cat fn i) p)))
-         (l2 (alst2 la))
+         (l2 (alst2 la)) ;or collect2&ret values
          (tl (first l2))
          (l (second l2)))
-    (logjsonl l tl (str-cat "log/" fn)))) ;1st use work/but dbg/fix here
+    ;(sv-cls tl "BlogPost")
+    ;(sv-al tl '((img i1) (i stuff))) ;make this part real/soon -finish
+    (logjsonl l tl (str-cat "log/" fn)) ;seperate&supercede now ;already takes 2lists
+    (mapcar #'(lambda (lf tf) (lt-assert lf tf fn)) l tl) ;do for each blog post
+    )) 
 ;ld.cl will use (lt) to load this, in the beginning
 ;several lines into cu.cl
 ;load-km c.km  could also give these :|keywords|
 (defvar *pw* (string-list->keyword-vector '("jpg" "jpeg" "gif" "png")))
 (defvar *dp* '(".jpg" ".jpeg" ".gif" ".png"))
-(defun lk () (load-kb "c2.km")) ;then can do a (taxonomy)
-(defun lk2 () (lk) (taxonomy))
+(defun lk () (load-kb "c2.km")) ;(BlogPost has (superclasses (Thing))) &much more
+(defun lk2 () (lk) (taxonomy))    ;then can do a (taxonomy)
 ;rest in t-.cl ;;pull out into problem specific part
 (defun htm-p (s) (suffixp ".htm" s))
 ;domain-specific rest now in cu.cl
