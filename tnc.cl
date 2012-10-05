@@ -108,12 +108,21 @@
          (l (second l2)))
     (logjsonl l tl))) ;1st use work/but dbg/fix here
 
+(defun p-lh (lh tag)
+  "w/in1post,get all of a tag-type"
+    (loop for i from 1 to 99 
+          for p = (find-lh tag i nil lh)
+          while p collect p))
+
 ;use this one  ;will also parse each post more, &(km)assert interesting bits
 (defun lt-assert (lf tf fn)
   ;will parse lf more too
+  ;let ((il (p-lh lf "img"))
+  ;     (ii (p-lh lf "i")))
     (sv-cls tf "BlogPost")
-    (sv-al tf '((img i1) (i stuff))) ;make this part real/soon -finish
-    ;(logjsonl lf tf (str-cat "log/" fn) ;seperate&supercede now
+   ;(sv-al tf '((img i1) (i stuff))) ;make this part real/soon -finish
+    (sv-al tf (list (cons "img" (p-lh lf "img"))
+                    (cons "i" (p-lh lf "i"))))
     )
 
 (defun gp-ff2 (fn pt) 
@@ -125,9 +134,8 @@
          (l2 (alst2 la)) ;or collect2&ret values
          (tl (first l2))
          (l (second l2)))
-    ;(sv-cls tl "BlogPost")
-    ;(sv-al tl '((img i1) (i stuff))) ;make this part real/soon -finish
-    (logjsonl l tl (str-cat "log/" fn)) ;seperate&supercede now ;already takes 2lists
+    ;log(for doc-store instert?)/etc, and assert now, for indx/inference/..
+    (logjsonl l tl (str-cat "log/" fn ".js")) ;seperate&supercede now ;already takes 2lists
     (mapcar #'(lambda (lf tf) (lt-assert lf tf fn)) l tl) ;do for each blog post
     )) 
 ;ld.cl will use (lt) to load this, in the beginning
