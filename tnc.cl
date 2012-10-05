@@ -78,7 +78,7 @@
 (defun find-lh (tag &optional (n 1) (attrib nil) (lhtml *i*))
   (chtml-matcher:find-in-lhtml lhtml tag attrib n))
 (defun get-post (n &optional (at-str "post hentry") (lh *i*))
-  (find-lh "div" n `((:CLASS ,at-str))))
+  (find-lh "div" n `((:CLASS ,at-str)) lh))
 ;soon alst of plc & ..  ;pull out into problem specific part
 ;now in cu.cl
 
