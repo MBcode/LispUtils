@@ -9,7 +9,9 @@
 (setf asdf:*central-registry* 
       '( *default-pathname-defaults* 
 	#p"/usr/local/lib/sbcl/site-systems/"
-	#p"/Users/bobak/Documents/downloads/lang/lsp/code/project/"
+;	#p"/Users/bobak/quicklisp/local-projects/" same as:
+	;#p"/Users/bobak/Documents/downloads/lang/lsp/code/project/"
+	#p"/Users/bobak/dwn/lang/lsp/code/project/"
 	#p"/usr/share/common-lisp/systems/" ;ln to below
 ))
 	;#p"/Users/bobak/.sbcl/systems/"
@@ -34,6 +36,8 @@
 	  ) ;t2 has fncs below
       (warn "no quicklisp")))
 )
+(defun lut () (load "/Users/bobak/lsp/util_mb"))
+(defun lql- () (load "/Users/bobak/lsp/ql.lisp"))
 #+quicklisp
 (defun ql (a) (ql:quickload  a))
 #+quicklisp
@@ -44,7 +48,9 @@
   (load #P"/Users/bobak/quicklisp/setup.lisp")
   (load #P"/Users/bobak/quicklisp/t.lsp" :print t)
   )
- 
+(defun lkm () (load "/Users/bobak/lsp/km_2-5-33"))
+(defun lkm2 () (lkm) (load "/Users/bobak/lsp/u2"))
+(lql) ;just do it 
 ;#p"/usr/share/common-lisp/source/" ; #p"/Users/bobak/Documents/downloads/lang/lsp/asdf/registry"
 (defun apr- (s) (apropos s :cl))
 (defun apr (s) (apropos s))
@@ -83,8 +89,11 @@
 (defun lsp (l) 
   (load (format nil "~A.lsp" l) :print t))
 (defun lt () (load "t.cl" :print t)) 
+(defun ltb () (load "t")) 
+(defun lt2 () (load "t2.cl" :print t)) 
+(defun lu () (load "/Users/bobak/lsp/util_mb"))
 (defun ct () (compile-file "t.cl")) 
-(defun lt2 () (load "t.fasl" :print t)) 
+(defun lt- () (load "t.fasl" :print t)) 
 (defun l-1 () (load "ld1.cl" :print t)) 
 (defun l1 () (load "ld.cl" :print t)) 
 (defun l2 () (load "ld2.cl" :print t)) 
@@ -361,6 +370,8 @@
   (system (format nil "vim~@[ ~A~]" (namestring-for-vim thing))))
 
 (push 'ed-in-vim *ed-functions*) 
+;;--
+(defun gc-full () (sb-ext:gc :full t))
 ;;--
 ;;/Users/bobak/Documents/downloads/lang/lsp/code/project/src/poiu
 (require :sb-posix)
