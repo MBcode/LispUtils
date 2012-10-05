@@ -7,13 +7,16 @@
 (setq drakma:*header-stream* *standard-output*)
 
 (ql 'cl-json)
-(defun encode-js2s (l &optional (strm *standard-output*)) (json:encode-json l strm))
+(defun encode-js2s (l &optional (strm *standard-output*)) 
+  (json:encode-json l strm))
+
 (defun encode-js2str (l &optional (tag "")) 
   (let ((str (make-string-output-stream)))
     (json:encode-json l str)
     (str-cat tag "," (get-output-stream-string str))))
+
 (defun logjsonl (l &optional (tag "") (outf "log.txt"))
-  (with-open-file (out outf :direction :output)
+  (with-open-file (out outf :direction :output :if-exists :supersede)
     (when (and (stringp tag) (full tag)) (format out "~%~a," tag))
     (if (listp tag) (mapcar #'(lambda (l1 t1)  ;l=lol tag=assoc l o tags
                                 (format out "~%~a," t1)
@@ -95,7 +98,7 @@
           while p collect p)))
 
 (defun gp-ff (fn pt)
-  "get post from file"
+  "get post/s from file &log-js"
   (let* ((s (s-crape-fn fn))
          (la (loop for i from 1 to 99 
                   for p = (get-post i pt s)
@@ -104,6 +107,18 @@
          (tl (first l2))
          (l (second l2)))
     (logjsonl l tl))) ;1st use work/but dbg/fix here
+
+;use this one  ;will also parse each post more, &(km)assert interesting bits
+(defun gp-ff2 (fn pt) 
+  "get post/s from file &log-js2sep files"
+  (let* ((s (s-crape-fn fn))
+         (la (loop for i from 1 to 99 
+                  for p = (get-post i pt s)
+                  while p collect (cons (str-cat fn i) p)))
+         (l2 (alst2 la))
+         (tl (first l2))
+         (l (second l2)))
+    (logjsonl l tl (str-cat "log/" fn)))) ;1st use work/but dbg/fix here
 ;ld.cl will use (lt) to load this, in the beginning
 ;several lines into cu.cl
 ;load-km c.km  could also give these :|keywords|
