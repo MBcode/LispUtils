@@ -1787,7 +1787,7 @@ the command has printed on stdout as string."
           into keywords
           finally (return (apply #'vector keywords))))
 
-(defun record->list (delimiter seq)
+(defun record->list (delimiter seq) ;explode could also do this
   (let ((end (length seq)))
     (loop for left = 0 then (+ right 1)
           for right = (or (position delimiter seq :start left) end)
@@ -2473,3 +2473,46 @@ the command has printed on stdout as string."
   `(do ()
      ((not ,test))
      ,@body))
+
+;from my tfec.cl work
+(defun i-lt-n-p (i n)
+  (if (numberp n) (< i n)
+    t))
+(defun apply-lines-n (filename linefnc &optional (n nil))
+  "apply to at most n lines"
+ (let ((tot 0))
+  (with-open-file (stream filename :direction :input)
+    (loop for line = (read-line stream nil)
+        while (and line (i-lt-n-p tot n))
+        do 
+        (incf tot)
+        (funcall linefnc line)))))
+;want to either collect csv lines, or mk km ins w/o collecting, which is preferable for large n
+(defun csv-bar (l) (csv_parse-str l :separator #\|))
+
+ 
+;-redone, to give class.txt mkclskm
+;(defun 2l2alst (l1 l2) (mapcar #'cons l1 l2)) ;(defun mkhl (h l) (2l2alst h l))
+(defun mkhl (h l) 
+  "alst of:csv header&list of values for a line"
+  (rm-nil (mapcar #'(lambda (a b) (when b (cons a b))) h l)))
+
+(defun mkalst-n (a b n) 
+  "mk alst except for nth vals"
+  (loop for ia in a 
+        for ib in b 
+        for count = 0 then (+ count 1)
+        unless (= count n) collect (cons ia ib)))
+
+
+(defun first-nonnil (l) (first (rm-nil l)))
+               ;(i (or (first l) (second l)))
+(defun assoc2 (a b) 
+  "val/2nd of assoc"
+  (let ((as (assoc a b :test #'equal)))
+    (when as (cdr as)))) ;was second
+
+(defun assoc2nd (a b) 
+  "val/2nd of assoc"
+  (let ((as (assoc a b :test #'equal)))
+    (when as (second as)))) ;was second 
