@@ -24,8 +24,8 @@
       (enconde-js2s l out))))
 
 ;(load "s.cl" :print t) ;now below
-(load "cu.cl" :print t) ;domain specific /blogs
-(lt) ;rest in t.cl for now
+(load "cu2.cl" :print t) ;domain specific /blogs
+;(lt) ;rest in t.cl for now  ;think i should have all of t.cl in here
 ;blog-post scraper bobak@balisp.org 
 (defun hr (u)
   "get the page as 1str"
@@ -114,19 +114,21 @@
           for p = (find-lh tag i nil lh)
           while p collect p))
 
-;use this one  ;will also parse each post more, &(km)assert interesting bits
-(defun lt-assert (lf tf fn)
+;-use this one  ;will also parse each post more, &(km)assert interesting bits
+(defun lt-assert (lf tf fn &optional (ct nil))
   ;will parse lf more too
   ;let ((il (p-lh lf "img"))
   ;     (ii (p-lh lf "i")))
-    (sv-cls tf "BlogPost")
+    (sv-cls tf (if ct (str-cat ct "BlogPost") "BlogPost"))
    ;(sv-al tf '((img i1) (i stuff))) ;make this part real/soon -finish
-    (sv-al tf (list (cons "img" (p-lh lf "img"))
-                    (cons "i" (p-lh lf "i"))))
-    )
+    (sv-al tf (list ;(cons "img" (p-lh (p-lh lf "img") "src"))
+                (cons "img" (p-lh lf "img"))
+                (cons "i" (p-lh lf "i"))))
+    )  ;pull out less/make cleaner..
+;(trace p-lh)
 
-(defun gp-ff2 (fn pt) 
-  "get post/s from file &log-js2sep files"
+(defun gp-ff2 (fn pt &optional (ct nil))  ;use this on sf&sf-pt
+  "get post/s from file assert&log-js2sep files"
   (let* ((s (s-crape-fn fn))
          (la (loop for i from 1 to 99 
                   for p = (get-post i pt s)
@@ -136,7 +138,7 @@
          (l (second l2)))
     ;log(for doc-store instert?)/etc, and assert now, for indx/inference/..
     (logjsonl l tl (str-cat "log/" fn ".js")) ;seperate&supercede now ;already takes 2lists
-    (mapcar #'(lambda (lf tf) (lt-assert lf tf fn)) l tl) ;do for each blog post
+    (mapcar #'(lambda (lf tf) (lt-assert lf tf fn ct)) l tl) ;do for each blog post
     )) 
 ;ld.cl will use (lt) to load this, in the beginning
 ;several lines into cu.cl
@@ -149,3 +151,18 @@
 (defun htm-p (s) (suffixp ".htm" s))
 ;domain-specific rest now in cu.cl
 ;can use in load&find in s.cl
+(lk)
+;i miss my mapcar that re-uses an arg if not a list, but can just lambda
+  ;ctp=*sf* *ny*  pt might go to cfg, &/or run through list of them 1st time/? 
+(defun do-city (city &optional (ctp *ct*) (pt *pt*)) 
+  (let ((ct (assoc2nd city ctp))
+        (pt (assoc2nd city pt)))
+   ;(mapcar #'gp-ff2 *sf* *sf-pt*)
+    ;mapcar #'gp-ff2 ct pt city
+    (mapcar #'(lambda (c p) (gp-ff2 c p city)) ct pt)))
+
+(defun tst (&optional (cts '("sf" "ny"))) 
+ ;(mapcar #'gp-ff2 *sf* *sf-pt*)
+ ;(mapcar #'gp-ff2 *ny* *ny-pt*)
+  (mapcar #'do-city cts)
+  (taxonomy))
