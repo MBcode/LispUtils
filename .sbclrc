@@ -74,10 +74,10 @@
                 ;; Uncomment to get backtraces on errors 
                 ;; (sb-debug:backtrace 20) 
                 (format *error-output* "Error: ~A~%" condition) 
-                (quit))) 
+                (exit))) 
        (load script) 
        (terpri) 
-       (quit)))  
+       (exit)))  
 ;--
 ;xach suggest also core-ing in (require 'sb-aclrepl)  ;which I have below
 (defun lp (f) (load f :print t))
@@ -142,8 +142,8 @@
  (progn *default-pathname-defaults*))
 (defun ex () 
   (print "byE")
-  (sb-ext:quit)
-  ;(sb-ext:exit) ;v1.1
+  ;(sb-ext:quit)
+  (sb-ext:exit) ;v1.1
   )
 (defun ex0 () (ex));for typos
 (defun run-ext (cmd &rest args)
@@ -446,8 +446,8 @@
                  (close (status-pipe proc))
                  #+clozure
                  (ccl:quit 0)
-                 #+sbcl ;exit in v1.1
-                 (sb-ext:quit :recklessly-p t ; don't cause
+                 #+sbcl ;exit in v1.1 was quit
+                 (sb-ext:exit :recklessly-p t ; don't cause
                                               ; compilation unit error
                                               ; msg.
                               :unix-status 0))))
