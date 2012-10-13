@@ -2507,12 +2507,14 @@ the command has printed on stdout as string."
 
 (defun first-nonnil (l) (first (rm-nil l)))
                ;(i (or (first l) (second l)))
-(defun assoc2 (a b) 
+(defun assoc2 (i a) 
   "val/2nd of assoc"
-  (let ((as (assoc a b :test #'equal)))
+  (let ((as (assoc i a :test #'equal)))
     (when as (cdr as)))) ;was second
 
-(defun assoc2nd (a b) 
+(defun assoc2nd (i a) 
   "val/2nd of assoc"
-  (let ((as (assoc a b :test #'equal)))
+  (let ((as (assoc i a :test #'equal)))
     (when as (second as)))) ;was second 
+;tried to do both assoc w/assoc-v above ;maybe better than tfec.cl attempt2do it.
+(defun assoc_v (k a)  (let ((v (assoc k a :test #'equal))) (when v (first-lv (rest v))))) ;best
