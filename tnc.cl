@@ -23,6 +23,14 @@
                                 (encode-js2s l out)) l tag)
       (enconde-js2s l out))))
 
+(defun logjsonal (lal &optional (outf "log.txt")) ;maybe still a dflt tag
+  ;this v as alst of l1 tg1 ..
+  (with-open-file (out outf :direction :output :if-exists :supersede)
+   ;(when (and (stringp tag) (full tag)) (format out "~%~a," tag))
+    (mapcar #'(lambda (al)  ;lst of vals or (assoc if a tag)
+                (when (listp al) (format out "~%~a," (cdr al)))
+                (encode-js2s (first-lv al) out)) lal)))
+
 ;(load "s.cl" :print t) ;now below
 (load "cu2.cl" :print t) ;domain specific /blogs
 ;(lt) ;rest in t.cl for now  ;think i should have all of t.cl in here
@@ -103,10 +111,13 @@
          (la (loop for i from 1 to 99 
                   for p = (get-post i pt s)
                   while p collect (cons (str-cat fn i) p)))
-         (l2 (alst2 la))
-         (tl (first l2))
-         (l (second l2)))
-    (logjsonl l tl))) ;1st use work/but dbg/fix here
+        ;(l2 (alst2 la))
+        ;(tl (first l2))
+        ;(l (second l2))
+         )
+   ;(logjsonl l tl)
+    (logjsonal la)
+    )) ;1st use work/but dbg/fix here
 
 (defun p-lh (lh tag)
   "w/in1post,get all of a tag-type"
@@ -155,7 +166,7 @@
 ;i miss my mapcar that re-uses an arg if not a list, but can just lambda
   ;ctp=*sf* *ny*  pt might go to cfg, &/or run through list of them 1st time/? 
 (defun do-city (city &optional (ctp *ct*) (pt *pt*)) 
-  (let ((ct (assoc2nd city ctp))
+  (let ((ct (assoc2nd city ctp))  ;use assoc_v
         (pt (assoc2nd city pt)))
    ;(mapcar #'gp-ff2 *sf* *sf-pt*)
     ;mapcar #'gp-ff2 ct pt city
