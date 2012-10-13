@@ -38,19 +38,17 @@
 )
 (defun lut () (load "/Users/bobak/lsp/util_mb"))
 (defun lql- () (load "/Users/bobak/lsp/ql.lisp"))
-#+quicklisp
-(defun ql (a) (ql:quickload  a))
-#+quicklisp
-(defun qa (a) (ql:system-apropos  a))
-;or
-;(format t "~%ql") 
 (defun lql ()
   (load #P"/Users/bobak/quicklisp/setup.lisp")
-  (load #P"/Users/bobak/quicklisp/t.lsp" :print t)
+ ;(load #P"/Users/bobak/quicklisp/t.lsp" :print t)
   )
 (defun lkm () (load "/Users/bobak/lsp/km_2-5-33"))
 (defun lkm2 () (lkm) (load "/Users/bobak/lsp/u2"))
 (lql) ;just do it 
+#+quicklisp
+(defun ql (a) (ql:quickload  a))
+#+quicklisp
+(defun qa (a) (ql:system-apropos  a))
 ;#p"/usr/share/common-lisp/source/" ; #p"/Users/bobak/Documents/downloads/lang/lsp/asdf/registry"
 (defun apr- (s) (apropos s :cl))
 (defun apr (s) (apropos s))
@@ -92,6 +90,7 @@
 (defun ltb () (load "t")) 
 (defun lt2 () (load "t2.cl" :print t)) 
 (defun lu () (load "/Users/bobak/lsp/util_mb"))
+(defun cu () (compile-file "/Users/bobak/lsp/util_mb.lisp"))
 (defun ct () (compile-file "t.cl")) 
 (defun lt- () (load "t.fasl" :print t)) 
 (defun l-1 () (load "ld1.cl" :print t)) 
@@ -143,7 +142,9 @@
  (progn *default-pathname-defaults*))
 (defun ex () 
   (print "byE")
-  (sb-ext:quit))
+  (sb-ext:quit)
+  ;(sb-ext:exit) ;v1.1
+  )
 (defun ex0 () (ex));for typos
 (defun run-ext (cmd &rest args)
   (let ((str (make-string-output-stream)))
@@ -445,7 +446,7 @@
                  (close (status-pipe proc))
                  #+clozure
                  (ccl:quit 0)
-                 #+sbcl
+                 #+sbcl ;exit in v1.1
                  (sb-ext:quit :recklessly-p t ; don't cause
                                               ; compilation unit error
                                               ; msg.
