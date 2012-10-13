@@ -81,8 +81,12 @@
 ;-prob won't use above scrape2structs
 ; -moved2 chtml:parse list easier2debug than structs @1st
 ;(lt) ;rest in t.cl for now
+(defun s-crape-str (str)
+  (chtml:parse str (chtml:make-lhtml-builder))) 
 (defun s-crape-fn (fn)
-  (chtml:parse (read-file-to-string fn) (chtml:make-lhtml-builder))) 
+ ;(chtml:parse (read-file-to-string fn) (chtml:make-lhtml-builder))
+  (s-crape-str (read-file-to-string fn))
+  )
 (defvar *i* (s-crape-fn "index.html"))
 ;(defun find-lh (tag attrib &optional (n 1) (lhtml *i*))
 ;  (chtml-matcher:find-in-lhtml lhtml tag attrib n))
@@ -127,6 +131,7 @@
 
 ;-use this one  ;will also parse each post more, &(km)assert interesting bits
 (defun lt-assert (lf tf fn &optional (ct nil))
+  "km assert"
   ;will parse lf more too
   ;let ((il (p-lh lf "img"))
   ;     (ii (p-lh lf "i")))
@@ -138,6 +143,45 @@
     )  ;pull out less/make cleaner..
 ;(trace p-lh)
 
+;defun gp-ff2 (fn pt &optional (ct nil))  ;use this on sf&sf-pt
+(defun gp-fs2 (s pt &optional (ct nil))  ;use this on sf&sf-pt
+  "get post/s from file assert&log-js2sep files" ;given string input s
+  (let* (;(s (s-crape-fn fn))
+         (la (loop for i from 1 to 99 
+                  for p = (get-post i pt s)
+                  while p collect (cons (str-cat fn i) p)))
+        (l2 (alst2 la)) ;or collect2&ret values
+        (tl (first l2))
+        (l (second l2))
+         )
+    ;log(for doc-store instert?)/etc, and assert now, for indx/inference/..
+   ;;(logjsonl l tl (str-cat "log/" fn ".js")) ;seperate&supercede now ;already takes 2lists
+   ;(logjsonal la (str-cat "log/" fn ".js")) ;seperate&supercede now ;already takes 2lists
+    (mapcar #'(lambda (lf tf) (lt-assert lf tf fn ct)) l tl) ;do for each blog post
+   la))  ;rewrite lt-assert for alst &mv dwn too
+(defun gp-ff2-(fn pt &optional (ct nil))  ;use this on sf&sf-pt
+  "get post/s from file assert&log-js2sep files" ;given filename=fn
+   (let ((la (gp-fs2 (s-crape-fn fn) pt ct)))
+    (logjsonal la (str-cat "log/" fn ".js")) ;seperate&supercede now ;already takes 2lists
+      ))
+;-fix above to replace: &allow for a str vs filename version
+(defun gp-ffns2 (fn s pt &optional (ct nil))  ;use this on sf&sf-pt
+  "get post/s from file assert&log-js2sep files"
+  (let* (;(s (s-crape-fn fn))
+         (la (loop for i from 1 to 99 
+                  for p = (get-post i pt s)
+                  while p collect (cons (str-cat fn i) p)))
+         (l2 (alst2 la)) ;or collect2&ret values
+         (tl (first l2))
+         (l (second l2)))
+    ;log(for doc-store instert?)/etc, and assert now, for indx/inference/..
+    (logjsonl l tl (str-cat "log/" fn ".js")) ;seperate&supercede now ;already takes 2lists
+    (mapcar #'(lambda (lf tf) (lt-assert lf tf fn ct)) l tl) ;do for each blog post
+    ))  
+(defun gp-ff2 (fn pt &optional (ct nil))  ;use this on sf&sf-pt
+   (gp-ffns2 fn (s-crape-fn fn) pt ct))
+;-if give fn also for now, then can have a vers that gets a str from a uri/&go right from that
+#+ignore
 (defun gp-ff2 (fn pt &optional (ct nil))  ;use this on sf&sf-pt
   "get post/s from file assert&log-js2sep files"
   (let* ((s (s-crape-fn fn))
@@ -150,7 +194,9 @@
     ;log(for doc-store instert?)/etc, and assert now, for indx/inference/..
     (logjsonl l tl (str-cat "log/" fn ".js")) ;seperate&supercede now ;already takes 2lists
     (mapcar #'(lambda (lf tf) (lt-assert lf tf fn ct)) l tl) ;do for each blog post
-    )) 
+    ))  
+;could also get&dump2file either the str or chtml(sexpr) so could revisit
+;  then pick it up from fn if str in same names files; or ... /generalizing is better though
 ;ld.cl will use (lt) to load this, in the beginning
 ;several lines into cu.cl
 ;load-km c.km  could also give these :|keywords|
@@ -166,6 +212,7 @@
 ;i miss my mapcar that re-uses an arg if not a list, but can just lambda
   ;ctp=*sf* *ny*  pt might go to cfg, &/or run through list of them 1st time/? 
 (defun do-city (city &optional (ctp *ct*) (pt *pt*)) 
+  "parse posts from htm files"
   (let ((ct (assoc2nd city ctp))  ;use assoc_v
         (pt (assoc2nd city pt)))
    ;(mapcar #'gp-ff2 *sf* *sf-pt*)
@@ -177,3 +224,12 @@
  ;(mapcar #'gp-ff2 *ny* *ny-pt*)
   (mapcar #'do-city cts)
   (taxonomy))
+#+ignore ;works, but it's in cu2.cl
+(defun do_city (city &optional (ctp *rt2*) (pt *pt*))
+  "parse from rss"
+  (let* ((fut (assoc2nd city ctp))  ;use assoc_v
+         (ft (mapcar #'first fut))
+         (ut (mapcar #'cdr fut))
+         (pt (assoc2nd city pt)))
+    (mapcar #'(lambda (f u p) (gp-ffns2 f (rss_t f) p city)) ft ut pt)
+    )) 
