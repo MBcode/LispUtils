@@ -47,6 +47,7 @@
   (s-crape-str (read-file-to-string fn)))
 
 (defvar *i* (s-crape-fn "index.html")) ;as a default for testing parser fncs
+
 ;defun find-lh (tag attrib &optional (n 1) (lhtml *i*))
 (defun find-lh (tag &optional (n 1) (attrib nil) (lhtml *i*))
   "get nth sub-sexpr w/tag" ;try to only do in smaller branchs
@@ -57,14 +58,12 @@
   (find-lh "div" n `((:CLASS ,at-str)) lh))
 ;might make a version that tries all the pt(post-tag) strings
 
-;early versions of gp(get-post).. moved out
-;moved other try to fp-ff2 tx.cl
-
 (defun p-lh (lh tag)
   "w/in1post,get all of a tag-type"
     (loop for i from 1 to 99 
           for p = (find-lh tag i nil lh)
           while p collect p))
+;(trace p-lh)
 
 ;ct=city (sf or ny)now; used to subclass blogPost s &more
 ;-use this one  ;will also parse each post more, &(km)assert interesting bits
@@ -75,11 +74,8 @@
                 (cons "img" (p-lh lf "img"))
                 (cons "i" (p-lh lf "i"))))
     )  ;pull out less/make cleaner..
-;(trace p-lh)
 
-;;;already split this out
-;;;-fix above to replace: &allow for a str vs filename version
-;;;-if give fn also for now, then can have a vers that gets a str from a uri/&go right from that
+;;;GP(get-post)fns
 (defun gp-ffns2 (fn s pt &optional (ct nil))  ;use this on sf&sf-pt
   "get post/s from sexpr w/filename-tag  assert&log-js2sep files"
   (let* (;(s (s-crape-fn fn))
@@ -129,13 +125,8 @@
 ;-
 ;(defvar *pw* (string-list->keyword-vector '("jpg" "jpeg" "gif" "png")))
 ;(defvar *dp* '(".jpg" ".jpeg" ".gif" ".png"))
-;load-km c.km  could also give these :|keywords|
-;rest in t-.cl ;;pull out into problem specific part
-;(defun htm-p (s) (suffixp ".htm" s))
-;domain-specific rest now in cu.cl
-;can use in load&find in s.cl
 ;-
-#+ignore ;~works, but it's in cu2.cl
+#+ignore ;~works, but it's in cu2.cl ;finish
 (defun do_city (city &optional (ctp *rt2*) (pt *pt*))
   "parse from rss"
   (let* ((fut (assoc2nd city ctp))  ;use assoc_v
