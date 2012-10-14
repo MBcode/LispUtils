@@ -52,11 +52,14 @@
   (chtml-matcher:find-in-lhtml lhtml tag attrib n))
 
 (defun get-post (n &optional (at-str "post hentry") (lh *i*))
-  "pull lhtml branch for one blogPost"
+  "pull lhtml branch for one blogPost" ;pass everything if can't catch it
+  (format nil "~%g-p:~a" (len lh))
   (or (find-lh "div" n `((:CLASS ,at-str)) lh)
       lh)) ;if can't find pass through w/o filtering out just the nth blogPost
 
 (defun get-post- (n &optional (at-str "post hentry") (lh *i*))
+  "pull lhtml branch for one blogPost"
+  (format nil "~%g-p-:~a" (len lh))
   (find-lh "div" n `((:CLASS ,at-str)) lh)) ;need ver to ret nil, so can get-pt
 
 ;might make a version that tries all the pt(post-tag) strings  ;get_post
@@ -69,9 +72,12 @@
 ;so can now come up w/versions that don't have to remember site metadata of PostTag
 ; could still remember it, but later can defgeneric,&have it try2look it up 1st
 
+#+ignore ;only check get-pt once/page not /post
 (defun get_post (n &optional (lh *i*))
   "get any post w/o knowing PostTag in adv"
-     (or (get-post n (get-pt lh) lh) 
+  (format nil "~%g_p:~a" (len lh))
+     ;or (get-post n (get-pt lh) lh)  ;better to get-pt once/blog vs.during iteration
+     (or (get-post- n (get-pt lh) lh)  ;better to get-pt once/blog vs.during iteration
          lh)) ;if can't find pass through w/o filtering out just the nth blogPos
 
 (defun p-lh (lh tag)
@@ -94,9 +100,11 @@
 ;;;GP(get-post)fns
 (defun gp-ffns2 (fn s pt &optional (ct nil))  ;use this on sf&sf-pt
   "get post/s from sexpr w/filename-tag  assert&log-js2sep files"
+  (format nil "~%gp-ffns2p:~a ~a ~a" fn (len s) pt)
   (let* (;(s (s-crape-fn fn))
-         (la (loop for i from 1 to 99 
-                  for p = (get-post i pt s)
+         (la (loop for i from 1 to 89 
+                 ;for p = (get-post i pt s)
+                  for p = (get-post- i pt s) ;need so it will stop
                   while p collect (cons (str-cat fn i) p)))
          (l2 (alst2 la)) ;or collect2&ret values
          (tl (first l2))
@@ -111,9 +119,12 @@
 ;-try ver w/o pt, by using get-pt
 (defun gp_ffns2 (fn s  &optional (ct nil))  ;pt not needed
   "get post/s from sexpr w/filename-tag  assert&log-js2sep files"
-  (let* (;(s (s-crape-fn fn))
-         (la (loop for i from 1 to 99 
-                  for p = (get_post i  s)
+  (let* (;(s (s-crape-fn fn))   ;s=sexpr
+         (pt (get-pt s)) ;get PostTag once/blog 
+         (la (loop for i from 1 to 89 
+                 ;for p = (get_post i  s)
+                 ;for p = (get-post i pt s)
+                  for p = (get-post- i pt s) ;need so it will stop
                   while p collect (cons (str-cat fn i) p)))
          (l2 (alst2 la)) ;or collect2&ret values
          (tl (first l2))
@@ -149,7 +160,7 @@
  ;(mapcar #'gp-ff2 *ny* *ny-pt*)
   (mapcar #'do-city cts)
   (taxonomy))
-;-
+;-last v had these working, but also caught in loop now
 (defun tst2 (&optional (cts '("sf" "ny"))) 
   (mapcar #'do-city_ cts)
   (taxonomy))
@@ -177,11 +188,12 @@
          (pt (assoc2nd city pt)))
     (mapcar #'(lambda (f u p) (gp-ffns2 f (rss_t f) p city)) ft ut pt)
     )) ;does the rss version even need the pt anyway?
-
+;still fix/finish these
 (defun do_city_ (city &optional (ctp *rt2*) ) ;still needs help even w/o pt
   "parse from rss"
   (let* ((fut (assoc2nd city ctp))  ;use assoc_v
          (ft (mapcar #'first fut))
          (ut (mapcar #'cdr fut)))
     (mapcar #'(lambda (f u ) (gp_ffns2 f (rss_t f)  city)) ft ut )))
-;if can't find pass through w/o filtering out just the nth blogPos ;except4 get-pt, still infloop prob?
+;if can't find pass through w/o filtering out just the nth blogPos 
+; poss through kept get-post from stopping the loop
