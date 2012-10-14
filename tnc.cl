@@ -1,10 +1,14 @@
 ;parse some blog posts bobak@balisp.org
-;cat ld.cl s.cl t.cl >tnc.cl
-(ql '(puri drakma chtml-matcher phtml cxml-stp closure-html))
+;was;cat ld.cl s.cl t.cl >tnc.cl (ql '(puri drakma chtml-matcher phtml cxml-stp closure-html))
+(ql '(puri drakma chtml-matcher))
 (use-package :puri)
-(lut) ;(load "/Users/bobak/lsp/util_mb")  ;https://github.com/MBcode/LispUtils
-(lkm2) ;(load "/Users/bobak/lsp/km_2-5-33") ;(load "/Users/bobak/lsp/u2") ;~=ukm2 ;https://github.com/MBcode/kmb
+(lut) ;(load "~/lsp/util_mb")  ;https://github.com/MBcode/LispUtils
+(lkm2) ;(load "~/lsp/km_2-5-33") ;(load "~/lsp/u2") ;~=ukm2 ;https://github.com/MBcode/kmb
 (setq drakma:*header-stream* *standard-output*)
+;blog-post scraper bobak@balisp.org 
+(defun hr (u)
+  "get the page as 1str"
+  (drakma:http-request (if (s-prefixp "http" u) u (str-cat "http://" u))))
 
 (ql 'cl-json)
 (defun encode-js2s (l &optional (strm *standard-output*)) 
@@ -31,56 +35,8 @@
                 (when (listp al) (format out "~%~a," (cdr al)))
                 (encode-js2s (first-lv al) out)) lal)))
 
-;(load "s.cl" :print t) ;now below
 (load "cu2.cl" :print t) ;domain specific /blogs
-;(lt) ;rest in t.cl for now  ;think i should have all of t.cl in here
-;blog-post scraper bobak@balisp.org 
-(defun hr (u)
-  "get the page as 1str"
-  (drakma:http-request (if (s-prefixp "http" u) u (str-cat "http://" u))))
-
-;git rid of unused from: ;http://codereview.stackexchange.com/questions/2277/simple-web-scraper-in-common-lisp-sbcl
-;-now in s-.cl, found struct more difficult to dbg/get used2html struct/ures
-;not scraping what I want right now, but can still study it
-(defun scrape-xhtml-type (xhtml-tree typ)
-  "Scrapes data from an XHTML tree, returning a list of lists of values."
-  (let ((results nil))
-    (stp:do-recursively (element xhtml-tree)
-            (when (and (typep element 'stp:element)
-                   (equal (stp:local-name element) typ))
-              ;(if (scrape-row element)
-              ;    (setq results (append results (list (scrape-row element)))))
-              (setq results (append results (list element)))
-              ))
-    results))
-
-(defun scrape-xhtml-types (xhtml-tree typl)
-  "Scrapes data from an XHTML tree, returning a list of lists of values."
-  (let ((results nil))
-    (stp:do-recursively (element xhtml-tree)
-            (when (and (typep element 'stp:element)
-                   (member (stp:local-name element) typl :test #'equal))
-              (setq results (append results (list element)))
-              ))
-    results))
-
-;not scraping what I want right now, but can still study it 
-; -moved2 chtml:parse list easier2debug than structs @1st
-
-(defun scrape-body (body)
-  "Scrapes data from a potentially invalid HTML document, returning a list of lists of values."
-  (let ((valid-xhtml (chtml:parse body (cxml:make-string-sink))))
-    (let ((xhtml-tree (chtml:parse valid-xhtml (cxml-stp:make-builder))))
-      (scrape-xhtml-types xhtml-tree '("img" "i"))))) 
-
-(defun scrape-fn (fn)
-  (scrape-body (read-file-to-string fn)))
-
-(defun scrape-uri (uri)
-  (scrape-body (hr uri)))
-;-prob won't use above scrape2structs
-; -moved2 chtml:parse list easier2debug than structs @1st
-;(lt) ;rest in t.cl for now
+;;moved50lines2 tx.cl
 (defun s-crape-str (str)
   (chtml:parse str (chtml:make-lhtml-builder))) 
 (defun s-crape-fn (fn)
@@ -129,6 +85,7 @@
           for p = (find-lh tag i nil lh)
           while p collect p))
 
+;ct=city (sf or ny)now; used to subclass blogPost s &more
 ;-use this one  ;will also parse each post more, &(km)assert interesting bits
 (defun lt-assert (lf tf fn &optional (ct nil))
   "km assert"
@@ -143,30 +100,10 @@
     )  ;pull out less/make cleaner..
 ;(trace p-lh)
 
-;defun gp-ff2 (fn pt &optional (ct nil))  ;use this on sf&sf-pt
-(defun gp-fs2 (s pt &optional (ct nil))  ;use this on sf&sf-pt
-  "get post/s from file assert&log-js2sep files" ;given string input s
-  (let* (;(s (s-crape-fn fn))
-         (la (loop for i from 1 to 99 
-                  for p = (get-post i pt s)
-                  while p collect (cons (str-cat fn i) p)))
-        (l2 (alst2 la)) ;or collect2&ret values
-        (tl (first l2))
-        (l (second l2))
-         )
-    ;log(for doc-store instert?)/etc, and assert now, for indx/inference/..
-   ;;(logjsonl l tl (str-cat "log/" fn ".js")) ;seperate&supercede now ;already takes 2lists
-   ;(logjsonal la (str-cat "log/" fn ".js")) ;seperate&supercede now ;already takes 2lists
-    (mapcar #'(lambda (lf tf) (lt-assert lf tf fn ct)) l tl) ;do for each blog post
-   la))  ;rewrite lt-assert for alst &mv dwn too
-(defun gp-ff2-(fn pt &optional (ct nil))  ;use this on sf&sf-pt
-  "get post/s from file assert&log-js2sep files" ;given filename=fn
-   (let ((la (gp-fs2 (s-crape-fn fn) pt ct)))
-    (logjsonal la (str-cat "log/" fn ".js")) ;seperate&supercede now ;already takes 2lists
-      ))
+;moved other try to tx.cl
 ;-fix above to replace: &allow for a str vs filename version
 (defun gp-ffns2 (fn s pt &optional (ct nil))  ;use this on sf&sf-pt
-  "get post/s from file assert&log-js2sep files"
+  "get post/s from sexpr w/filename-tag  assert&log-js2sep files"
   (let* (;(s (s-crape-fn fn))
          (la (loop for i from 1 to 99 
                   for p = (get-post i pt s)
@@ -179,8 +116,16 @@
     (mapcar #'(lambda (lf tf) (lt-assert lf tf fn ct)) l tl) ;do for each blog post
     ))  
 (defun gp-ff2 (fn pt &optional (ct nil))  ;use this on sf&sf-pt
+  "get post/s from file assert&log-js2sep files"
    (gp-ffns2 fn (s-crape-fn fn) pt ct))
 ;-if give fn also for now, then can have a vers that gets a str from a uri/&go right from that
+;==was in cu2.cl
+(defun scrape-tag (tg) (scrape-uri (t2rss tg)))
+
+(defun rss-t (tg)
+  (hr (t2rss tg)))
+(defun rss_t (tg)
+  (s-crape-str (rss-t tg)))
 #+ignore
 (defun gp-ff2 (fn pt &optional (ct nil))  ;use this on sf&sf-pt
   "get post/s from file assert&log-js2sep files"
