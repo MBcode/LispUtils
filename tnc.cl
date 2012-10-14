@@ -53,7 +53,11 @@
 
 (defun get-post (n &optional (at-str "post hentry") (lh *i*))
   "pull lhtml branch for one blogPost"
-  (find-lh "div" n `((:CLASS ,at-str)) lh))
+  (or (find-lh "div" n `((:CLASS ,at-str)) lh)
+      lh)) ;if can't find pass through w/o filtering out just the nth blogPost
+
+(defun get-post- (n &optional (at-str "post hentry") (lh *i*))
+  (find-lh "div" n `((:CLASS ,at-str)) lh)) ;need ver to ret nil, so can get-pt
 
 ;might make a version that tries all the pt(post-tag) strings  ;get_post
 (defvar *trypt* '("post hentry" "format_text entry-content" "blog-content"
@@ -61,13 +65,14 @@
                   "post-meta"))
 (defun get-pt (lh)
   "return pt(post-tag) for lhtml, blogPost"
-  (first-lv (rm-nil (mapcar #'(lambda (tp) (when (get-post 1 tp lh) tp)) *trypt*))))
+  (first-lv (rm-nil (mapcar #'(lambda (tp) (when (get-post- 1 tp lh) tp)) *trypt*))))
 ;so can now come up w/versions that don't have to remember site metadata of PostTag
 ; could still remember it, but later can defgeneric,&have it try2look it up 1st
 
 (defun get_post (n &optional (lh *i*))
   "get any post w/o knowing PostTag in adv"
-      (get-post n (get-pt lh) lh))
+     (or (get-post n (get-pt lh) lh) 
+         lh)) ;if can't find pass through w/o filtering out just the nth blogPos
 
 (defun p-lh (lh tag)
   "w/in1post,get all of a tag-type"
@@ -179,3 +184,4 @@
          (ft (mapcar #'first fut))
          (ut (mapcar #'cdr fut)))
     (mapcar #'(lambda (f u ) (gp_ffns2 f (rss_t f)  city)) ft ut )))
+;if can't find pass through w/o filtering out just the nth blogPos ;except4 get-pt, still infloop prob?
