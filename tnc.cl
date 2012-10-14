@@ -124,7 +124,7 @@
 (defun lk () (load-kb "c2.km")) ;(BlogPost has (superclasses (Thing))) &much more
 (defun lk2 () (lk) (taxonomy))    ;then can do a (taxonomy)
 (lk)
-;-
+;-try ver os docity fncs w/o pt
   ;ctp=*sf* *ny*  pt might go to cfg, &/or run through list of them 1st time/? 
 (defun do-city (city &optional (ctp *ct*) (pt *pt*)) 
   "parse posts from htm files"
@@ -134,12 +134,20 @@
     ;mapcar #'gp-ff2 ct pt city
     (mapcar #'(lambda (c p) (gp-ff2 c p city)) ct pt)))
 
+(defun do-city_ (city &optional (ctp *ct*) ) 
+  "parse posts from htm files"
+  (let ((ct (assoc2nd city ctp)))
+    (mapcar #'(lambda (c ) (gp_ff2 c  city)) ct )))
+
 (defun tst (&optional (cts '("sf" "ny"))) 
  ;(mapcar #'gp-ff2 *sf* *sf-pt*)
  ;(mapcar #'gp-ff2 *ny* *ny-pt*)
   (mapcar #'do-city cts)
   (taxonomy))
 ;-
+(defun tst2 (&optional (cts '("sf" "ny"))) 
+  (mapcar #'do-city_ cts)
+  (taxonomy))
 ;==was in cu2.cl
 (defun hl95 () (s-crape-str (h95)))
 (defun scrape-tag (tg) (scrape-uri (t2rss tg)))
@@ -163,4 +171,11 @@
          (ut (mapcar #'cdr fut))
          (pt (assoc2nd city pt)))
     (mapcar #'(lambda (f u p) (gp-ffns2 f (rss_t f) p city)) ft ut pt)
-    )) 
+    )) ;does the rss version even need the pt anyway?
+
+(defun do_city_ (city &optional (ctp *rt2*) ) ;still needs help even w/o pt
+  "parse from rss"
+  (let* ((fut (assoc2nd city ctp))  ;use assoc_v
+         (ft (mapcar #'first fut))
+         (ut (mapcar #'cdr fut)))
+    (mapcar #'(lambda (f u ) (gp_ffns2 f (rss_t f)  city)) ft ut )))
