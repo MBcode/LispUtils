@@ -1,5 +1,4 @@
 ;parse/scrape  blog-posts bobak@balisp.org
-;was;cat ld.cl s.cl t.cl >tnc.cl (ql '(puri drakma chtml-matcher phtml cxml-stp closure-html))
 (ql '(puri drakma chtml-matcher)) ;(use-package :puri)
 (lut) ;(load "~/lsp/util_mb")  ;https://github.com/MBcode/LispUtils
 (lkm2) ;(load "~/lsp/km_2-5-33") ;(load "~/lsp/u2") ;~=ukm2 ;https://github.com/MBcode/kmb
@@ -36,7 +35,6 @@
                 (encode-js2s (first-lv al) out)) lal)))
 
 (load "cu2.cl" :print t) ;domain specific /blogs
-;;moved50lines2 tx.cl
 
 (defun s-crape-str (str)
   "htm str -> lhtml"
@@ -56,7 +54,20 @@
 (defun get-post (n &optional (at-str "post hentry") (lh *i*))
   "pull lhtml branch for one blogPost"
   (find-lh "div" n `((:CLASS ,at-str)) lh))
-;might make a version that tries all the pt(post-tag) strings
+
+;might make a version that tries all the pt(post-tag) strings  ;get_post
+(defvar *trypt* '("post hentry" "format_text entry-content" "blog-content"
+                  "journal-entry-tag journal-entry-tag-post-body" "pin-it-btn-shortcode-wrapper"
+                  "post-meta"))
+(defun get-pt (lh)
+  "return pt(post-tag) for lhtml, blogPost"
+  (first-lv (rm-nil (mapcar #'(lambda (tp) (when (get-post 1 tp lh) tp)) *trypt*))))
+;so can now come up w/versions that don't have to remember site metadata of PostTag
+; could still remember it, but later can defgeneric,&have it try2look it up 1st
+
+(defun get_post (n &optional (lh *i*))
+  "get any post w/o knowing PostTag in adv"
+      (get-post n (get-pt lh) lh))
 
 (defun p-lh (lh tag)
   "w/in1post,get all of a tag-type"
@@ -92,6 +103,23 @@
 (defun gp-ff2 (fn pt &optional (ct nil))  ;use this on sf&sf-pt
   "get post/s from file assert&log-js2sep files"
    (gp-ffns2 fn (s-crape-fn fn) pt ct))
+;-try ver w/o pt, by using get-pt
+(defun gp_ffns2 (fn s  &optional (ct nil))  ;pt not needed
+  "get post/s from sexpr w/filename-tag  assert&log-js2sep files"
+  (let* (;(s (s-crape-fn fn))
+         (la (loop for i from 1 to 99 
+                  for p = (get_post i  s)
+                  while p collect (cons (str-cat fn i) p)))
+         (l2 (alst2 la)) ;or collect2&ret values
+         (tl (first l2))
+         (l (second l2)))
+    ;log(for doc-store instert?)/etc, and assert now, for indx/inference/..
+    (logjsonl l tl (str-cat "log/" fn ".js")) ;seperate&supercede now ;already takes 2lists
+    (mapcar #'(lambda (lf tf) (lt-assert lf tf fn ct)) l tl) ;do for each blog post
+    ))  
+(defun gp_ff2 (fn  &optional (ct nil))  ;use this on sf&sf-pt
+  "get post/s from file assert&log-js2sep files"
+   (gp_ffns2 fn (s-crape-fn fn)  ct))
 ;-
 (defun lk () (load-kb "c2.km")) ;(BlogPost has (superclasses (Thing))) &much more
 (defun lk2 () (lk) (taxonomy))    ;then can do a (taxonomy)
@@ -113,6 +141,7 @@
   (taxonomy))
 ;-
 ;==was in cu2.cl
+(defun hl95 () (s-crape-str (h95)))
 (defun scrape-tag (tg) (scrape-uri (t2rss tg)))
 
 (defun rss-t (tg)
