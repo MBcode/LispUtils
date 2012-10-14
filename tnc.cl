@@ -38,46 +38,22 @@
 (load "cu2.cl" :print t) ;domain specific /blogs
 ;;moved50lines2 tx.cl
 (defun s-crape-str (str)
+  "htm str -> lhtml"
   (chtml:parse str (chtml:make-lhtml-builder))) 
 (defun s-crape-fn (fn)
- ;(chtml:parse (read-file-to-string fn) (chtml:make-lhtml-builder))
+  "htm file -> lhtml"
   (s-crape-str (read-file-to-string fn))
   )
 (defvar *i* (s-crape-fn "index.html"))
-;(defun find-lh (tag attrib &optional (n 1) (lhtml *i*))
-;  (chtml-matcher:find-in-lhtml lhtml tag attrib n))
+;defun find-lh (tag attrib &optional (n 1) (lhtml *i*))
 (defun find-lh (tag &optional (n 1) (attrib nil) (lhtml *i*))
   (chtml-matcher:find-in-lhtml lhtml tag attrib n))
+
 (defun get-post (n &optional (at-str "post hentry") (lh *i*))
   (find-lh "div" n `((:CLASS ,at-str)) lh))
-;soon alst of plc & ..  ;pull out into problem specific part
-;now in cu.cl
 
-;start w/1,&expand to get all for the file
-(defun gp1 (fn pt)
-  "get 1st post from a file"
-  (get-post 1 pt (s-crape-fn fn))) 
-
-(defun gp-ff0 (fn pt)
-  "get post from file"
-  (let ((s (s-crape-fn fn)))
-    (loop for i from 1 to 99 
-          for p = (get-post i pt s)
-          while p collect p)))
-
-(defun gp-ff (fn pt)
-  "get post/s from file &log-js"
-  (let* ((s (s-crape-fn fn))
-         (la (loop for i from 1 to 99 
-                  for p = (get-post i pt s)
-                  while p collect (cons (str-cat fn i) p)))
-        ;(l2 (alst2 la))
-        ;(tl (first l2))
-        ;(l (second l2))
-         )
-   ;(logjsonl l tl)
-    (logjsonal la)
-    )) ;1st use work/but dbg/fix here
+;early versions of gp(get-post).. moved out
+;moved other try to fp-ff2 tx.cl
 
 (defun p-lh (lh tag)
   "w/in1post,get all of a tag-type"
@@ -100,7 +76,6 @@
     )  ;pull out less/make cleaner..
 ;(trace p-lh)
 
-;moved other try to tx.cl
 ;-fix above to replace: &allow for a str vs filename version
 (defun gp-ffns2 (fn s pt &optional (ct nil))  ;use this on sf&sf-pt
   "get post/s from sexpr w/filename-tag  assert&log-js2sep files"
@@ -118,41 +93,9 @@
 (defun gp-ff2 (fn pt &optional (ct nil))  ;use this on sf&sf-pt
   "get post/s from file assert&log-js2sep files"
    (gp-ffns2 fn (s-crape-fn fn) pt ct))
-;-if give fn also for now, then can have a vers that gets a str from a uri/&go right from that
-;==was in cu2.cl
-(defun scrape-tag (tg) (scrape-uri (t2rss tg)))
-
-(defun rss-t (tg)
-  (hr (t2rss tg)))
-(defun rss_t (tg)
-  (s-crape-str (rss-t tg)))
-#+ignore
-(defun gp-ff2 (fn pt &optional (ct nil))  ;use this on sf&sf-pt
-  "get post/s from file assert&log-js2sep files"
-  (let* ((s (s-crape-fn fn))
-         (la (loop for i from 1 to 99 
-                  for p = (get-post i pt s)
-                  while p collect (cons (str-cat fn i) p)))
-         (l2 (alst2 la)) ;or collect2&ret values
-         (tl (first l2))
-         (l (second l2)))
-    ;log(for doc-store instert?)/etc, and assert now, for indx/inference/..
-    (logjsonl l tl (str-cat "log/" fn ".js")) ;seperate&supercede now ;already takes 2lists
-    (mapcar #'(lambda (lf tf) (lt-assert lf tf fn ct)) l tl) ;do for each blog post
-    ))  
-;could also get&dump2file either the str or chtml(sexpr) so could revisit
-;  then pick it up from fn if str in same names files; or ... /generalizing is better though
-;ld.cl will use (lt) to load this, in the beginning
-;several lines into cu.cl
-;load-km c.km  could also give these :|keywords|
-(defvar *pw* (string-list->keyword-vector '("jpg" "jpeg" "gif" "png")))
-(defvar *dp* '(".jpg" ".jpeg" ".gif" ".png"))
+;-
 (defun lk () (load-kb "c2.km")) ;(BlogPost has (superclasses (Thing))) &much more
 (defun lk2 () (lk) (taxonomy))    ;then can do a (taxonomy)
-;rest in t-.cl ;;pull out into problem specific part
-(defun htm-p (s) (suffixp ".htm" s))
-;domain-specific rest now in cu.cl
-;can use in load&find in s.cl
 (lk)
 ;i miss my mapcar that re-uses an arg if not a list, but can just lambda
   ;ctp=*sf* *ny*  pt might go to cfg, &/or run through list of them 1st time/? 
@@ -169,7 +112,25 @@
  ;(mapcar #'gp-ff2 *ny* *ny-pt*)
   (mapcar #'do-city cts)
   (taxonomy))
-#+ignore ;works, but it's in cu2.cl
+;-
+;-if give fn also for now, then can have a vers that gets a str from a uri/&go right from that
+;==was in cu2.cl
+(defun scrape-tag (tg) (scrape-uri (t2rss tg)))
+
+(defun rss-t (tg)
+  (hr (t2rss tg)))
+(defun rss_t (tg)
+  "get sexpr from rss for tg"
+  (s-crape-str (rss-t tg)))
+;(defvar *pw* (string-list->keyword-vector '("jpg" "jpeg" "gif" "png")))
+;(defvar *dp* '(".jpg" ".jpeg" ".gif" ".png"))
+;load-km c.km  could also give these :|keywords|
+;rest in t-.cl ;;pull out into problem specific part
+;(defun htm-p (s) (suffixp ".htm" s))
+;domain-specific rest now in cu.cl
+;can use in load&find in s.cl
+;-
+#+ignore ;~works, but it's in cu2.cl
 (defun do_city (city &optional (ctp *rt2*) (pt *pt*))
   "parse from rss"
   (let* ((fut (assoc2nd city ctp))  ;use assoc_v
