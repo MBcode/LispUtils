@@ -42,7 +42,9 @@
   (load #P"/Users/bobak/quicklisp/setup.lisp")
  ;(load #P"/Users/bobak/quicklisp/t.lsp" :print t)
   )
-(defun lkm () (load "/Users/bobak/lsp/km_2-5-33"))
+;(defun lkm () (load "/Users/bobak/lsp/km_2-5-33"))
+;#<SYSTEM km / km-2-5-33 / quicklisp 2012-09-09>
+(defun lkm () (ql 'km))
 (defun lkm2 () (lkm) (load "/Users/bobak/lsp/u2"))
 (lql) ;just do it 
 #+quicklisp
