@@ -2,6 +2,10 @@
 (ql '(puri drakma chtml-matcher)) ;(use-package :puri)
 (lut) ;(load "~/lsp/util_mb")  ;https://github.com/MBcode/LispUtils
 (lkm2) ;(load "~/lsp/km_2-5-33") ;(load "~/lsp/u2") ;~=ukm2 ;https://github.com/MBcode/kmb
+;(when (find-package :km) (use-package :km)) ;should just import what needed
+;(when (find-package :km)
+;  (defun load-kb (kb) (km:load-kb (kb)))
+;  (defun km () (km:km)))
 (setq drakma:*header-stream* *standard-output*)
 
 (defun hr (u)
@@ -117,7 +121,7 @@
   "get post/s from file assert&log-js2sep files"
    (gp-ffns2 fn (s-crape-fn fn) pt ct))
 ;-try ver w/o pt, by using get-pt
-(defun gp_ffns2 (fn s  &optional (ct nil))  ;pt not needed
+(defun gp_ffns2- (fn s  &optional (ct nil))  ;pt not needed
   "get post/s from sexpr w/filename-tag  assert&log-js2sep files"
   (let* (;(s (s-crape-fn fn))   ;s=sexpr
          (pt (get-pt s)) ;get PostTag once/blog 
@@ -133,6 +137,13 @@
     (logjsonl l tl (str-cat "log/" fn ".js")) ;seperate&supercede now ;already takes 2lists
     (mapcar #'(lambda (lf tf) (lt-assert lf tf fn ct)) l tl) ;do for each blog post
     ))  
+(defun gp_ffns2 (fn s  &optional (ct nil))  ;pt not needed  ;for rss ;rename-soon
+  "log&assert rss lh"
+  (let ((tl (list (str-cat fn "-date-or-similar")))
+        (l (list s)))
+    (logjsonl l tl (str-cat "log/" fn ".js")) ;seperate&supercede now ;already takes 2lists
+    (mapcar #'(lambda (lf tf) (lt-assert lf tf fn ct)) l tl) ;do for each blog post
+    ))
 (defun gp_ff2 (fn  &optional (ct nil))  ;use this on sf&sf-pt
   "get post/s from file assert&log-js2sep files"
    (gp_ffns2 fn (s-crape-fn fn)  ct))
@@ -189,11 +200,13 @@
     (mapcar #'(lambda (f u p) (gp-ffns2 f (rss_t f) p city)) ft ut pt)
     )) ;does the rss version even need the pt anyway?
 ;still fix/finish these
+(defun gp_fc (f city) (gp_ffns2 f (rss_t f)  city))
 (defun do_city_ (city &optional (ctp *rt2*) ) ;still needs help even w/o pt
   "parse from rss"
   (let* ((fut (assoc2nd city ctp))  ;use assoc_v
          (ft (mapcar #'first fut))
          (ut (mapcar #'cdr fut)))
-    (mapcar #'(lambda (f u ) (gp_ffns2 f (rss_t f)  city)) ft ut )))
+    (mapcar #'(lambda (f u ) (gp_fc f city) ;(gp_ffns2 f (rss_t f)  city)
+                ) ft ut )))
 ;if can't find pass through w/o filtering out just the nth blogPos 
 ; poss through kept get-post from stopping the loop
