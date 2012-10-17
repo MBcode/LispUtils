@@ -1,4 +1,5 @@
 ;parse/scrape  blog-posts bobak@balisp.org
+; wish more bloggers used rdfa or similar ;thought experiment on how2add it, might help here/?
 (ql '(puri drakma chtml-matcher)) ;(use-package :puri)
 (lut) ;(load "~/lsp/util_mb")  ;https://github.com/MBcode/LispUtils
 (lkm2) ;(load "~/lsp/km_2-5-33") ;(load "~/lsp/u2") ;~=ukm2 ;https://github.com/MBcode/kmb
@@ -108,6 +109,8 @@
                 (cons "img" (p-lh lf "img"))
                 (cons "i" (p-lh lf "i"))))
     )  ;pull out less/make cleaner..
+;going to make ins for img/etc ;will be in c2.km
+;can more easily group/see same/similar imgs/descriptions/etc
 
 ;;;GP(get-post)fns
 (defun gp-ffns2 (fn s pt &optional (ct nil))  ;use this on sf&sf-pt
@@ -211,15 +214,23 @@
 (defun gp_fc (f city) (gp_ffns2 f (rss_t f)  city))
 (defun gp_tg (tg) (gp_fc tg (subseq tg 0 2)))
 ;-fix not parsing body:
+(defun body-lh (lh)
+  "get unparsed body&parse it"
+  (s-crape-str (apply #'str-cat+ (butfirst-n (first (get-body lh)) 5))))
 (defun prs-lh-body (lh &optional (tg "dflttg"))
-  (let ((lhb (s-crape-str (apply #'str-cat+ (butfirst-n (first (get-body lh)) 5))))
+  "get lh w/unparsed body, get&parse it"  ;assume :body &4more are junk /but could check
+  (let (;(lhb (s-crape-str (apply #'str-cat+ (butfirst-n (first (get-body lh)) 5))))
+        (lhb (body-lh lh))
         (ct (subseq tg 0 2)))
     (gp_ffns2 tg lhb ct)))
+
 (defun gp_fc2 (f city) 
+  "parse an rss update" ;hopefully only 1 /check  ;make sure not getting all the posts at once/could be
   (let ((lh (rss_t f)))
-    (gp_ffns2 f lh  city)
-    (prs-lh-body lh f))) 
-(defun gp_tg2 (tg) (gp_fc2 tg (subseq tg 0 2)))
+    (gp_ffns2 f lh  city) ;try to parse the whole thing
+    (prs-lh-body lh f))) ;assume body needs to be broken out&parsed
+(defun gp_tg2 (tg) (gp_fc2 tg (subseq tg 0 2))) ;eg. (gp_tg2 "sf6") ;gets rss&when bodyMissed parses it
+;next go for parsing out time, &more..
 ;
 (defun do_city_ (city &optional (ctp *rt2*) ) ;still needs help even w/o pt
   "parse from rss"
