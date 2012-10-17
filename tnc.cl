@@ -6,6 +6,13 @@
 ;(when (find-package :km)
 ;  (defun load-kb (kb) (km:load-kb (kb)))
 ;  (defun km () (km:km)))
+(defun str-cat_2 (a b)
+      (format nil "~a ~a" a b))
+(defun str-cat+ (&rest args)
+      (reduce #'str-cat_2 args))
+(defun butfirst-n (s n)
+  "everything after1st n in a seq"
+    (subseq s n (len s)))
 (setq drakma:*header-stream* *standard-output*)
 
 (defun hr (u)
@@ -90,6 +97,7 @@
           for p = (find-lh tag i nil lh)
           while p collect p))
 ;(trace p-lh)
+(defun get-body (lh) (p-lh lh "body"))
 
 ;ct=city (sf or ny)now; used to subclass blogPost s &more
 ;-use this one  ;will also parse each post more, &(km)assert interesting bits
@@ -201,6 +209,18 @@
     )) ;does the rss version even need the pt anyway?
 ;still fix/finish these
 (defun gp_fc (f city) (gp_ffns2 f (rss_t f)  city))
+(defun gp_tg (tg) (gp_fc tg (subseq tg 0 2)))
+;-fix not parsing body:
+(defun prs-lh-body (lh &optional (tg "dflttg"))
+  (let ((lhb (s-crape-str (apply #'str-cat+ (butfirst-n (first (get-body lh)) 5))))
+        (ct (subseq tg 0 2)))
+    (gp_ffns2 tg lhb ct)))
+(defun gp_fc2 (f city) 
+  (let ((lh (rss_t f)))
+    (gp_ffns2 f lh  city)
+    (prs-lh-body lh f))) 
+(defun gp_tg2 (tg) (gp_fc2 tg (subseq tg 0 2)))
+;
 (defun do_city_ (city &optional (ctp *rt2*) ) ;still needs help even w/o pt
   "parse from rss"
   (let* ((fut (assoc2nd city ctp))  ;use assoc_v
