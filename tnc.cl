@@ -102,6 +102,43 @@
 
 ;ct=city (sf or ny)now; used to subclass blogPost s &more
 ;-use this one  ;will also parse each post more, &(km)assert interesting bits
+(defun gentmp (n) (if n (gentemp n) (gentemp)))
+(defun mk-name (al &optional (c nil))
+  ;might have a slot name2use for cls
+  (let ((np (first al))) ;c2sn ->  (assoc2nd al c2sn)
+    (gentmp np) ;for now
+  ))
+(defun sv-al (i al)   ;SetValue s from alist ;wrk on here1st, was mapcar&car
+  "set km values from alst"  ;other tests worth thinking about
+  (mapcar_ #'(lambda (pr) (sv i (first-lv pr) (cdr pr)))
+          al))
+(defun mk-cls (i cls als)
+  ;when i 
+  (when (and i (or cls als)) 
+    (when cls
+      (sv-cls i cls))
+    (when (and als (len_gt als 1))
+      (sv-al i als));if just one of cls
+    (ki i)))
+(defun mk-clses (als) ;assoc of cls name &values, which can be used to make the ins name mabye w/gentemp
+  ;(sv-cls i cls)
+  ;(sv-als i als);if just one of cls, map over just that 1
+  (mapcar #'(lambda (cal) 
+              (let ((c (first cal))
+                    (al (cdr cal)))
+                ;when (eq c cls) 
+                (mk-cls (mk-name al) c al) ;(sv-al i al)
+                  ))
+          (collect-if #'listp als))
+ ;(ki i) ;should ret list of ins-names
+  )
+(defun mk-body-clses (als) 
+  (let* ((bdy (get-body als))
+         (td (tree-depth bdy)))
+    (when bdy 
+      (format t "~%body-depth:~a" td)
+      (when (< td 8) ;not aligned to iterate properly/fix
+        (mk-clses bdy)))))
 (defun lt-assert (lf tf fn &optional (ct nil))
   "km assert" ;will parse lf more too
     (sv-cls tf (if ct (str-cat ct "BlogPost") "BlogPost"))
@@ -237,7 +274,7 @@
   (let* ((fut (assoc2nd city ctp))  ;use assoc_v
          (ft (mapcar #'first fut))
          (ut (mapcar #'cdr fut)))
-    (mapcar #'(lambda (f u ) (gp_fc f city) ;(gp_ffns2 f (rss_t f)  city)
+    (mapcar #'(lambda (f u ) (gp_fc2 f city) ;gp_fc;(gp_ffns2 f (rss_t f)  city)
                 ) ft ut )))
 ;if can't find pass through w/o filtering out just the nth blogPos 
 ; poss through kept get-post from stopping the loop
