@@ -15,7 +15,9 @@
   "everything after1st n in a seq"
     (subseq s n (len s)))
 (setq drakma:*header-stream* *standard-output*)
-
+;(load "queue.lisp" :print t) ;unpkgd rsm for:
+;(load "filter.lisp" :print t) ;(al 'rsm-filter) ;try2use
+(lrsm) ;in .sbclrc like lut&lkm2
 (defun hr (u)
   "get the page as 1str"
   (drakma:http-request (if (s-prefixp "http" u) u (str-cat "http://" u))))
@@ -57,6 +59,9 @@
   (s-crape-str (read-file-to-string fn)))
 
 (defvar *i* (s-crape-fn "index.html")) ;as a default for testing parser fncs
+;(al 'phtml) ;so can compare w/parse-html
+;(defun s-crape (a) (phtml:parse-html a))
+;(defvar *ip* (s-crape "index.html")) ;as a default for testing parser fncs
 
 ;defun find-lh (tag attrib &optional (n 1) (lhtml *i*))
 (defun find-lh (tag &optional (n 1) (attrib nil) (lhtml *i*))
@@ -112,6 +117,7 @@
   "set km values from alst"  ;other tests worth thinking about
   (mapcar_ #'(lambda (pr) (sv i (first-lv pr) (cdr pr)))
           al))
+;in all uses below, might iterate over &/or look@ svs[2]
 (defun mk-cls (i cls als)
   ;when i 
   (when (and i (or cls als)) 
@@ -144,7 +150,9 @@
     (sv-cls tf (if ct (str-cat ct "BlogPost") "BlogPost"))
     (sv-al tf (list ;(cons "img" (p-lh (p-lh lf "img") "src"))
                 (cons "img" (p-lh lf "img"))
-                (cons "i" (p-lh lf "i"))))
+                (cons "i" (p-lh lf "i"))
+                (cons "strong" (p-lh lf "strong"))
+                ))
     )  ;pull out less/make cleaner..
 ;going to make ins for img/etc ;will be in c2.km
 ;can more easily group/see same/similar imgs/descriptions/etc
@@ -278,3 +286,6 @@
                 ) ft ut )))
 ;if can't find pass through w/o filtering out just the nth blogPos 
 ; poss through kept get-post from stopping the loop
+(defun tst3 (&optional (cts '("sf" "ny"))) 
+  (mapcar #'do_city_ cts)
+  (taxonomy))

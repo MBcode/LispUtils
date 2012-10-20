@@ -37,6 +37,7 @@
       (warn "no quicklisp")))
 )
 (defun lut () (load "/Users/bobak/lsp/util_mb"))
+(defun lrsm () (load "/Users/bobak/lsp/rsm"))
 (defun lql- () (load "/Users/bobak/lsp/ql.lisp"))
 (defun lql ()
   (load #P"/Users/bobak/quicklisp/setup.lisp")
@@ -47,9 +48,9 @@
 (defun ql (a) (ql:quickload  a))
 #+quicklisp
 (defun qa (a) (ql:system-apropos  a))
-;(defun lkm () (load "/Users/bobak/lsp/km_2-5-33"))
 ;#<SYSTEM km / km-2-5-33 / quicklisp 2012-09-09>
-(defun lkm () (ql 'km))
+(defun lkm () (load "/Users/bobak/lsp/km_2-5-33"))
+;(defun lkm () (ql 'km))
 (defun lkm2 () (lkm) (load "/Users/bobak/lsp/u2"))
 ;#p"/usr/share/common-lisp/source/" ; #p"/Users/bobak/Documents/downloads/lang/lsp/asdf/registry"
 (defun apr- (s) (apropos s :cl))
