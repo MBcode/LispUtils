@@ -7,13 +7,10 @@
 ;(when (find-package :km)
 ;  (defun load-kb (kb) (km:load-kb (kb)))
 ;  (defun km () (km:km)))
-(defun str-cat_2 (a b)
-      (format nil "~a ~a" a b))
-(defun str-cat+ (&rest args)
-      (reduce #'str-cat_2 args))
-(defun butfirst-n (s n)
-  "everything after1st n in a seq"
-    (subseq s n (len s)))
+;in utils now:
+;(defun str-cat_2 (a b) (format nil "~a ~a" a b))
+;(defun str-cat+ (&rest args) (reduce #'str-cat_2 args))
+;(defun butfirst-n (s n) "everything after1st n in a seq" (subseq s n (len s)))
 (setq drakma:*header-stream* *standard-output*)
 ;(load "queue.lisp" :print t) ;unpkgd rsm for:
 ;(load "filter.lisp" :print t) ;(al 'rsm-filter) ;try2use
@@ -59,8 +56,10 @@
   (s-crape-str (read-file-to-string fn)))
 
 (defvar *i* (s-crape-fn "index.html")) ;as a default for testing parser fncs
+;(load "x.cl" :print t) ;(ql 's-xml) (defvar *ix* (parse-xmlsfile "index.xml"))
 ;(al 'phtml) ;so can compare w/parse-html
-;(defun s-crape (a) (phtml:parse-html a))
+;(defun s-crape-str (a) (phtml:parse-html a))
+;(defun s-crape-fn (a) (phtml:parse-html (read-file-to-string a)))
 ;(defvar *ip* (s-crape "index.html")) ;as a default for testing parser fncs
 
 ;defun find-lh (tag attrib &optional (n 1) (lhtml *i*))
@@ -92,7 +91,7 @@
 #+ignore ;only check get-pt once/page not /post
 (defun get_post (n &optional (lh *i*))
   "get any post w/o knowing PostTag in adv"
-  (format nil "~%g_p:~a" (len lh))
+  (format t "~%g_p:~a" (len lh))
      ;or (get-post n (get-pt lh) lh)  ;better to get-pt once/blog vs.during iteration
      (or (get-post- n (get-pt lh) lh)  ;better to get-pt once/blog vs.during iteration
          lh)) ;if can't find pass through w/o filtering out just the nth blogPos
@@ -104,7 +103,13 @@
           while p collect p))
 ;(trace p-lh)
 (defun get-body (lh) (p-lh lh "body"))
-
+(defun rec-len (l)
+  (when (full l)
+    (format t " ~a:~a " (len l) (len (second-lv l)))
+    (rec-len (cddr l)))) ;but-first-n 2
+ ;try2get chtml-matcher going, it might speed some of the work up
+;chtml pairs w/cxml -
+;(name (attributes) children*) ;xmls /etc, should go dwn&parse this way
 ;ct=city (sf or ny)now; used to subclass blogPost s &more
 ;-use this one  ;will also parse each post more, &(km)assert interesting bits
 (defun gentmp (n) (if n (gentemp n) (gentemp)))
@@ -117,7 +122,11 @@
   "set km values from alst"  ;other tests worth thinking about
   (mapcar_ #'(lambda (pr) (sv i (first-lv pr) (cdr pr)))
           al))
-;in all uses below, might iterate over &/or look@ svs[2]
+;in all uses of sv-al below, might iterate over &/or look@ svs[2]  ;or try:
+(defun svs-al (i al)   ;SetValue s from alist ;wrk on here1st, was mapcar&car
+  "set km values from alst"  ;other tests worth thinking about
+  (mapcar_ #'(lambda (pr) (svs i (first-lv pr) (cdr pr)))
+          al))
 (defun mk-cls (i cls als)
   ;when i 
   (when (and i (or cls als)) 
@@ -138,6 +147,7 @@
           (collect-if #'listp als))
  ;(ki i) ;should ret list of ins-names
   )
+(trace mk-clses)
 (defun mk-body-clses (als) 
   (let* ((bdy (get-body als))
          (td (tree-depth bdy)))
@@ -145,10 +155,19 @@
       (format t "~%body-depth:~a" td)
       (when (< td 8) ;not aligned to iterate properly/fix
         (mk-clses bdy)))))
+;(defun sv-p-lh (i tg) (sv-al i (p-lh lf tg)))
 (defun lt-assert (lf tf fn &optional (ct nil))
   "km assert" ;will parse lf more too
     (sv-cls tf (if ct (str-cat ct "BlogPost") "BlogPost"))
-    (sv-al tf (list ;(cons "img" (p-lh (p-lh lf "img") "src"))
+    ;(mapcar #'(lambda (tg) (sv-p-lh tf tg)) '("img" "i" "strong"))
+    ;or (sv-p-lh tf "img") ... or:
+    ;(mapcar #'(lambda (tg) (sv-al tf (p-lh lf tg))) '("img" "i" "strong"))
+    ;(sv-al tf (p-lh lf "img"))
+    ;(sv-al tf (p-lh lf "i"))
+    ;(sv-al tf (p-lh lf "strong"))
+    ;;svs-al tf #+ignore
+    (sv-al tf 
+           (list ;(cons "img" (p-lh (p-lh lf "img") "src"))
                 (cons "img" (p-lh lf "img"))
                 (cons "i" (p-lh lf "i"))
                 (cons "strong" (p-lh lf "strong"))
@@ -216,7 +235,7 @@
    ;(mapcar #'gp-ff2 *sf* *sf-pt*)
     ;mapcar #'gp-ff2 ct pt city
     (mapcar #'(lambda (c p) (gp-ff2 c p city)) ct pt)))
-
+;same file read just different inputs
 (defun do-city_ (city &optional (ctp *ct*) ) 
   "parse posts from htm files"
   (let ((ct (assoc2nd city ctp)))
@@ -235,6 +254,7 @@
 (defun hl95 () (s-crape-str (h95)))
 (defun scrape-tag (tg) (scrape-uri (t2rss tg)))
 
+;===below is all for rss
 (defun rss-t (tg)
   "get str of rss for a tag"
   (hr (t2rss tg)))
@@ -267,6 +287,7 @@
   (let (;(lhb (s-crape-str (apply #'str-cat+ (butfirst-n (first (get-body lh)) 5))))
         (lhb (body-lh lh))
         (ct (subseq tg 0 2)))
+    ;(mk-body-clses lhb) ;or just mk-clses  ;try this as well
     (gp_ffns2 tg lhb ct)))
 
 (defun gp_fc2 (f city) 

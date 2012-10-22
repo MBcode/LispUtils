@@ -1,5 +1,5 @@
 ;threec utilities
-(defun km-seqp+ (s)
+(defun km-seqp+ (s)  ;mv2 kmb/u2.lisp
   (km-seqp (list+ s)))
  ;====start of sys.lisp
 #|
@@ -591,6 +591,11 @@ pathnames as well."
 (defun strcat (&rest args)
     (apply #'concatenate 'string args))
 
+;when you need spaces between
+(defun str-cat_2 (a b)
+      (format nil "~a ~a" a b))
+(defun str-cat+ (&rest args)
+      (reduce #'str-cat_2 args))
 ;(defun implode-l (l)
 ;  (apply #'strcat (mapcar #'to-str l)))
 (defun implode-l (l &optional (insert-spaces t))
@@ -2244,6 +2249,13 @@ the command has printed on stdout as string."
 ;-
 (defun butlast- (s)
   (subseq s 0 (1- (len s))))
+
+(defun butlast-n (s n)
+  (subseq s 0 (- (len s) n)))
+
+(defun butfirst-n (s n)
+  "everything after1st n in a seq"
+    (subseq s n (len s))) 
 
 (defun rm-ext (s)
   "rm extention"
