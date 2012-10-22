@@ -1328,6 +1328,14 @@ If HEADER-VALUE-PARSER return multiple values, they are concatenated together in
 (defun positions- (a  b)
   (remove-nils (positions a b)))
 
+(defun mapappend (fun &rest lists)
+    "A non-destructive mapcan."
+      (reduce #'append (apply #'mapcar fun lists)))
+;-
+(defun positionsl (pl l)
+  "find each pl in l, &give all#s"
+  (sort (mapappend #'(lambda (p) (positions- p l)) pl) #'<)) 
+
 ;better than prefix-p above
 ;#+sbcl ;or #-acl
 #+sbcl ;already in acl
@@ -2518,3 +2526,135 @@ the command has printed on stdout as string."
     (when as (second as)))) ;was second 
 ;tried to do both assoc w/assoc-v above ;maybe better than tfec.cl attempt2do it.
 (defun assoc_v (k a)  (let ((v (assoc k a :test #'equal))) (when v (first-lv (rest v))))) ;best
+(defun assoc_v1 (k a)  (let ((v (assoc k a :test #'equal :key #'first-lv))) (if (consp v) (cdr v) v)))
+;-
+(defun rm-nohtm (s) (rm-str "><" s))
+
+(defun link-disp-txt (s)
+  "part of txt >that if visable in html<"
+ (if (not (stringp s)) s
+  (let ((ps (positionsl '(#\> #\<) (rm-nohtm s))))
+   (if (fulll ps) (subseq s (1+ (second ps)) (third ps))
+     s)))) 
+;-
+(defgeneric safe_v (s))
+;(defmethod safe_v ((s String)) (rm-colon (safe-trim s)))
+(defmethod safe_v ((s String)) (num-str (rm-colon (safe-trim s)))) ;want nums if there
+(defmethod safe_v (a) (safe_v (to-str a)))
+;(defmethod safe_v (sy) (intern (safe_v (symbol-name sy))))
+(defmethod safe_v ((sy symbol))  ;already in utr2.lisp
+  (let* ((s (symbol-name sy))
+     (p (position ":" s :test #'equal)))
+    (if (and (numberp p) (> p 1)) (intern (safe_v s)) ;
+      sy)))
+(defmethod safe_v ((c cons))
+  (when *dbg* (warn "do not send safe_v a cons"))
+  (cons (safe_v (car c)) (safe_v (cdr c))))
+
+(defun safe_al (a) ;already in utr2.lisp
+  "test if no lst in (b . c)"
+  (if (and (consp a) (not (consp (car a))) (not (consp (cdr a)))) a
+    (when *dbg* (warn "not safe alt_elt:~a" a))))
+
+(defun sv_al (i al)   ;SetValue s from alist
+  "set km values from alst"
+;(first-lv
+  (mapcar
+    ;#'(lambda (pr) (sv i (safe_v (car pr)) (safe_v (cdr pr))))
+    #'(lambda (pr) (when (safe_al pr) (sv i (safe_v (car pr)) (safe_v (cdr pr)))))
+    ;#'(lambda (pr) (sv i (safe_v (car pr)) (cdr pr))) ;see if can just insert value
+          al))
+;);maybe ret first-lv of al instead
+(defun sv_al_ (i al)   ;SetValue s from aything
+  (mapcar
+    ;#'(lambda (pr) (when (consp pr) (sv i (safe_v (first-lv pr)) (safe_v (rest-lv pr))))) 
+    #'(lambda (pr) (when (consp pr) (sv i (safe_v (car-lv pr)) (safe_v (cdr-lv pr)))))
+    al))
+(defun sv_al_f (i al)   ;SetValue s from aything
+    #'(lambda (pr) (when (consp pr) (let ((prl (flat1 pr))) ;don't use
+                      ;(sv i (safe_v (first-lv prl)) (safe_v (rest-lv prl)))
+                      (sv_al_ i prl)
+                      ))))
+(defun sv_al_1 (l) (sv_al_ (first-lv l) (rest-lv l))) ;map over c2q     ;ins only no cls
+;-
+;defun get_id_ (dl &optional (n nil))  ;xmls-idp
+;-
+ 
+(defun sv_al_gi (al &optional (c nil))   ;SetValue s from aything
+  ;let ((i (get_id_ al)))
+  (let ((i (assoc-v :id al)))
+    (when c (sv-cls i c))
+    (sv_al_ i al)))
+
+(defun sv_al_c (l)  ;same but sets cls, and gensyms it for insname ;close but squished ins together
+  (let* ((f (rm-colon (to-str (first-lv l))))
+     (i (gensym f))
+     ;(i (get_id_ (rest-lv l))) ;now need2map over parts of lst
+     )
+    (format t "~%~a"  f) ;dbg
+    (sv-cls i f)
+    ;(sv_al_f i (rest-lv l))
+    (sv_al_ i (flat1 (rest-lv l)))
+    )) ;map over c2q     ;could flat1 here
+;take c2q top type as cls, and pull :ID for each as insname &rest info the ins
+;  might str-cat cls _ id  for insname
+(defun sv_al_c2 (l &optional (c nil))  ;same but sets cls, and gensyms it for insname
+    ;(mapcar_ #'(lambda (p) (sv_al_gi p c)) l)
+    (sv_al_gi l c)
+    )
+(defun sv_al_c1 (l)  ;same but sets cls, and gensyms it for insname
+  (let* ((f (rm-colon (to-str (first-lv l)))))
+    (mapcar_ #'(lambda (p) (sv_al_c2 p f)) (rest-lv l))))
+;turn c1&c2 to sv_al_c_
+
+(defun sv_al_c_ (l)  ;same but sets cls, and gensyms it for insname
+  (let* ((f (rm-colon (to-str (first-lv l)))))
+    (mapcar_ #'(lambda (p) (sv_al_gi p f)) (rest-lv l))))
+;_ 
+;(defun starts_with (lst x)  ;km has starts-with
+;    "Is x a list whose first element is x?"
+;    (and (consp lst) (eql (first lst) x)))
+
+(defun eq-len (a b) ;do for more
+  (eq (len a) (len b)))
+;- 
+;defun subseqs (lst snl &key (start nil) (end nil)) ;orginal in mb_utils
+(defun subseq-s (lst snl &key (start nil) (end nil) (add2 t))
+  "start# end=t subseq  maps over offset lst of positions"
+ (let ((snl1 (if start (cons start snl) snl))
+       (snl2 (if end (append snl (list (len lst)))  snl)))
+    (when *dbg-ut* (format nil "~&~a ~a" snl1 snl2))
+    (mapcar #'(lambda (a b) (subseq lst a (if add2 (1+ b) b)))
+        snl1 (rest snl2))))
+(defun break-by-pair (s p)
+  "seq broken in parts between brakets or whatever"
+  (let ((pl (positionsl p s)))
+    (subseq-s s pl)))
+(defun break-by-brackets (s) ;no only if no embedding  ;finish&get2 json-decode quickly
+  (break-by-pair s '(#\[ #\])))
+;-have a version that gets from 1st in start to last from end-:ut/ascii.lisp between-str2curlys
+(defun between-str2curlys (s) (between-str2by s #\{ #\})) ;better name 
+(defun between-str2by2 (str by by2)
+  "between (by+by2  by2-on)"
+  (list (between-str2by str by by2)
+        (last-str2by-end str by2)))
+(defun between-str2curlys2 (s) (between-str2by2 s #\{ #\}))
+;-
+(defun lists2alst (l1 l2) (mapcar #'cons l1 l2)) ;not used yet
+(defun l+v2alst (l v) (mapcar #'(lambda (e) (cons e v)) l))
+;defun collect-curlys (s )
+;-
+;http://letoverlambda.com/index.cl/guest/chap5.html http://letoverlambda.com/lol-orig.lisp
+(defun predicate-splitter (orderp splitp)
+  (lambda (a b)
+    (let ((s (funcall splitp a)))
+      (if (eq s (funcall splitp b))
+        (funcall orderp a b)
+        s))))
+;(sort '(5 1 2 4 3 8 9 6 7)  (predicate-splitter #'< #'evenp))
+;        (2 4 6 8 1 3 5 7 9)
+
+;============from: binary-types-0.90
+(defun make-pairs (list)
+  "(make-pairs '(1 2 3 4)) => ((1 . 2) (3 . 4))"
+  (loop for x on list by #'cddr collect (cons (first x) (second x)))) 
