@@ -2595,3 +2595,83 @@ the command has printed on stdout as string."
 (defun make-pairs (list)
   "(make-pairs '(1 2 3 4)) => ((1 . 2) (3 . 4))"
   (loop for x on list by #'cddr collect (cons (first x) (second x)))) 
+
+;-
+(defun ls2 (p) (mapcar_ #'(lambda (f) (str-cat p f)) (ls p))) ;next txt-files2
+
+(defun explode-by-tab (s) (csv_parse-str s))  ;or csv-parse-str but that gives an array
+(defun explode-by-space (s) (collect-if #'full (explode- s))) ;1or more spaces treated as one  
+(defun explode-by-ctrl-a (s) (explode- s #\^A)) ;in mh2t will use csv-parse-str to get Tabs
+ 
+
+(defun txt-p (s) (suffixp ".txt" s))
+;defun txt-files2 (&optional (path nil)) 
+(defun files-of-p (&optional (path nil) (filetype-p #'txt-p))
+  (if path (mapcar_ #'(lambda (f) (str-cat path f)) (collect-if filetype-p (ls path)))
+    (collect-if filetype-p (ls))))
+(defun txt-files2 (&optional (path nil)) (files-of-p path #'txt-p)) 
+(defun clean-htm (s) (replace-substrings s   "\">"   "_")) ;or simple-replace-strings w/alst 2chng;NO
+ 
+;"utr2.lisp" 555 lines --69%- 
+(defun tree-map (fn tree)
+  "Maps FN over every atom in TREE."
+  (cond
+   ((null tree) nil)
+   ((atom tree) (funcall fn tree))
+   (t
+    (cons
+     (tree-map fn (car tree))
+     (tree-map fn (cdr tree)))))) 
+
+(defun split-strs2at2 (strs by)
+ (let ((p (position by strs :test #'equal)))
+  (when p
+      (cons ;(apply #'str-cat 
+           (subseq strs 0 p);)
+            ;(apply #'str-cat 
+               (subseq strs (+ p 1);)
+               )))))
+(defun rest-from (strs by)
+  (rest (split-strs2at2 strs by)))
+ 
+(defun run-ext2 (s)
+  "input1str&it breaks4you"
+  (apply #'run-ext (tokens s)))
+(defun run-ext2ls (l s)
+  "start run-ext2 off w/a pre-list"
+  (apply #'run-ext (append l (tokens s)))) 
+(defun postfix-if-not (post str)
+  "make sure it ends w/post"
+  (if (suffixp post str) str
+    (str-cat str post))) 
+(defun replace-all (string part replacement &key (test #'char=))
+"Returns a new string in which all the occurences of the part 
+is replaced with replacement."
+    (with-output-to-string (out)
+      (loop with part-length = (length part)
+            for old-pos = 0 then (+ pos part-length)
+            for pos = (search part string
+                              :start2 old-pos
+                              :test test)
+            do (write-string string out
+                             :start old-pos
+                             :end (or pos (length string)))
+            when pos do (write-string replacement out)
+            while pos)))
+
+(defun stream_lines (strm)
+  "read stream->1str"
+  (loop for line = (read-line strm nil)
+        while line
+        collect line)) 
+
+(defun file2str (fn) (with-open-file (strm fn :direction :input) (stream_lines strm)))  
+
+(defun warn-nil (nv str1 val1)
+  (if nv nv
+    (warn str1 val1))) 
+
+
+(defun genstr (s)
+  "unique-str GUID"
+  (symbol-name (gensym s))) 
