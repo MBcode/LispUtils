@@ -4,13 +4,7 @@
 (lut) ;(load "~/lsp/util_mb")  ;https://github.com/MBcode/LispUtils
 (lkm2) ;(load "~/lsp/km_2-5-33") ;(load "~/lsp/u2") ;~=ukm2 ;https://github.com/MBcode/kmb
 ;(when (find-package :km) (use-package :km)) ;should just import what needed
-;(when (find-package :km)
-;  (defun load-kb (kb) (km:load-kb (kb)))
-;  (defun km () (km:km)))
-;in utils now:
-;(defun str-cat_2 (a b) (format nil "~a ~a" a b))
-;(defun str-cat+ (&rest args) (reduce #'str-cat_2 args))
-;(defun butfirst-n (s n) "everything after1st n in a seq" (subseq s n (len s)))
+; loading the file directly w/o package info instead
 (setq drakma:*header-stream* *standard-output*)
 ;(load "queue.lisp" :print t) ;unpkgd rsm for:
 ;(load "filter.lisp" :print t) ;(al 'rsm-filter) ;try2use
@@ -20,6 +14,10 @@
   (drakma:http-request (if (s-prefixp "http" u) u (str-cat "http://" u))))
 
 (ql 'cl-json)
+(defun decode-file (path) ;not used right now
+  (with-open-file (stream path :direction :input)
+    (json:decode-json-strict stream)))
+
 (defun encode-js2s (l &optional (strm *standard-output*)) 
   (json:encode-json l strm))
 
@@ -107,6 +105,8 @@
   (when (full l)
     (format t " ~a:~a " (len l) (len (second-lv l)))
     (rec-len (cddr l)))) ;but-first-n 2
+;(rec-len (caddr *i*))
+; 28:0  26:8  24:2  22:2  20:2  18:2  16:2  14:3  12:2  10:2  8:3  6:2  4:2  2:3 
  ;try2get chtml-matcher going, it might speed some of the work up
 ;chtml pairs w/cxml -
 ;(name (attributes) children*) ;xmls /etc, should go dwn&parse this way
@@ -155,6 +155,20 @@
       (format t "~%body-depth:~a" td)
       (when (< td 8) ;not aligned to iterate properly/fix
         (mk-clses bdy)))))
+;
+(defun rec-mk (l)
+  (when (full l)
+    (format t "~%~a:~a:~a " (first-lv l) (len l) (len (second-lv l)))
+    (rec-mk (cddr l)))) 
+;get the (reg)struct of this thing down/so can easily parse it  ;maybe try rsm mappers as well
+(defvar *ignore-tgs* '(:SCRIPT :STYLE))
+(defun ignorable-tg-p (a) (member (first-lv a) *ignore-tgs*)) ;not yet/fix
+(defun filter-tgs (l) (filter l #'ignorable-tg-p)) ;lrsm above
+(defun rec-mk2 (l) ;;get the (reg)struct of this thing down fix/finish
+  (when (full l)
+    (let ((fl (first-lv)))
+      (format t "~%~a:~a:~a:~a " (first-lv fl) (len l) (len (second-lv l)) (len (second-lv fl)))
+      (rec-mk2 (cddr l)))))
 ;(defun sv-p-lh (i tg) (sv-al i (p-lh lf tg)))
 (defun lt-assert (lf tf fn &optional (ct nil))
   "km assert" ;will parse lf more too
