@@ -123,7 +123,9 @@
 (defun mk-name (al &optional (c nil))
   ;might have a slot name2use for cls
   (let ((np (second-lv (second-lv al)))) ;c2sn ->  (assoc2nd al c2sn)
-    (gentmp (when (atom np) np)) ;for now
+    (gentmp (when (atom np) 
+              (ki_ np) ;(under_ (str-trim (str-cat np)))
+              )) ;for now
   ))
 (defun sv-al (i al)   ;SetValue s from alist ;wrk on here1st, was mapcar&car
   "set km values from alst"  ;other tests worth thinking about
@@ -134,10 +136,13 @@
   "set km values from alst"  ;other tests worth thinking about
   (mapcar_ #'(lambda (pr) (svs i (first-lv pr) (cdr pr)))
           al))
-(defun sv_ (i sn v) (if (listp v) (svs i sn v) (sv i sn v)))
+;(defun sv_ (i sn v) (if (listp v) (svs i sn v) (sv i sn v)))
+(defun sv_ (i sn v) (if (listp v) (svs2 i sn v) (sv i sn v)))
 (defun sv-s-al (i al) 
-  (mapcar_ #'(lambda (pr) (sv_ i (first-lv pr) (cdr pr)))
-          al))
+  (let ((all (if (<= (tree-depth al) 1) (list al) al)))
+    (mapcar_ #'(lambda (pr) (let ((sn (first-lv pr))) 
+                              (when sn (sv_ i sn (cdr pr)))))
+          all)))
 (defun mk-cls (i cls als)
   ;when i 
   (when (and i (or cls als)) 
@@ -182,16 +187,17 @@
       (format t "~%~a:~a:~a:~a " (first-lv fl) (len l) (len (second-lv l)) (len (second-lv fl)))
       (rec-mk2 (cddr l)))))
 ;(defun sv-p-lh (i tg) (sv-al i (p-lh lf tg)))
+(defun mk-si (lh tg)
+  "get ins for slots"
+  (cons tg (mk-clses (p-lh lh tg))))
+
 (defun lt-assert (lf tf fn &optional (ct nil))
   "km assert" ;will parse lf more too
     (sv-cls tf (if ct (str-cat ct "BlogPost") "BlogPost"))
     ;(mapcar #'(lambda (tg) (sv-p-lh tf tg)) '("img" "i" "strong"))
     ;or (sv-p-lh tf "img") ... or:
     ;(mapcar #'(lambda (tg) (sv-al tf (p-lh lf tg))) '("img" "i" "strong"))
-    (sv-al tf (list
-     (cons "img" (mk-clses  (p-lh lf "img")))
-     (cons "i" (mk-clses  (p-lh lf "i")))
-     (cons "strong" (mk-clses  (p-lh lf "strong")))))
+    (sv-al tf (mapcar #'(lambda (tg) (mk-si lf tg)) '("img" "i" "strong")))
     ;;svs-al tf 
     #+ignore
     (sv-al tf 

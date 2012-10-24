@@ -97,7 +97,7 @@ Copyright (c) 2000-2006, Sunil Mishra All rights reserved. for99lines
 ;-
 ;(load-bps) ;mine is much nicer
 (defun c-load (f) (compile-load f))
-(trace c-load)
+;(trace c-load)
 (defun load-lsp (&optional (dir "tools/bps/"))
  (let ((lf (ls-lsp dir)))
   (when (full lf)
@@ -636,6 +636,7 @@ pathnames as well."
 ;  -there are times if 1char long you want to keep it, even make it a char-
 
 (defun rm-star (s) (remove #\* s)) 
+(defun rm-parens (s) (remove #\( (remove #\) s))) 
 (defun no* (str) (csv-trim2 '( #\*) str)) ;utl
 (defun noparens (str) (csv-trim2 '( #\( #\)) str)) ;utl 
 
@@ -1265,7 +1266,7 @@ If HEADER-VALUE-PARSER return multiple values, they are concatenated together in
   (let ((hsl (mapcar #'hyphenate sl)))
     (mapcar #'(lambda (o n) (simple-replace-string o n txt)) sl hsl)))
     ;shouldn't it be reduced though/?
-(trace replace-w-hyphens) 
+;(trace replace-w-hyphens) 
 ;--- 
 ;defun hyphens (s)
 (defun hyphens-at (s)
@@ -1663,7 +1664,8 @@ If HEADER-VALUE-PARSER return multiple values, they are concatenated together in
 
 ;(defun clean4echo (s) (rm-strs '("*") s))
 ;(defun clean4echo (s) (rm-strs '("(" "*" ")" "_nil" "nil_") s))
-(defun clean4echo (s) (rm-strs '("(" "*" ")" "_nil" "nil_" ">" "<") s))
+;(defun clean4echo (s) (rm-strs '("(" "*" ")" "_nil" "nil_" ">" "<") s))
+(defun clean4echo (s) (rm-strs '("(" "*" ")" "_nil" "nil_" ">" "<" ":" ",") s))
 (defun run_ext (cmd &rest args)
           (let ((str (make-string-output-stream)))
             #+sbcl (sb-ext:run-program (clean4echo cmd) args :search t :output str)
@@ -2597,7 +2599,11 @@ the command has printed on stdout as string."
   (loop for x on list by #'cddr collect (cons (first x) (second x)))) 
 
 ;-
-(defun ls2 (p) (mapcar_ #'(lambda (f) (str-cat p f)) (ls p))) ;next txt-files2
+;(defun ls2 (p) (mapcar_ #'(lambda (f) (str-cat p f)) (ls p))) ;next txt-files2
+(defun ls2 (&optional (p "")) 
+  (if (full p)
+    (mapcar_ #'(lambda (f) (str-cat p f)) (ls p))
+    (ls)))
 
 (defun explode-by-tab (s) (csv_parse-str s))  ;or csv-parse-str but that gives an array
 (defun explode-by-space (s) (collect-if #'full (explode- s))) ;1or more spaces treated as one  
@@ -2610,6 +2616,7 @@ the command has printed on stdout as string."
   (if path (mapcar_ #'(lambda (f) (str-cat path f)) (collect-if filetype-p (ls path)))
     (collect-if filetype-p (ls))))
 (defun txt-files2 (&optional (path nil)) (files-of-p path #'txt-p)) 
+
 (defun clean-htm (s) (replace-substrings s   "\">"   "_")) ;or simple-replace-strings w/alst 2chng;NO
  
 ;"utr2.lisp" 555 lines --69%- 
@@ -2640,10 +2647,12 @@ the command has printed on stdout as string."
 (defun run-ext2ls (l s)
   "start run-ext2 off w/a pre-list"
   (apply #'run-ext (append l (tokens s)))) 
+
 (defun postfix-if-not (post str)
   "make sure it ends w/post"
   (if (suffixp post str) str
     (str-cat str post))) 
+
 (defun replace-all (string part replacement &key (test #'char=))
 "Returns a new string in which all the occurences of the part 
 is replaced with replacement."
