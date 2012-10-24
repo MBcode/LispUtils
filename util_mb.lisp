@@ -626,7 +626,9 @@ pathnames as well."
 (defun rm-commas (s)
   (remove #\, s))
 (defun trim-commas (s)
-  (string-trim '(#\, #\Space #\Tab #\Newline) s))
+  (string-trim '(#\, #\Space #\Tab #\Newline #\NO-BREAK_SPACE) s))
+(defun rm-space (s)
+  (remove #\NO-BREAK_SPACE (remove #\space s)))
 
 (defun rm-ws-parens (s)
   ;(when (full s) (remove-if #'(lambda (x) (member x "( )")) s))

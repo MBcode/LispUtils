@@ -119,13 +119,17 @@
 ;(name (attributes) children*) ;xmls /etc, should go dwn&parse this way
 ;ct=city (sf or ny)now; used to subclass blogPost s &more
 ;-use this one  ;will also parse each post more, &(km)assert interesting bits
-(defun gentmp (n) (if n (gentemp n) (gentemp)))
+(defun gentmp (n) (if n (gentemp (str-trim n)) (gentemp)))
+#+ignore
+(defun mk-name (al &optional (c nil)) ;might have a slot name2use for cls
+  (let ((np (second-lv (second-lv al)))) ;c2sn ->  (assoc2nd al c2sn)
+    (gentmp (when (atom np) np)))) ;for now
 (defun mk-name (al &optional (c nil))
   ;might have a slot name2use for cls
   (let ((np (second-lv (second-lv al)))) ;c2sn ->  (assoc2nd al c2sn)
-    (gentmp (when (atom np) 
+    (gentmp (if (and (atom np) (full np)) 
               (ki_ np) ;(under_ (str-trim (str-cat np)))
-              )) ;for now
+              c)) ;for now
   ))
 (defun sv-al (i al)   ;SetValue s from alist ;wrk on here1st, was mapcar&car
   "set km values from alst"  ;other tests worth thinking about
@@ -158,7 +162,7 @@
               (let ((c (first cal))
                     (al (cdr cal)))
                 ;when (eq c cls) 
-                (mk-cls (mk-name al) c al) ;(sv-al i al)
+                (mk-cls (mk-name al c) c al) ;(sv-al i al)
                   ))
           (if (listp als) als
             (collect-if #'listp als)))
