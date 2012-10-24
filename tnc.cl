@@ -6,11 +6,14 @@
 ;(when (find-package :km) (use-package :km)) ;should just import what needed
 ; loading the file directly w/o package info instead
 (setq drakma:*header-stream* *standard-output*)
+(defun hr (u) ;should not have to redefine, worry about later
+  "get the page as 1str"
+  (drakma:http-request (if (s-prefixp "http" u) u (str-cat "http://" u))))
 ;(load "queue.lisp" :print t) ;unpkgd rsm for:
 ;(load "filter.lisp" :print t) ;(al 'rsm-filter) ;try2use
 (lrsm) ;in .sbclrc like lut&lkm2
 (defun hr (u)
-  "get the page as 1str"
+  "http-request:get the page as 1str" ;if file:// skip hr
   (drakma:http-request (if (s-prefixp "http" u) u (str-cat "http://" u))))
 
 (ql 'cl-json)
@@ -43,7 +46,7 @@
                 (when (listp al) (format out "~%~a," (cdr al)))
                 (encode-js2s (first-lv al) out)) lal)))
 
-(load "cu2.cl" :print t) ;domain specific /blogs
+(load "cu2.cl" :print t) ;domain specific /blogs ;will replace w/site.csv
 
 (defun s-crape-str (str)
   "htm str -> lhtml"
@@ -53,7 +56,11 @@
   "htm file -> lhtml"
   (s-crape-str (read-file-to-string fn)))
 
+(defgeneric s-crape (s))
+;(defmethod s-crape ())
+
 (defvar *i* (s-crape-fn "index.html")) ;as a default for testing parser fncs
+(defvar *r1* (s-crape-fn "cu/sf1.htm")) ;find rss still has posts/go to old parsing of rss as well
 ;(load "x.cl" :print t) ;(ql 's-xml) (defvar *ix* (parse-xmlsfile "index.xml"))
 ;(al 'phtml) ;so can compare w/parse-html
 ;(defun s-crape-str (a) (phtml:parse-html a))
@@ -79,7 +86,7 @@
 ;might make a version that tries all the pt(post-tag) strings  ;get_post
 (defvar *trypt* '("post hentry" "format_text entry-content" "blog-content"
                   "journal-entry-tag journal-entry-tag-post-body" "pin-it-btn-shortcode-wrapper"
-                  "post-meta"))
+                  "post-meta")) ;after figure out url<->pt could cache it&use vs. trying again
 (defun get-pt (lh)
   "return pt(post-tag) for lhtml, blogPost"
   (first-lv (rm-nil (mapcar #'(lambda (tp) (when (get-post- 1 tp lh) tp)) *trypt*))))
@@ -115,8 +122,8 @@
 (defun gentmp (n) (if n (gentemp n) (gentemp)))
 (defun mk-name (al &optional (c nil))
   ;might have a slot name2use for cls
-  (let ((np (first al))) ;c2sn ->  (assoc2nd al c2sn)
-    (gentmp np) ;for now
+  (let ((np (second-lv (second-lv al)))) ;c2sn ->  (assoc2nd al c2sn)
+    (gentmp (when (atom np) np)) ;for now
   ))
 (defun sv-al (i al)   ;SetValue s from alist ;wrk on here1st, was mapcar&car
   "set km values from alst"  ;other tests worth thinking about
@@ -127,13 +134,17 @@
   "set km values from alst"  ;other tests worth thinking about
   (mapcar_ #'(lambda (pr) (svs i (first-lv pr) (cdr pr)))
           al))
+(defun sv_ (i sn v) (if (listp v) (svs i sn v) (sv i sn v)))
+(defun sv-s-al (i al) 
+  (mapcar_ #'(lambda (pr) (sv_ i (first-lv pr) (cdr pr)))
+          al))
 (defun mk-cls (i cls als)
   ;when i 
   (when (and i (or cls als)) 
     (when cls
       (sv-cls i cls))
     (when (and als (len_gt als 1))
-      (sv-al i als));if just one of cls
+      (sv-s-al i als));if just one of cls ;might want a ver that svs if al val is a list
     (ki i)))
 (defun mk-clses (als) ;assoc of cls name &values, which can be used to make the ins name mabye w/gentemp
   ;(sv-cls i cls)
@@ -144,7 +155,8 @@
                 ;when (eq c cls) 
                 (mk-cls (mk-name al) c al) ;(sv-al i al)
                   ))
-          (collect-if #'listp als))
+          (if (listp als) als
+            (collect-if #'listp als)))
  ;(ki i) ;should ret list of ins-names
   )
 (trace mk-clses)
@@ -176,10 +188,12 @@
     ;(mapcar #'(lambda (tg) (sv-p-lh tf tg)) '("img" "i" "strong"))
     ;or (sv-p-lh tf "img") ... or:
     ;(mapcar #'(lambda (tg) (sv-al tf (p-lh lf tg))) '("img" "i" "strong"))
-    ;(sv-al tf (p-lh lf "img"))
-    ;(sv-al tf (p-lh lf "i"))
-    ;(sv-al tf (p-lh lf "strong"))
-    ;;svs-al tf #+ignore
+    (sv-al tf (list
+     (cons "img" (mk-clses  (p-lh lf "img")))
+     (cons "i" (mk-clses  (p-lh lf "i")))
+     (cons "strong" (mk-clses  (p-lh lf "strong")))))
+    ;;svs-al tf 
+    #+ignore
     (sv-al tf 
            (list ;(cons "img" (p-lh (p-lh lf "img") "src"))
                 (cons "img" (p-lh lf "img"))
