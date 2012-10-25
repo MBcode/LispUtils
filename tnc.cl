@@ -1,4 +1,4 @@
-;parse/scrape  blog-posts bobak@balisp.org
+;parse/scrape  blog-posts bobak@balisp.org ;https://sites.google.com/site/mikebobak/ip
 ; wish more bloggers used rdfa or similar ;thought experiment on how2add it, might help here/?
 (ql '(puri drakma chtml-matcher)) ;(use-package :puri)
 (lut) ;(load "~/lsp/util_mb")  ;https://github.com/MBcode/LispUtils
@@ -140,10 +140,18 @@
   "set km values from alst"  ;other tests worth thinking about
   (mapcar_ #'(lambda (pr) (svs i (first-lv pr) (cdr pr)))
           al))
-;(defun sv_ (i sn v) (if (listp v) (svs i sn v) (sv i sn v)))
-(defun sv_ (i sn v) (if (listp v) (svs2 i sn v) (sv i sn v)))
+(defun sv_ (i sn v) (if (listp v) (svs i sn v) (sv i sn v)))
+;(defun sv_ (i sn v) (if (listp v) (svs2 i sn v) (sv i sn v)))
 (defun sv-s-al (i al) 
-  (let ((all (if (<= (tree-depth al) 1) (list al) al)))
+  (let ((all (if (or (<= (tree-depth al) 1)  (not (first-lv al)))
+               (list (list (or (first-lv al) 'val) (second-lv al))) ;* (list al) 
+               al)))
+    (mapcar_ #'(lambda (pr) (let ((sn (first-lv pr))) 
+                              (when sn (sv_ i sn (cdr pr)))))
+          all)))
+;set up as (:cls * ...
+(defun sv-al_ (i al) 
+  (let ((all (collect-if #'listp al)))
     (mapcar_ #'(lambda (pr) (let ((sn (first-lv pr))) 
                               (when sn (sv_ i sn (cdr pr)))))
           all)))
@@ -153,11 +161,12 @@
     (when cls
       (sv-cls i cls))
     (when (and als (len_gt als 1))
-      (sv-s-al i als));if just one of cls ;might want a ver that svs if al val is a list
+      (sv-s-al i als));if just one of cls ;might want a ver that svs if al val is a list ;tried sv-al_
     (ki i)))
 (defun mk-clses (als) ;assoc of cls name &values, which can be used to make the ins name mabye w/gentemp
   ;(sv-cls i cls)
   ;(sv-als i als);if just one of cls, map over just that 1
+  (rec-len als) ;try
   (mapcar #'(lambda (cal) 
               (let ((c (first cal))
                     (al (cdr cal)))
