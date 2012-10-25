@@ -142,6 +142,7 @@
           al))
 (defun sv_ (i sn v) (if (listp v) (svs i sn v) (sv i sn v)))
 ;(defun sv_ (i sn v) (if (listp v) (svs2 i sn v) (sv i sn v)))
+;look@wordize/word-seq to get text in/in a more searchable form
 (defun sv-s-al (i al) 
   (let ((all (if (or (<= (tree-depth al) 1)  (not (first-lv al)))
                (list (list (or (first-lv al) 'val) (second-lv al))) ;* (list al) 
@@ -210,7 +211,8 @@
     ;(mapcar #'(lambda (tg) (sv-p-lh tf tg)) '("img" "i" "strong"))
     ;or (sv-p-lh tf "img") ... or:
     ;(mapcar #'(lambda (tg) (sv-al tf (p-lh lf tg))) '("img" "i" "strong"))
-    (sv-al tf (mapcar #'(lambda (tg) (mk-si lf tg)) '("img" "i" "strong")))
+   ;(sv-al tf (mapcar #'(lambda (tg) (mk-si lf tg)) '("img" "i" "strong")))
+    (sv-al_ tf (mapcar #'(lambda (tg) (mk-si lf tg)) '("img" "i" "strong"))) ;helps assert :seq
     ;;svs-al tf 
     #+ignore
     (sv-al tf 
