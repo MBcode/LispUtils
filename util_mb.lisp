@@ -92,8 +92,23 @@ Copyright (c) 2000-2006, Sunil Mishra All rights reserved. for99lines
 ;new
 (defun lsp-p (f) 
   (member (pathname-type f) *source-file-extensions* :test #'equal))
-(defun ls-lsp (f)
-  (collect-if #'lsp-p (ls f)))
+(defun ls-lsp (&optional (d nil))
+  (collect-if #'lsp-p (ls d)))
+;(defun asd-p (f) (suffixp ".asd" f))
+(defun asd-p (f) (equal "asd" (pathname-type f)))
+(defun ls-asd (&optional (d nil))  
+  (collect-if #'asd-p (ls d)))
+(defun asd1 (&optional (d nil))
+  "1st/smallest asd file in dir"
+  (first-lv (sort (ls-asd d) #'len<))) 
+;need2 str-cat the d in
+(defun a1 (&optional (d nil)) 
+  "get root/sym of smallest asd file in dir"
+  (let ((as (asd1 d)))
+    (when as (intern (car-lv (split-strs2at as "."))))))
+(defun la1 () 
+  "load most likely .asd file in this dir"
+  (al (a1)))
 ;-
 ;(load-bps) ;mine is much nicer
 (defun c-load (f) (compile-load f))
@@ -429,14 +444,17 @@ pathnames as well."
 ;
 ;pass in keys, so can send: :test #'string-equal, &generlize beyond str2seq
 (defun split-str2by (str by) ;can generalize, think there is something already
+  "str by char get cons"
   (when (position by str)
     (let ((p (position by str)))
       (cons (subseq str 0 p) 
             (subseq str (+ p 1)))))) 
 (defun last-str2by (str by) 
+  "str from char on"
   (let ((p (position by str)))
     (when p (subseq str p ))))
 (defun first-str2by-end (str by) 
+  "str till char"
   (let ((p (positions by str)))
     (when p (subseq str 0 (1+ (last_lv p))))))
 (defun between-str2by (str by by2) 
@@ -446,11 +464,15 @@ pathnames as well."
   (let ((p (positions by str)))
     (when p (subseq str (last_lv p)))))
 ;or for now   ;oh could mv let up
-(defun split-strs2at (strs by) 
+#+ignore
+(defun split-strs2at (strs by) ;mv let up
   (when (position by strs :test #'string-equal)
     (let ((p (position by strs :test #'string-equal)))
       (cons (apply #'str-cat (subseq strs 0 p)) 
             (apply #'str-cat (subseq strs (+ p 1))))))) 
+(defun split-strs2at (strs by) 
+  (let ((p (position by strs :test #'string-equal)))
+    (when p (cons (subseq strs 0 p) (subseq strs (+ p 1))))))
 ;(defun split-at (seq by) 
 ;  (let ((p (position by seq :test #'equal)))
 ;    (when p (list (subseq seq 0 p) (subseq seq (+ p 1))))))
@@ -1172,6 +1194,7 @@ If HEADER-VALUE-PARSER return multiple values, they are concatenated together in
 (defun len-lt (l n) (< (len l) n)) ;make sure safe to access
 ;
 (defun len> (a b) (> (len a) (len b)))
+(defun len< (a b) (< (len a) (len b)))
 (defun sort-len-lol (lol) (sort lol #'len>))
 ;(defun max-len (&rest lol) (sort lol #'len>))
 (defun max-len (&rest lol) (first-lv (sort-len-lol lol)))
