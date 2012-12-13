@@ -2,10 +2,22 @@
 (lut) ;load: https://github.com/MBcode/LispUtils/blob/master/util_mb.lisp
 ;;;===============================================================================
 ;1.      Assume the US dollar is available in denominations of $100, $50, $20, $10, $5, $1, $0.25, $0.10, $0.05 and $0.01. Write a function to return the number of different ways to exactly represent an arbitrary value less than $1,000,000 using any number or combination of these denominations.
-(defvar *vals* '(100 50 20 10 5 1 0.25 0.10 0.05 0.01))
+(defvar *denom* '(100 50 20 10 5 1 0.25 0.10 0.05 0.01))
 ;assuming efficient enumerations, as 10**(6+2)pennies etc, will be a very very large number of combinations
+(defun divf (n d)
+  (floor (/ (float n) v)))
 
+(defun mx-val-in (v n) (divf n v))
 
+(defun denom4val (v &optional (den *denom*))
+ (when (full den)
+  (let* ((d (first den))
+         (nd (mx-val-in d v)) ;# of this d
+         (nr (mod v d)))
+    (cons (cons nd d) (denom4val nr (rest den))))))
+
+;use: (denom4val 102.26)
+;((1 . 100) (0 . 50) (0 . 20) (0 . 10) (0 . 5) (2 . 1) (1 . 0.25) (0 . 0.1) (0 . 0.05) (1 . 0.01))
 ;;;===============================================================================
 ;2. Determine the sum of all prime numbers less than an input number (the input number will be at most 10,000,000).
 
