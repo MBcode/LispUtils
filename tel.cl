@@ -32,6 +32,8 @@
 (defun speak-denom4val (v)
   (speak-f1a #'denoms4val v))
 ;get: ("one of 100" "two of 1" "one of 0.25" "one of 0.01")
+;If you really want 'all' enumerations, there are standard enums for each denom in terms of lesser vals
+;&you could replace any w/a tree of those enums, &all DFS paths would be all enums
 ;;;===============================================================================
 ;2. Determine the sum of all prime numbers less than an input number (the input number will be at most 10,000,000).
 
@@ -95,7 +97,7 @@ RETURN: An array of prime numbers.  "
 
 ;then a version of https://github.com/MBcode/LispUtils/blob/master/test.lisp w/more options
 ;
-;Might use: http://common-lisp.net/project/cl-graph/
+;Might use: http://common-lisp.net/project/cl-graph/  ;or might not need, but try:
 (ql 'cl-graph)
 (use-package :cl-graph)
 (defun table2graph (&optional (table *table*))
@@ -106,3 +108,8 @@ RETURN: An array of prime numbers.  "
   (let ((g (table2graph table)))
     ;read up on this lib
     ))
+
+;if not, sort the letter/names (so don't have2have both halves of a connection matrix
+;assert friend on each pair off the csv-table, &go down list of friends,&assert aquaint4their friends
+;incr aquaint count, could also format this as a hadoop job, 
+;not unlike: https://github.com/MBcode/LispUtils/blob/master/ts.cl
