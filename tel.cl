@@ -98,6 +98,7 @@ RETURN: An array of prime numbers.  "
 ;then a version of https://github.com/MBcode/LispUtils/blob/master/test.lisp w/more options
 ;
 ;Might use: http://common-lisp.net/project/cl-graph/  ;or might not need, but try:
+#+ignore (progn
 (ql 'cl-graph)
 (use-package :cl-graph)
 
@@ -109,7 +110,7 @@ RETURN: An array of prime numbers.  "
   (let ((g (table2graph table)))
     ;read up on this lib
     ))
-
+)
 ;if not, sort the letter/names (so don't have2have both halves of a connection matrix)
 ;assert friend on each pair off the csv-table, &go down list of friends,&assert aquaint4their friends
 ;incr aquaint count, could also format this as a hadoop job, 
@@ -118,13 +119,30 @@ RETURN: An array of prime numbers.  "
 (defvar *aquint* (make-hash-table :test 'equal))
 
 (defun set-hash (h key val)
-  (setf (gethash key) val))
+ ;(setf (gethash key) val)
+  (pushnew varl (gethash key))
+  )
 
+;(defun add-hash-between-vertexes (g from to)
+;  (if (char-lessp from to) (set-hash g from to)
+;                           (set-hash g to from)))
+;actually might need friends to be set both ways, to faster find the foaf, for aquints
 (defun add-hash-between-vertexes (g from to)
-  (if (char-lessp from to) (set-hash g from to)
-                           (set-hash g to from)))
+  (set-hash g from to) (set-hash g to from))
 
 (defun table2g (&optional (table *table*) (g *friends*))
   (mapcar #'(lambda (p) (add-hash-between-vertexes g (car p) (cdr p))) table))
 
-;actually might need friends to be set both ways, to faster find the foaf, for aquints
+(defun friend-p (a b)
+  (member a (gethash b)))
+
+(defun most-aquaint (&optional (table *table*))
+  (table2g)
+  (maphash #'(lambda (k v)  ;k=person v=all-friends ;aquaint aren't already friends
+               (loop for friend in v
+                     unless (friend-p k friend) (set-hash *aquint* k friend)))  *friends*)
+  (let ((mx 0) (p nil))
+    (maphash #'(lambda (k v)  ;k=person v=aquaint list, find max of
+                 (when (> (len v) mx) (setf mx (len v)) (setf p k))) *aquaint*)
+    p)) ;person w/mx aquaint
+;untested, but might do it, will finish tomorrow
