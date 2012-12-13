@@ -2,6 +2,8 @@
 (lut) ;load: https://github.com/MBcode/LispUtils/blob/master/util_mb.lisp
 ;;;===============================================================================
 ;1.      Assume the US dollar is available in denominations of $100, $50, $20, $10, $5, $1, $0.25, $0.10, $0.05 and $0.01. Write a function to return the number of different ways to exactly represent an arbitrary value less than $1,000,000 using any number or combination of these denominations.
+(defvar *vals* '(100 50 20 10 5 1 0.25 0.10 0.05 0.01))
+;assuming efficient enumerations, as 10**(6+2)pennies etc, will be a very very large number of combinations
 
 
 ;;;===============================================================================
