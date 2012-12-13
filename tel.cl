@@ -100,6 +100,7 @@ RETURN: An array of prime numbers.  "
 ;Might use: http://common-lisp.net/project/cl-graph/  ;or might not need, but try:
 (ql 'cl-graph)
 (use-package :cl-graph)
+
 (defun table2graph (&optional (table *table*))
   (let ((g  (make-container 'graph-container)))
     (mapcar #'(lambda (p) (add-edge-between-vertexes g (car p) (cdr p))) table)))
@@ -109,7 +110,21 @@ RETURN: An array of prime numbers.  "
     ;read up on this lib
     ))
 
-;if not, sort the letter/names (so don't have2have both halves of a connection matrix
+;if not, sort the letter/names (so don't have2have both halves of a connection matrix)
 ;assert friend on each pair off the csv-table, &go down list of friends,&assert aquaint4their friends
 ;incr aquaint count, could also format this as a hadoop job, 
 ;not unlike: https://github.com/MBcode/LispUtils/blob/master/ts.cl
+(defvar *friends* (make-hash-table :test 'equal))
+(defvar *aquint* (make-hash-table :test 'equal))
+
+(defun set-hash (h key val)
+  (setf (gethash key) val))
+
+(defun add-hash-between-vertexes (g from to)
+  (if (char-lessp from to) (set-hash g from to)
+                           (set-hash g to from)))
+
+(defun table2g (&optional (table *table*) (g *friends*))
+  (mapcar #'(lambda (p) (add-hash-between-vertexes g (car p) (cdr p))) table))
+
+;actually might need friends to be set both ways, to faster find the foaf, for aquints
