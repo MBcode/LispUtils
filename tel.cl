@@ -24,6 +24,14 @@
 ;use: (denoms4val 102.26)
 ;((1 . 100) (2 . 1) (1 . 0.25) (1 . 0.01))
 ;Then use formatting, for English of the 1st elt..
+(defun speak-f1a (f v)
+  "fnc(v)->alst, format car of cdr"
+  (let ((al (funcall f v)))
+    (mapcar #'(lambda (p) (format nil "~r of ~a" (car p) (cdr p))) al))) 
+
+(defun speak-denom4val (v)
+  (speak-f1a #'denoms4val v))
+;get: ("one of 100" "two of 1" "one of 0.25" "one of 0.01")
 ;;;===============================================================================
 ;2. Determine the sum of all prime numbers less than an input number (the input number will be at most 10,000,000).
 
@@ -88,3 +96,13 @@ RETURN: An array of prime numbers.  "
 ;then a version of https://github.com/MBcode/LispUtils/blob/master/test.lisp w/more options
 ;
 ;Might use: http://common-lisp.net/project/cl-graph/
+(ql 'cl-graph)
+(use-package :cl-graph)
+(defun table2graph (&optional (table *table*))
+  (let ((g  (make-container 'graph-container)))
+    (mapcar #'(lambda (p) (add-edge-between-vertexes g (car p) (cdr p))) table)))
+
+(defun most-aquaint (&optional (table *table*))
+  (let ((g (table2graph table)))
+    ;read up on this lib
+    ))
