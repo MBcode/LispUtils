@@ -18,6 +18,12 @@
 
 ;use: (denom4val 102.26)
 ;((1 . 100) (0 . 50) (0 . 20) (0 . 10) (0 . 5) (2 . 1) (1 . 0.25) (0 . 0.1) (0 . 0.05) (1 . 0.01))
+;Could write something to explain in English what was used
+(defun denoms4val (v)
+  (collect-if #'(lambda (p) (posative-p (car p))) (denom4val v)))
+;use: (denoms4val 102.26)
+;((1 . 100) (2 . 1) (1 . 0.25) (1 . 0.01))
+;Then use formatting, for English of the 1st elt..
 ;;;===============================================================================
 ;2. Determine the sum of all prime numbers less than an input number (the input number will be at most 10,000,000).
 
@@ -72,7 +78,13 @@ RETURN: An array of prime numbers.  "
 ;use: (sum-primes-to 40) 
 ;197
 ;;;===============================================================================
-;3. I have a csv format table of telephone calls; each call is on a line of the format “calling #, called #”. Define friends as any two people who have talked, and acquaintances as any two people who are not friends, but share a friend. Thus, if A talks to B, and C talks to B, then A and B are friends, A and C are acquaintances. Find who has the most acquaintances. The table will have at most 1,000,000 entries, and the phone numbers will be integers with at most 15 digits. 
+;3. I have a csv format table of telephone calls; each call is on a line of the format “calling #, called #”. 
+;Define friends as any two people who have talked, and acquaintances as any two people who are not friends, but share a friend. 
+;Thus, if A talks to B, and C talks to B, then A and B are friends, A and C are acquaintances. 
+;Find who has the most acquaintances. 
+;The table will have at most 1,000,000 entries, and the phone numbers will be integers with at most 15 digits. 
 (defvar *table* (csv-read-file "file.csv"))
 
 ;then a version of https://github.com/MBcode/LispUtils/blob/master/test.lisp w/more options
+;
+;Might use: http://common-lisp.net/project/cl-graph/
