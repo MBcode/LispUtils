@@ -120,7 +120,7 @@ RETURN: An array of prime numbers.  "
 
 (defun set-hash (h key val)
  ;(setf (gethash key) val)
-  (pushnew varl (gethash key))
+  (pushnew val (gethash key h))
   )
 
 ;(defun add-hash-between-vertexes (g from to)
@@ -134,9 +134,9 @@ RETURN: An array of prime numbers.  "
   (mapcar #'(lambda (p) (add-hash-between-vertexes g (car p) (cdr p))) table))
 
 (defun friend-p (a b)
-  (member a (gethash b)))
+  (member a (gethash a b)))
 
-(defun most-aquaint (&optional (table *table*))
+(defun most-aquaint (&optional (table *table*)) ;fix
   (table2g)
   (maphash #'(lambda (k v)  ;k=person v=all-friends ;aquaint aren't already friends
                (loop for friend in v
