@@ -8,7 +8,6 @@ use http://www.quicklisp.org/ it even has KM now
 
 http://mike.bobak.googlepages.com/clmath.txt on why cl has better intrinsic math ability 
 
- 
 ;upcoming:
 ;http://www.sbcl.org/manual/#sb_002dconcurrency
 ;;use sb-concurrency:mailbox maybe something pregel like
@@ -16,3 +15,6 @@ http://mike.bobak.googlepages.com/clmath.txt on why cl has better intrinsic math
 detour around giving: bit.ly/TP8gfz
  
 Hope to get to try http://cse.aalto.fi/instans/ soon. 
+
+Some of this could be translated to C++/Java via:
+    http://www.isi.edu/isd/LOOM/Stella/index.html
