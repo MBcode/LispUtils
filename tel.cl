@@ -94,7 +94,8 @@ RETURN: An array of prime numbers.  "
 ;Find who has the most acquaintances. 
 ;The table will have at most 1,000,000 entries, and the phone numbers will be integers with at most 15 digits. 
 ;(defvar *table* (csv-read-file "file.csv"))
-(defvar *table* (read-csv "file.csv"  #'convert-to-list))
+;(defvar *table* (read-csv "file.csv"  #'convert-to-list))
+(defvar *table* (read-csv "file.csv"))
 
 ;then a version of https://github.com/MBcode/LispUtils/blob/master/test.lisp w/more options
 ;
@@ -117,7 +118,7 @@ RETURN: An array of prime numbers.  "
 ;incr aquaint count, could also format this as a hadoop job, 
 ;not unlike: https://github.com/MBcode/LispUtils/blob/master/ts.cl
 (defvar *friends* (make-hash-table :test 'equal))
-(defvar *aquint* (make-hash-table :test 'equal))
+(defvar *aquaint* (make-hash-table :test 'equal))
 
 (defun set-hash (h key val)
  ;(setf (gethash key) val)
@@ -127,23 +128,23 @@ RETURN: An array of prime numbers.  "
 ;(defun add-hash-between-vertexes (g from to)
 ;  (if (char-lessp from to) (set-hash g from to)
 ;                           (set-hash g to from)))
-;actually might need friends to be set both ways, to faster find the foaf, for aquints
+;actually might need friends to be set both ways, to faster find the foaf, for aquaints
 (defun add-hash-between-vertexes (g from to)
   (set-hash g from to) (set-hash g to from))
 
 (defun table2g (&optional (table *table*) (g *friends*))
   (mapcar #'(lambda (p) (add-hash-between-vertexes g (car p) (cdr p))) table))
 
-(defun friend-p (a b)
-  (member a (gethash a b)))
+(defun friend-p (a b &optional (h *friends*))
+  (member a (gethash b h) :test #'equal))
 
 (defun most-aquaint (&optional (table *table*)) ;fix
   (table2g table)
   (maphash #'(lambda (k v)  ;k=person v=all-friends ;aquaint aren't already friends
                (loop for friend in v 
-                     unless (friend-p k friend) do (set-hash *aquint* k friend)))  *friends*)
+                     unless (friend-p k friend) do (set-hash *aquaint* k friend)))  *friends*)
   (let ((mx 0) (p nil))
     (maphash #'(lambda (k v)  ;k=person v=aquaint list, find max of
-                 (when (> (len v) mx) (setf mx (len v)) (setf p k))) *aquint*)
+                 (when (> (len v) mx) (setf mx (len v)) (setf p k))) *aquaint*)
     p)) ;person w/mx aquaint
 ;untested, but might do it, will finish tomorrow
