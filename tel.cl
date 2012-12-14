@@ -5,7 +5,7 @@
 (defvar *denom* '(100 50 20 10 5 1 0.25 0.10 0.05 0.01))
 ;assuming efficient enumerations, as 10**(6+2)pennies etc, will be a very very large number of combinations
 (defun divf (n d)
-  (floor (/ (float n) v)))
+  (floor (/ (float n) d)))
 
 (defun mx-val-in (v n) (divf n v))
 
@@ -93,7 +93,8 @@ RETURN: An array of prime numbers.  "
 ;Thus, if A talks to B, and C talks to B, then A and B are friends, A and C are acquaintances. 
 ;Find who has the most acquaintances. 
 ;The table will have at most 1,000,000 entries, and the phone numbers will be integers with at most 15 digits. 
-(defvar *table* (csv-read-file "file.csv"))
+;(defvar *table* (csv-read-file "file.csv"))
+(defvar *table* (read-csv "file.csv"  #'convert-to-list))
 
 ;then a version of https://github.com/MBcode/LispUtils/blob/master/test.lisp w/more options
 ;
@@ -137,12 +138,12 @@ RETURN: An array of prime numbers.  "
   (member a (gethash a b)))
 
 (defun most-aquaint (&optional (table *table*)) ;fix
-  (table2g)
+  (table2g table)
   (maphash #'(lambda (k v)  ;k=person v=all-friends ;aquaint aren't already friends
-               (loop for friend in v
-                     unless (friend-p k friend) (set-hash *aquint* k friend)))  *friends*)
+               (loop for friend in v 
+                     unless (friend-p k friend) do (set-hash *aquint* k friend)))  *friends*)
   (let ((mx 0) (p nil))
     (maphash #'(lambda (k v)  ;k=person v=aquaint list, find max of
-                 (when (> (len v) mx) (setf mx (len v)) (setf p k))) *aquaint*)
+                 (when (> (len v) mx) (setf mx (len v)) (setf p k))) *aquint*)
     p)) ;person w/mx aquaint
 ;untested, but might do it, will finish tomorrow
