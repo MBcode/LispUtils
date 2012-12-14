@@ -121,9 +121,13 @@ RETURN: An array of prime numbers.  "
 (defvar *aquaint* (make-hash-table :test 'equal))
 
 (defun set-hash (h key val)
- ;(setf (gethash key) val)
-  (pushnew val (gethash key h))
+ ;(setf (gethash key h) val)
+ (pushnew (first-lv val) (gethash key h))
+ ;(pushnew (first-lv (first-lv val)) (gethash key h))
   )
+
+(defun print-hash (h)
+  (maphash #'(lambda (k v) (format t "~%~a,~a" k v)) h))
 
 ;(defun add-hash-between-vertexes (g from to)
 ;  (if (char-lessp from to) (set-hash g from to)
@@ -146,5 +150,6 @@ RETURN: An array of prime numbers.  "
   (let ((mx 0) (p nil))
     (maphash #'(lambda (k v)  ;k=person v=aquaint list, find max of
                  (when (> (len v) mx) (setf mx (len v)) (setf p k))) *aquaint*)
+                ;if = maybe ret whole set
     p)) ;person w/mx aquaint
 ;untested, but might do it, will finish tomorrow
