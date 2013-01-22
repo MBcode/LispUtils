@@ -1,4 +1,5 @@
-#+ignore ;fix in utils
+;try loading some kaggle hhp data, as R had some problems w/it bobak@balisp.org
+#+ignore ;fix here&in utils
 (defun read-from-csv-str (str &key (start 0) (separator #\,))
     (if (>= start (length str)) nil
       (let ((pn (position separator str)))
@@ -68,6 +69,9 @@
        ;#'(lambda (l) (when (eq (second l) 1) (print (first l))))
       ;99
        ))
-
+;now do for rest of files, and assert values to proper(km)structs along the way 
+(defvar *basedir* "data/HHP_release3")
+(defvar *filelst* '("Claims" "DaysInHospital_Y2" "DaysInHospital_Y3" "DrugCount" "LabCount"
+                     "Lookup PrimaryConditionGroup" "Lookup ProcedureGroup" "Members" "Target"))
 
 ;(rt) ;in end of ld.cl
