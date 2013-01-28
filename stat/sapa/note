@@ -1,0 +1,72 @@
+@<53 mercury6: /lib.stat.cmu.edu/sapaclisp> cp /Users/bobak/Documents/downloads/lang/lsp/cse/math/stat/*.sh .
+@<54 mercury6: /lib.stat.cmu.edu/sapaclisp> sh *.sh
+x - extracting acvs.lisp (Text)
+x - extracting basic-math.lisp (Text)
+x - extracting basic-statistics.lisp (Text)
+x - extracting dft-and-fft.lisp (Text)
+x - extracting examples.lisp (Text)
+x - extracting filtering.lisp (Text)
+x - extracting hacks.lisp (Text)
+x - extracting harmonic.lisp (Text)
+x - extracting index (Text)
+x - extracting matrix.lisp (Text)
+x - extracting multitaper.lisp (Text)
+x - extracting nonparametric.lisp (Text)
+x - extracting parametric.lisp (Text)
+x - extracting random.lisp (Text)
+x - extracting sapa-package.lisp (Text)
+x - extracting tapers.lisp (Text)
+x - extracting utilities.lisp (Text)
+@<55 mercury6: /lib.stat.cmu.edu/sapaclisp> 
+ 
+http://lib.stat.cmu.edu/sapaclisp/everything 
+#+sbcl "ocean-wave" #+sbcl "rough-ice-profile" #+sbcl "smooth-ice-profile" #+sbcl "Willamette-River" #+sbcl "AR-2" 
+"ocean-wave" "rough-ice-profile" "smooth-ice-profile" "Willamette-River" "AR-2" 
+ocean-wave rough-ice-profile smooth-ice-profile Willamette-River AR-2 
+http://users.stat.umn.edu/~kb/classes/8511/files/data/atomicclock.txt
+http://users.stat.umn.edu/~kb/classes/8511/files/data/oceannoise.txt
+http://users.stat.umn.edu/~kb/classes/8511/files/data/oceanwaves.txt
+http://users.stat.umn.edu/~kb/classes/8511/files/data/roughice.txt
+http://users.stat.umn.edu/~kb/classes/8511/files/data/simar2.txt
+http://users.stat.umn.edu/~kb/classes/8511/files/data/simar4.txt
+http://users.stat.umn.edu/~kb/classes/8511/files/data/smoothice.txt
+http://users.stat.umn.edu/~kb/classes/8511/files/data/willamette.txt
+http://users.stat.umn.edu/~kb/classes/8511/files/data/windspeed.txt
+http://faculty.washington.edu/dbp/SAPACLISP-1.x/examples.lisp 
+http://faculty.washington.edu/dbp/sapabook.html 
+http://faculty.washington.edu/dbp/DATA/wind.dat
+http://faculty.washington.edu/dbp/DATA/Willamette.dat
+http://faculty.washington.edu/dbp/DATA/clock.dat
+http://faculty.washington.edu/dbp/DATA/ocean-noise.dat
+http://faculty.washington.edu/dbp/DATA/ar2.dat
+http://faculty.washington.edu/dbp/DATA/ar4.dat
+http://faculty.washington.edu/dbp/DATA/ocean-wave.dat
+http://faculty.washington.edu/dbp/DATA/rough.dat
+http://faculty.washington.edu/dbp/DATA/smooth.dat
+Author mmommer http://lists.common-lisp.net/pipermail/sapaclisp-cvs/2005-May/000005.html 
+egrep -v "^C" ocean-wave|cat>ocean-wave.txt
+egrep -v "^C" rough-ice-profile|cat>rough-ice-profile.txt
+egrep -v "^C" smooth-ice-profile|cat>smooth-ice-profile.txt
+egrep -v "^C" Willamette-River|cat>Willamette-River.txt
+egrep -v "^C" AR-2|cat>AR-2.txt
+λ▶<251 j27daedalus: /stat/sapaclisp> wc ocea*
+     134     154    1461 ocean-noise.dat
+     140     188    1494 ocean-wave
+    1030    1049    4395 ocean-wave.dat
+     128     128     973 ocean-wave.txt
+     128     128     974 ocean-wave.txt~
+     141     188    1494 ocean-wave~
+    1701    1835   10791 total
+λ▶<252 j27daedalus: /stat/sapaclisp> mv ocean-wave.t* doc
+λ▶<253 j27daedalus: /stat/sapaclisp> cp ocean-wave.dat ocean-wave.txt  ;then j27_2
+ 
+alias s1 'scl --load ld.cl' 
+http://www.clal.org.cn/personal/scgui/myhomepage/StatLib%20Index.htm 
+http://lib.stat.cmu.edu/sapaclisp/ 
+http://lib.stat.cmu.edu/datasets/ 
+http://users.stat.umn.edu/~kb/classes/8511/datasets.html  
+
+http://www.stat.washington.edu/courses/stat520/winter99/data.html 
+http://faculty.washington.edu/dbp/SAPACLISP-1.x/examples.lisp 
+http://faculty.washington.edu/dbp/sapabook.html 
+ 
