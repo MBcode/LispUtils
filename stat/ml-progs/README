@@ -1,0 +1,38 @@
+This directory contains Common Lisp files for various standard
+inductive learning algorithms that all use the same basic data format
+and same interface.  It also includes automatic testing software for
+running learning curves that compare multiple systems and utilities
+for plotting and statistically evaluating the results.
+
+The file "data-utilities" should be loaded before any other code.
+Comments at the begining of universal-tester.lisp help define the data
+format and interface standards used.  Commenting elsewhere can be
+sparse.
+
+See comments in the universal-tester.lisp file and the trace in
+sample-univ-tester-trace to see how to use the universal tester.
+
+Sample data sets are dna-standard.lisp and labor-neg.lisp.  DATA-UTILITIES.LISP
+includes a function for converting a data file suitable for Quinlan`s C4.5 to
+the "ml-prog" format.
+
+Current algorithms include versions of:
+
+AQ:		Early DNF learner.
+Backprop: 	The standard multi-layer neural-net learning method.
+Bayes Indp:     Simple naive or "idiot's" Bayesian classifier.
+Cobweb:   	A probabilistic clustering system.
+ID3:            Decision tree learner with a number of features.
+KNN:   		K nearest neighbor (instance-based) algorithm.
+Perceptron:	Early one-layer neural-net algorithm.
+PFOIL:          Propositional version of FOIL for learning DNF.
+PFOIL-CNF:      Propositional version of FOIL for learning CNF.
+Dlist:          Propositional decision-list learner using a FOIL-based approach
+PFOIDL:         Propositional version of FOIDL for learning decision-lists
+                in the reverse order.
+PGOLEM:         Propositional version of GOLEM (ILP system) for learning DNF.
+
+Raymond J. Mooney
+Department of Computer Sciences
+University of Texas at Austin
+
