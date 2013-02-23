@@ -1,6 +1,4 @@
 ;new use for km-utils, where want to step toward more generalized json->triples, bobak@balisp.org
-(defvar *ips* (rest (cadr *annot*)))
-(defvar *nets* (cdr *net*))
 
 ;- ;these bits ref my github, re:km/etc  ;&/or will be added soon
 (defun sv_al_nn (i al)   ;SetValue s from aything ;no-nils   ;add to u2.lisp
