@@ -36,11 +36,5 @@
   "lst of (insnaem alst) ->assert" ;set cls then alst values
   (mapcar #'(lambda (i-al) (mk-i-al i-al cls)) i-al_s))
 
-(mk-i-al_s *ips* "ip")
-(mk-i-al_s *nets* "net")
-;-if work dump both below-
-(defun mk-ip (&optional (ips *ips*))
-  "assert ip info"  ;set cls then alst values
-  (mapcar #'(lambda (ip) (sv-cls (first ip) "ip")) ips)
-  (mapcar #'sv-i-al ips))
-;defun mk-net (&optional (nets *nets*))
+;test w/cl-json output that has (insname alst of slotname/value pairs)
+;(mk-i-al_s *nets* "net")
