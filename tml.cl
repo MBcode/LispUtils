@@ -7,7 +7,7 @@
     #'(lambda (pr) (when (and (consp pr) (cdr pr)) 
                      (sv i (safe_v (car-lv pr)) (safe_v (cdr-lv pr)))))
     al)
-  i) ;hope alst wasn't expected anyplc in sv_al ;but want insname now, so can eval emed ins&just store it's name
+  i) ;hope alst wasn't expected anyplc in sv_al ;but want insname now, so can eval embed ins&just store it's name
 
 ;-don't assert slot-val of a long alst, that should have been another instance
 (defun strlst (s)
@@ -59,11 +59,11 @@
 
 ;fix deeper ins /in net ;if long-value is in parens, check if it's an i-al and recursively set
 
-;write something so if slotname is also a taxonomy classname, to make the value an instance
+;write something so if slotname is also a taxonomy classname, to make the value an instance ;someday
 (defun thing-p (cls)
   "is this symbol the name of a km class?" ;makes tmp qry so works on anything
   (eq '|Thing| (first-lv (gvs cls "superclasses"))))  ;or (member '|Thing| (list+ ...))
-;just give a list of str/sym of slotnames (that are clses) that you should turn there vals, into *insnames
+;4now:just give a list of str/sym of slotnames (that are clses) that you should turn there vals, into *insnames
 ;* and above just have a list of cls/slotnames that might have json which would cause an embedded ins /2start
 
 ;test w/cl-json output that has (insname alst of slotname/value pairs)
