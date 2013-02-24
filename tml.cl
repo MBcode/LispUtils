@@ -14,11 +14,11 @@
       in)))
 
 (defun sv-i-al (i-al)
-  "ins-name alst assertion" ;use mk-i-al instead, if ok2also set cls 
+  "ins-name alst assertion" 
   (sv_al_nn (first i-al) (rest i-al)))
  ;(sv_al_nn (n-ins (first i-al) cls) (rest i-al))
  ;if going to pass in something that needs the cls, might as well set that2ins name@same time
-
+;=use mk-i-al instead of these2, if ok2also set cls, in one go 
 (defun sv-cls-inum (in cls)
   "ins-name is a num, so pre-append w/cls-name"
   (let ((i (n-ins in cls)))
@@ -34,8 +34,8 @@
   "lst of (insnaem alst) ->assert" ;set cls then alst values
   (mapcar #'(lambda (i-al) (mk-i-al i-al cls)) i-al_s))
 
-;fix deeper ins /in net
-;(trace n-ins)
+;fix deeper ins /in net ;if long-value is in parens, check if it's an i-al and recursively set
+
 ;write something so if slotname is also a taxonomy classname, to make the value an instance
 
 ;test w/cl-json output that has (insname alst of slotname/value pairs)
