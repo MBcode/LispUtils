@@ -1,20 +1,21 @@
 ;new use for km-utils, where want to step toward more generalized json->triples, bobak@balisp.org
 
-;- ;these bits ref my github, re:km/etc  ;&/or will be added soon
-(defun sv_al_nn (i al)   ;SetValue s from aything ;no-nils   ;add to u2.lisp
+;- ;these bits ref my github, re:km/etc  ;&/or will be added soon to u2.lisp
+(defun sv_al_nn (i al)   ;SetValue s from aything ;no-nils   
   (mapcar
     ;#'(lambda (pr) (when (consp pr) (sv i (safe_v (car-lv pr)) (safe_v (cdr-lv pr)))))
     #'(lambda (pr) (when (and (consp pr) (cdr pr)) 
                      (sv i (safe_v (car-lv pr)) (safe_v (cdr-lv pr)))))
     al)
-  i) ;hope alst wasn't expected anyplc in sv_al 
+  i) ;hope alst wasn't expected anyplc in sv_al ;but want insname now, so can eval emed ins&just store it's name
 
+;-don't assert slot-val of a long alst, that should have been another instance
 (defun strlst (s)
   "a str that wants to be a list"
   (when (and (stringp s) (prefixp "(" s))
     (eval-str (str-cat "'" s))))
 
-(defun sv_al_nn2 (i al)   ;SetValue s from aything ;no-nils   ;add to u2.lisp
+(defun sv_al_nn2 (i al)   ;SetValue s from aything ;no-nils  ;allow4slotVals that are alst-turnIt2->ins
   (mapcar  ;when val a list, try to assert it, &use it's insname as the value  ;1deeper now
     #'(lambda (pr) (when (and (consp pr) (cdr pr)) 
                      (let* ((sval (strlst (safe_v (cdr-lv pr)))) ;lst will be in a str/so trans b4 listp
