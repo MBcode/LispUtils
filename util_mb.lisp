@@ -108,7 +108,10 @@ Copyright (c) 2000-2006, Sunil Mishra All rights reserved. for99lines
     (when as (intern (car-lv (split-strs2at as "."))))))
 (defun la1 () 
   "load most likely .asd file in this dir"
-  (al (a1)))
+ ;(al (a1))
+  (let ((a1 (a1)))
+    (format t "~%(al '~a)" a1)
+    (al a1)))
 ;-
 ;(load-bps) ;mine is much nicer
 (defun c-load (f) (compile-load f))
@@ -1401,6 +1404,22 @@ If HEADER-VALUE-PARSER return multiple values, they are concatenated together in
          (string= post str :start2 (- (length str) (length post)))
   ))
 ; (suffixp "Tagging" ">>>>> Tagging") ; T
+
+(defun ls-ext (ext) 
+  "lst of files in cur-dir ending in ext"
+  (collect #'(lambda (f) (when (suffixp ext f) f)) (ls)))
+
+(defun car- (cns)     
+  (when (consp cns) (car cns)))
+
+(defun split-first (line &optional (splt #\.))     
+   (car- (split-str2by line splt)))
+;was going2write a break-dot
+
+(defun ald () ;then &optional n ;to load the nth
+  "load 1st .asd file"
+  (let ((f (first-lv (ls-ext ".asd"))))
+    (when f (al (intern (split-first f))))))
  
  ;from sr-init.lisp
 (defun list-lines (filename)
