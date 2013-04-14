@@ -48,6 +48,8 @@
 (defun ql (a) (ql:quickload  a))
 #+quicklisp
 (defun qa (a) (ql:system-apropos  a))
+#+quicklisp
+(defun qd (a) (ql:who-depends-on  a))
 ;#<SYSTEM km / km-2-5-33 / quicklisp 2012-09-09>
 (defun lkm () (load "/Users/bobak/lsp/km_2-5-33"))
 ;(defun lkm () (ql 'km))
@@ -94,6 +96,7 @@
 (defun lt2 () (load "t2.cl" :print t)) 
 (defun lu () (load "/Users/bobak/lsp/util_mb"))
 (defun cu () (compile-file "/Users/bobak/lsp/util_mb.lisp"))
+(defun cu2 () (compile-file "/Users/bobak/lsp/u2.lisp"))
 (defun ct () (compile-file "t.cl")) 
 (defun lt- () (load "t.fasl" :print t)) 
 (defun l-1 () (load "ld1.cl" :print t)) 
@@ -107,12 +110,13 @@
   (sb-unix:posix-getcwd/))
 (defun pwd ()
  (sb-unix:posix-getcwd))
-(defun al (l) 
+(defun al (l) ;la1 & ald will both load a .asd file in the dir w/o having to type it ;should come up w/dialog&have a dflt 
  "asdf load"
   (asdf:oos 'asdf:load-op l))
 (defun altst (l) 
- "asdf load"
+ "asdf load test"
   (asdf:oos 'asdf:test-op l))
+(defun alt (l) "asdf load test" (asdf:oos 'asdf:test-op l))
 (defvar *clocc-root* "/Users/bobak/Documents/downloads/lang/lsp/code/clocc/clocc/") 
 (defun loc ()
    "load clocc"
@@ -553,3 +557,24 @@
 
 ;(setf sb-int:*repl-prompt-fun* #'package-prompt) 
 (sb-ext:set-sbcl-source-location "/Users/bobak/dwn/lang/lsp/lisps/sbcl/sbcl")
+
+;http://blog.viridian-project.de/2009/07/24/sbcl-getting-started-with-mmap/
+#+ignore
+(defun mmap-file (file-stream)
+  “Use mmap() to map FILE-STREAM into memory.”
+  (sb-posix:mmap nil ; where to map (NIL if you don’t care)?
+                 (file-length file-stream) ; how much?
+                 sb-posix:prot-read
+                 sb-posix:map-shared
+                 (sb-sys:fd-stream-fd file-stream)
+                 0)) ; offset into the file 
+
+(defun program-stream (program &optional args)
+  (let ((process (sb-ext:run-program program args
+                                     :input :stream
+                                     :output :stream
+                                     :wait nil
+                                     :search t)))
+    (when process
+      (make-two-way-stream (sb-ext:process-output process)
+                           (sb-ext:process-input process))))) 
