@@ -1315,7 +1315,7 @@ If HEADER-VALUE-PARSER return multiple values, they are concatenated together in
 
 ;try to trim everything
 (defun not-ALPHANUMERICP (c)
-  (not (ALPHANUMERICP c)))
+  (not (alphanumericp c)))
 ;use: string-downcase 
 
 (defun alpha_char-p (c)
@@ -2185,9 +2185,10 @@ the command has printed on stdout as string."
 ;could apply equal mapcar .. &call w/&rest
 ;-
 (defun ssort (l &optional (cmp #'string<))
-    "safe sort of a list of symbols"
+    "safe sort of a list of symbols" ;now anything 
    ;(sort (copy-list l) #'string< :key #'symbol-name)
-    (sort (copy-list l) cmp :key #'symbol-name)
+   ;(sort (copy-list l) cmp :key #'symbol-name)
+    (sort (copy-list l) cmp :key #'to-str)
     )
 ;;printout.cl 
 (defgeneric prins (a &optional s))
@@ -2728,3 +2729,23 @@ is replaced with replacement."
 (defun genstr (s)
   "unique-str GUID"
   (symbol-name (gensym s))) 
+;-
+(defun an-str (s)
+  (remove-if-not #'alphanumericp s))
+
+(defun explode_s (s)
+  "break by space then alphanum-only those words"
+  (mapcar #'an-str (explode_ s))) 
+;-
+(defun cnt-consecutive (l)
+  "assume sorted, cnt same neighbors"
+  (when l
+    (if (equal (first-lv l) (second l)) (let* ((v (second l))
+                                               (c (count v l :test #'equal)))
+                                          (cons (cons v c)
+                                              (cnt-consecutive (subseq l c))))
+      (cons (first-lv l)  (cnt-consecutive (rest l)))))) 
+;-
+(defun cdr-lv1 (mcp)
+  "if cons v, else 1"
+  (if (consp mcp) (cdr mcp) 1)) 
