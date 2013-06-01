@@ -2743,7 +2743,7 @@ is replaced with replacement."
     (and (listp (car cp)) (listp (cdr cp)))))
 
 (defun tree-map2 (fn2 tree &optional (ancestor nil))
-  "Maps FN over every atom in TREE."
+  "Maps FN over every atom in TREE." ;might change
   (cond
    ((null tree) nil)
    ((lolp tree) (funcall fn2 tree ancestor))
@@ -2754,3 +2754,18 @@ is replaced with replacement."
      (tree-map2 fn2 (car tree) tree)
      (tree-map2 fn2 (cdr tree) tree))))) 
  
+(defun last- (l n)
+    (let ((ln (len l)))
+          (subseq l (- ln n) (len l)))) 
+
+(defun tree-maps (fn tree &optional (stop nil))
+  "Maps FN over every atom or..  in TREE."
+  (cond
+   ((null tree) nil)
+   ((and stop (funcall stop tree)) (funcall fn tree))
+   ((atom tree) ;(unless stop (funcall fn tree))
+                )
+   (t
+    (cons
+     (tree-maps fn (car tree) stop)
+     (tree-maps fn (cdr tree) stop)))))  
