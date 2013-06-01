@@ -2734,3 +2734,23 @@ is replaced with replacement."
        ;mx
        ))) ;get a loop max in there too ;have a version that does it
  
+(defun assocp (cp)
+  (when (consp cp)
+    (and (atom (car cp)) (atom (cdr cp)))))
+
+(defun lolp (cp)
+  (when (listp cp)
+    (and (listp (car cp)) (listp (cdr cp)))))
+
+(defun tree-map2 (fn2 tree &optional (ancestor nil))
+  "Maps FN over every atom in TREE."
+  (cond
+   ((null tree) nil)
+   ((lolp tree) (funcall fn2 tree ancestor))
+   ((assocp tree) (funcall fn2 tree ancestor))
+   ((atom tree) (funcall fn2 tree ancestor))
+   (t
+    (cons
+     (tree-map2 fn2 (car tree) tree)
+     (tree-map2 fn2 (cdr tree) tree))))) 
+ 
