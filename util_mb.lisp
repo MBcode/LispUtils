@@ -2769,3 +2769,8 @@ is replaced with replacement."
     (cons
      (tree-maps fn (car tree) stop)
      (tree-maps fn (cdr tree) stop)))))  
+
+;quickly check out a list
+(defun plen (l) (if (stringp l) l (len l)))
+(defun mplen (l) (mapcar #'plen l))
+(defun mplen2 (l) (format t "~%~a" (plen l)) (mplen l)) 
