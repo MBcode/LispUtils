@@ -578,7 +578,7 @@ pathnames as well."
   (if (stringp s) (str-trim s) s))
 
 (defun safe-trim (s)
-      (string-trim '( #\( #\) #\tab #\newline #\space #\; ) s)) 
+      (string-trim '( #\( #\) #\tab #\newline #\space #\; #\\) s)) 
  
 ;;; with apologies to christophe rhodes ...
 (defun split (string &optional max (ws '(#\Space #\Tab)))
@@ -710,6 +710,8 @@ pathnames as well."
       (substitute #\_ #\: s))
 (defun rm-dash (s)
       (substitute #\Space #\- s))
+(defun rm-bslash (s)
+      (substitute #\Space #\/ s))
 
 (defun underscore (s)
   (substitute #\_ #\Space s))
@@ -1575,7 +1577,7 @@ If HEADER-VALUE-PARSER return multiple values, they are concatenated together in
 ;look at find*comparator ben/new/choice-params-ff3-new.lisp
 ;ben's files
 (defun safer-read-from-string (s)
-  (read-from-string (string-trim '( #\( #\) #\newline #\space #\; ) s)))
+  (read-from-string (string-trim '( #\( #\) #\newline #\space #\; #\\) s)))
  
 ;(string s) ;does the same thing
 (defun to-str (s)  ;could have symbolp then symbol-name, but this ok
@@ -1593,7 +1595,7 @@ If HEADER-VALUE-PARSER return multiple values, they are concatenated together in
 (defun safer-string (s)
  ;(if s (safer-read-from-string (to-str s)) "")
  ;(if s (string-trim '( #\( #\) #\newline #\space #\; ) (to-str s)) " ") ;was "" still stripped so:
-  (if s (csv-trim2 '( #\( #\) #\newline #\space #\; ) (to-str s)) " ")
+  (if s (csv-trim2 '( #\( #\) #\newline #\space #\; #\\) (to-str s)) " ")
   )
 ;tsp.cl
 ;(defun remove-nils (l) (remove-if #'null l)) ;already above
@@ -1961,7 +1963,10 @@ the command has printed on stdout as string."
  
 ;-
 (defun getnum (str)
-  (numstr (trim-punct str)))
+  (when (len-gt str 0) ;new
+    (numstr (trim-punct str))))
+
+(defun numericp (sn) (numberp (getnum sn)))
 
 (defun get_nums (line)
       (collect-if #'numberp (mapcar #'getnum (remove-if-not #'full (explode- line)))))
