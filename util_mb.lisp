@@ -1963,8 +1963,9 @@ the command has printed on stdout as string."
  
 ;-
 (defun getnum (str)
-  (when (len-gt str 0) ;new
-    (numstr (trim-punct str))))
+  (if (and (stringp str) (len-gt str 0)) ;new
+    (numstr (trim-punct str))
+    (when (numberp str) str)))
 
 (defun numericp (sn) (numberp (getnum sn)))
 
