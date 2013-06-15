@@ -781,6 +781,9 @@ pathnames as well."
       1 
       (reduce #'+ tree :key #'tree-size))) 
 ;------
+(defun lexemep (s) (or (stringp s) (symbolp s)))
+(defun lens1 (s) (if (lexemep s) 1 (len s)))
+;------
 (defun lens (l)
   (mapcar #'len l))
 ;------
