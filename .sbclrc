@@ -8,17 +8,17 @@
 #-:asdf (load "/Users/bobak/Documents/downloads/lang/lsp/asdf/asdf-install/load-asdf-install")
 (setf asdf:*central-registry* 
       '( *default-pathname-defaults* 
-	#p"/usr/local/lib/sbcl/site-systems/"
-;	#p"/Users/bobak/quicklisp/local-projects/" same as:
-	;#p"/Users/bobak/Documents/downloads/lang/lsp/code/project/"
-	#p"/Users/bobak/dwn/lang/lsp/code/project/"
-	#p"/usr/share/common-lisp/systems/" ;ln to below
+        #p"/usr/local/lib/sbcl/site-systems/"
+;       #p"/Users/bobak/quicklisp/local-projects/" same as:
+        ;#p"/Users/bobak/Documents/downloads/lang/lsp/code/project/"
+        #p"/Users/bobak/dwn/lang/lsp/code/project/"
+        #p"/usr/share/common-lisp/systems/" ;ln to below
 ))
-	;#p"/Users/bobak/.sbcl/systems/"
-	 ;#p"/Users/bobak/lsp/y"
-	;#p"/Users/bobak/Documents/downloads/lang/lsp/code/project/src/clbuild_0/systems/" 
+        ;#p"/Users/bobak/.sbcl/systems/"
+         ;#p"/Users/bobak/lsp/y"
+        ;#p"/Users/bobak/Documents/downloads/lang/lsp/code/project/src/clbuild_0/systems/" 
 (defun pv () (princ sb-ext:*debug-print-variable-alist*
-		    ))
+                    ))
 ;#+ignore
 (defun ldql ()
 (let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp" (user-homedir-pathname)))
@@ -26,30 +26,24 @@
     (if (probe-file quicklisp-init)
       (progn
           (load quicklisp-init)
-	  (if (probe-file t2) (load t2 :print t)
-	    (warn "no qa/ql"))
-	 ;(eval-when (:load-toplevel :execute)
-	 ;      (use-package :ql)
-	 ;	(defun ql (a) (quickload  a))
-	 ;	(defun qa (a) (system-apropos  a))
-	 ;	)
-	  ) ;t2 has fncs below
+          (if (probe-file t2) (load t2 :print t)
+            (warn "no qa/ql"))
+         ;(eval-when (:load-toplevel :execute)
+         ;      (use-package :ql)
+         ;      (defun ql (a) (quickload  a))
+         ;      (defun qa (a) (system-apropos  a))
+         ;      )
+          ) ;t2 has fncs below
       (warn "no quicklisp")))
 )
 (defun lut () (load "/Users/bobak/lsp/util_mb"))
 (defun lrsm () (load "/Users/bobak/lsp/rsm"))
 (defun lql- () (load "/Users/bobak/lsp/ql.lisp"))
-(defun lql ()
-  (load #P"/Users/bobak/quicklisp/setup.lisp")
- ;(load #P"/Users/bobak/quicklisp/t.lsp" :print t)
-  )
+(defun lql () (load #P"/Users/bobak/quicklisp/setup.lisp"))
 (lql) ;just do it 
-#+quicklisp
-(defun ql (a) (ql:quickload  a))
-#+quicklisp
-(defun qa (a) (ql:system-apropos  a))
-#+quicklisp
-(defun qd (a) (ql:who-depends-on  a))
+#+quicklisp (defun ql (a) (ql:quickload  a))
+#+quicklisp (defun qa (a) (ql:system-apropos  a))
+#+quicklisp (defun qd (a) (ql:who-depends-on  a))
 ;#<SYSTEM km / km-2-5-33 / quicklisp 2012-09-09>
 (defun lkm () (load "/Users/bobak/lsp/km_2-5-33"))
 ;(defun lkm () (ql 'km))
@@ -95,6 +89,8 @@
 (defun ltb () (load "t")) 
 (defun lt2 () (load "t2.cl" :print t)) 
 (defun lu () (load "/Users/bobak/lsp/util_mb"))
+(defun lq () "https://github.com/pnathan/cl-linq"
+  (ql 'alexandria) (load "/Users/bobak/lsp/cl-linq.lisp"))
 (defun cu () (compile-file "/Users/bobak/lsp/util_mb.lisp"))
 (defun cu2 () (compile-file "/Users/bobak/lsp/u2.lisp"))
 (defun ct () (compile-file "t.cl")) 
@@ -110,13 +106,12 @@
   (sb-unix:posix-getcwd/))
 (defun pwd ()
  (sb-unix:posix-getcwd))
-(defun al (l) ;la1 & ald will both load a .asd file in the dir w/o having to type it ;should come up w/dialog&have a dflt 
+(defun al (l) 
  "asdf load"
   (asdf:oos 'asdf:load-op l))
 (defun altst (l) 
- "asdf load test"
+ "asdf load"
   (asdf:oos 'asdf:test-op l))
-(defun alt (l) "asdf load test" (asdf:oos 'asdf:test-op l))
 (defvar *clocc-root* "/Users/bobak/Documents/downloads/lang/lsp/code/clocc/clocc/") 
 (defun loc ()
    "load clocc"
@@ -171,17 +166,17 @@
   (push :aclrepl cl:*features*))
 #+aclrepl  ;http://www.sbcl.org/manual/sb_002daclrepl.html
 (progn
-	(setq sb-aclrepl:*max-history* 100)
-	(setf (sb-aclrepl:alias "asdc")
-	#'(lambda (sys) (asdf:operate 'asdf:compile-op sys)))
-	(sb-aclrepl:alias "l" (sys) (asdf:operate 'asdf:load-op sys))
-	(sb-aclrepl:alias "t" (sys) (asdf:operate 'asdf:test-op sys))
-	;; The 1 below means that two characaters ("up") are required
-	(sb-aclrepl:alias ("up" 1 "Use package") (package) (use-package package))
-	;; The 0 below means only the first letter ("r") is required,
-	;; such as ":r base64"
-	(sb-aclrepl:alias ("require" 0 "Require module") (sys) (require sys))
-	(setq cl:*features* (delete :aclrepl cl:*features*))) 
+        (setq sb-aclrepl:*max-history* 100)
+        (setf (sb-aclrepl:alias "asdc")
+        #'(lambda (sys) (asdf:operate 'asdf:compile-op sys)))
+        (sb-aclrepl:alias "l" (sys) (asdf:operate 'asdf:load-op sys))
+        (sb-aclrepl:alias "t" (sys) (asdf:operate 'asdf:test-op sys))
+        ;; The 1 below means that two characaters ("up") are required
+        (sb-aclrepl:alias ("up" 1 "Use package") (package) (use-package package))
+        ;; The 0 below means only the first letter ("r") is required,
+        ;; such as ":r base64"
+        (sb-aclrepl:alias ("require" 0 "Require module") (sys) (require sys))
+        (setq cl:*features* (delete :aclrepl cl:*features*))) 
 ;
 (defun bt (&optional (n 7))
  (sb-debug:backtrace n)) ;bt
@@ -191,13 +186,13 @@
 (defun load-lib (library) 
   "Loads a library using ASDF" 
   (handler-bind ((asdf:missing-component (lambda (c) (print-object c *standard-output*) 
-					   (format t "~%~%Enter the path of its possible location:") 
-					   (let ((path (read-line))) 
-					     (if (zerop (length path)) 
-					       (invoke-restart 'abort-request) 
-					       ;or (abort) ;in SLIME-less ;environment 
-					       (progn (push path asdf:*central-registry*) 
-						      (invoke-restart 'asdf:retry))))))) 
+                                           (format t "~%~%Enter the path of its possible location:") 
+                                           (let ((path (read-line))) 
+                                             (if (zerop (length path)) 
+                                               (invoke-restart 'abort-request) 
+                                               ;or (abort) ;in SLIME-less ;environment 
+                                               (progn (push path asdf:*central-registry*) 
+                                                      (invoke-restart 'asdf:retry))))))) 
     (asdf:oos 'asdf:load-op library)))
 ;Unfortunately it doesn't work, because there is no RETRY restart available at the time of searching through *central-registry*. At the time the missing-component error occurs there is no way to fix it, without patching up asdf.lisp. There must be another way, for example through *system-definition-search-functions*. Or maybe it's better to encourage ASDF developers to provide retry restart for the missing-component error? 
 (defun al2 (l) (load-lib l)) 
@@ -205,7 +200,7 @@
 (defun add-package-nickname (name nickname)
  (let ((p (find-package name)))
    (rename-package p (package-name p)
-	(cons nickname (package-nicknames name)))))
+        (cons nickname (package-nicknames name)))))
 
 (add-package-nickname :cl-user :user) 
 (add-package-nickname :common-lisp-user :lisp) ;new 
@@ -329,7 +324,7 @@
     (values functions macros)) )   
 ;;; If a fasl was stale, try to recompile and load (once).
 (defmethod asdf:perform :around ((o asdf:load-op)
-			      (c asdf:cl-source-file))
+                              (c asdf:cl-source-file))
   (handler-case (call-next-method o c)
    ;; If a fasl was stale, try to recompile and load (once).
    (sb-ext:invalid-fasl ()
@@ -342,7 +337,7 @@
 (defmacro without-package-variance-warnings (&body body)
     `(eval-when (:compile-toplevel :load-toplevel :execute)
             (handler-bind (#+sbcl(sb-int:package-at-variance #'muffle-warning))
-	             ,@body)))
+                     ,@body)))
 
  (sb-alien:alien-funcall ;http://xach.livejournal.com/208882.html
        (sb-alien:extern-alien "disable_lossage_handler" (function sb-alien:void)))
@@ -548,33 +543,12 @@
 (defun package-prompt (stream)
   (unless (eq *last-package* *package*)
     (setf *cached-prompt*
-	  (concatenate 'string (or (first (package-nicknames *package*))
-				   (package-name *package*))
-		       "> "))
+          (concatenate 'string (or (first (package-nicknames *package*))
+                                   (package-name *package*))
+                       "> "))
     (setf *last-package* *package*))
   (terpri)
   (princ *cached-prompt* stream))
 
 ;(setf sb-int:*repl-prompt-fun* #'package-prompt) 
-(sb-ext:set-sbcl-source-location "/Users/bobak/dwn/lang/lsp/lisps/sbcl/sbcl")
-
-;http://blog.viridian-project.de/2009/07/24/sbcl-getting-started-with-mmap/
-#+ignore
-(defun mmap-file (file-stream)
-  “Use mmap() to map FILE-STREAM into memory.”
-  (sb-posix:mmap nil ; where to map (NIL if you don’t care)?
-                 (file-length file-stream) ; how much?
-                 sb-posix:prot-read
-                 sb-posix:map-shared
-                 (sb-sys:fd-stream-fd file-stream)
-                 0)) ; offset into the file 
-
-(defun program-stream (program &optional args)
-  (let ((process (sb-ext:run-program program args
-                                     :input :stream
-                                     :output :stream
-                                     :wait nil
-                                     :search t)))
-    (when process
-      (make-two-way-stream (sb-ext:process-output process)
-                           (sb-ext:process-input process))))) 
+(sb-ext:set-sbcl-source-location "/Users/bobak/dwn/lang/lsp/lisps/sbcl/sbcl") 
