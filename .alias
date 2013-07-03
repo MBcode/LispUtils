@@ -1,0 +1,13 @@
+#4595   24533  200330 /Users/bobak/.alias  tcsh
+alias scl "date;rlwrap sbcl --noinform "
+alias s1- 'scl --load ld1.cl'
+alias s0 'scl --load ld0.cl'
+alias s1 'scl --load ld.cl'
+alias s2 'scl --load ld2.cl'
+alias s3 'scl --load ld3.cl'
+alias s4 'scl --load ld4.cl'
+alias s5 'scl --load ld5.cl'
+alias s6 'scl --load ld6.cl'
+alias s7 'scl --load ld7.cl'
+alias s8 'scl --load ld8.cl'
+alias sclt 'scl --load t.lsp' 
