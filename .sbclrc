@@ -41,7 +41,8 @@
 (defun lql- () (load "/Users/bobak/lsp/ql.lisp"))
 (defun lql () (load #P"/Users/bobak/quicklisp/setup.lisp"))
 (lql) ;just do it 
-#+quicklisp (defun ql (a) (ql:quickload  a))
+;#+quicklisp (defun ql (a) (ql:quickload  a))
+#+quicklisp (defun ql (a) (ql:quickload  a :verbose t :explain t))
 #+quicklisp (defun qa (a) (ql:system-apropos  a))
 #+quicklisp (defun qd (a) (ql:who-depends-on  a))
 ;#<SYSTEM km / km-2-5-33 / quicklisp 2012-09-09>
@@ -536,6 +537,8 @@
             (push (asdf:component-name pkg) system-list)))
       (asdf:map-systems #'push-pkg-to-system-list))
     (sort system-list #'string<))) 
+
+(defun lcs () (list-current-systems))
 ;=use old prompt until newprompt.cl has something more interesting
 (defvar *last-package* nil)
 (defvar *cached-prompt* nil)
