@@ -36,11 +36,18 @@
           ) ;t2 has fncs below
       (warn "no quicklisp")))
 )
+;;; The following lines (should have been) added by ql:add-to-init-file:
+#-quicklisp
+(let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp"
+				       (user-homedir-pathname))))
+  (when (probe-file quicklisp-init)
+    (load quicklisp-init))) 
+
 (defun lut () (load "/Users/bobak/lsp/util_mb"))
 (defun lrsm () (load "/Users/bobak/lsp/rsm"))
 (defun lql- () (load "/Users/bobak/lsp/ql.lisp"))
 (defun lql () (load #P"/Users/bobak/quicklisp/setup.lisp"))
-(lql) ;just do it 
+;(lql) ;just do it 
 ;#+quicklisp (defun ql (a) (ql:quickload  a))
 #+quicklisp (defun ql (a) (ql:quickload  a :verbose t :explain t))
 #+quicklisp (defun qa (a) (ql:system-apropos  a))
@@ -555,3 +562,40 @@
 
 ;(setf sb-int:*repl-prompt-fun* #'package-prompt) 
 (sb-ext:set-sbcl-source-location "/Users/bobak/dwn/lang/lsp/lisps/sbcl/sbcl") 
+
+;https://github.com/Hexstream/hexstream-sbcl-init/blob/master/.sbclrc us&cp..
+; wish these had comments /add them@some pnt
+(defun us (symbols &optional (package *package*))
+  (if (not (listp symbols))
+      (setf symbols (list symbols)))
+  (unexport symbols package)
+  (dolist (symbol symbols)
+    (unintern symbol package)))
+
+(defun cp (package)
+  (do-symbols (symbol package)
+    (if (not (symbol-package symbol))
+	(us symbol package)))) 
+
+(defun unexport-all (package)
+  (do-external-symbols (symbol package)
+    (unexport symbol package)))
+
+(defun unintern-all (package)
+  (let ((package (find-package package)))
+    (do-symbols (symbol package)
+      (if (eq (symbol-package symbol) package)
+	  (unintern symbol package))))) 
+
+(defun char-apropos (string &key (start 0) (end char-code-limit))
+  (let ((string (string string)))
+    (loop for code from start below end
+          for name = (char-name (code-char code))
+          when (search string name)
+          do (format t "~&; ~S = ~C~%" (code-char code) (code-char code))))) 
+;-
+;/Users/bobak/dwn/lang/lsp/doc/book/HyperSpec/Body/m_do_sym.htm 
+(defun pkg-symbs (&optional (pkg cl:*package*)) ;can (describe pkg) as well
+  (let ((lst ()))
+   (do-symbols (s (find-package pkg)) (push s lst))
+   lst))
