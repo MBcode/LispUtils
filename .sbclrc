@@ -56,7 +56,6 @@
 (defun lkm () (load "/Users/bobak/lsp/km_2-5-33"))
 ;(defun lkm () (ql 'km))
 (defun lkm2 () (lkm) (load "/Users/bobak/lsp/u2"))
-(defun lkm3 () (lu) (lkm2))
 ;#p"/usr/share/common-lisp/source/" ; #p"/Users/bobak/Documents/downloads/lang/lsp/asdf/registry"
 (defun apr- (s) (apropos s :cl))
 (defun apr (s) (apropos s))
@@ -98,6 +97,7 @@
 (defun ltb () (load "t")) 
 (defun lt2 () (load "t2.cl" :print t)) 
 (defun lu () (load "/Users/bobak/lsp/util_mb"))
+(defun lkm3 () (lu) (lkm2))
 (defun lq () "https://github.com/pnathan/cl-linq"
   (ql 'alexandria) (load "/Users/bobak/lsp/cl-linq.lisp"))
 (defun cu () (compile-file "/Users/bobak/lsp/util_mb.lisp"))
