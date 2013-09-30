@@ -241,6 +241,7 @@ in `directory normal form'. Returns truename which will be in
    :defaults wildcard))
 
 
+#-CCL
 (defun directory-pathname-p (p)
   "Is the given pathname the name of a directory? This function can
 usefully be used to test whether a name returned by LIST-DIRECTORIES
@@ -2282,8 +2283,8 @@ the command has printed on stdout as string."
     (terpri) 
     (dolist (sub 
 	      #+sbcl (sb-mop:class-direct-subclasses class)
-	      #-sbcl (clos:class-direct-subclasses class)
-	      ) 
+	      #-sbcl (class-direct-subclasses class)
+	      ) ;#-sbcl (clos:class-direct-subclasses class) ;not4 ccl
       (print-subclasses sub (1+ indent))))) 
 ;-
 (defun butlast- (s)
@@ -2439,7 +2440,8 @@ the command has printed on stdout as string."
               )
     :finally (return (nreverse res))))
 
-(defun prs-csv (str) (csv_parse-str str  :separator #\Comma))
+;(defun prs-csv (str) (csv_parse-str str  :separator #\Comma))
+(defun prs-csv (str) (csv_parse-str str  :separator #\,))
 (defun prs-csv-nums (str) 
   (mapcar- #'numstr- (prs-csv str)))
  
@@ -2783,3 +2785,13 @@ is replaced with replacement."
 (defun plen (l) (if (stringp l) l (len l)))
 (defun mplen (l) (mapcar #'plen l))
 (defun mplen2 (l) (format t "~%~a" (plen l)) (mplen l)) 
+;from: http://common-lisp.net/language.html
+;defun explode (string &optional (delimiter #\Space)) ;already in km
+(defun explode= (string &optional (delimiter #\Space))
+  (let ((pos (position delimiter string)))
+    (if (null pos)
+        (list string)
+        (cons (subseq string 0 pos)
+              (explode (subseq string (1+ pos))
+                       delimiter)))))
+ 
