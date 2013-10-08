@@ -601,3 +601,5 @@
   (let ((lst ()))
    (do-symbols (s (find-package pkg)) (push s lst))
    lst))
+
+(defun print-red  (a)  (format t "~c[31m ~a ~c[0m~%"  #\ESC a #\ESC)) 
