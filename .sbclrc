@@ -5,7 +5,7 @@
 ;(require 'swank)
 ;(swank-loader:init :load-contribs t)
 
-#-:asdf (load "/Users/bobak/Documents/downloads/lang/lsp/asdf/asdf-install/load-asdf-install")
+;#-:asdf (load "/Users/bobak/Documents/downloads/lang/lsp/asdf/asdf-install/load-asdf-install")
 (setf asdf:*central-registry* 
       '( *default-pathname-defaults* 
         #p"/usr/local/lib/sbcl/site-systems/"
@@ -320,6 +320,7 @@
   (eval "(defun all (s) (lispy:install (lispy:module-by-name s)))")
 ))
 
+#+sbcl
 (defun getenv (var) ;close
    (sb-ext:posix-getenv var))
 
@@ -333,6 +334,7 @@
             (push symbol functions)))) 
     (values functions macros)) )   
 ;;; If a fasl was stale, try to recompile and load (once).
+#+sbcl
 (defmethod asdf:perform :around ((o asdf:load-op)
                               (c asdf:cl-source-file))
   (handler-case (call-next-method o c)
@@ -384,6 +386,7 @@
 
 (push 'ed-in-vim *ed-functions*) 
 ;;--
+#+sbcl
 (defun gc-full () (sb-ext:gc :full t))
 ;;--
 ;;/Users/bobak/Documents/downloads/lang/lsp/code/project/src/poiu
@@ -399,23 +402,29 @@
         (allocation-threshhold (sb-ext:bytes-consed-between-gcs)))
     (< available-bytes (* *prefork-allocation-reserve-ratio* allocation-threshhold))))
 
+#+sbcl
 (defun posix-fork ()
   (when (should-i-gc-p)
     (sb-ext:gc))
   (sb-posix:fork))
 
+#+sbcl
 (defun posix-close (x)
   (sb-posix:close x))
 
+#+sbcl
 (defun posix-setpgrp ()
   (sb-posix:setpgrp))
 
+#+sbcl
 (defun posix-wait ()
   (sb-posix:wait))
 
+#+sbcl
 (defun posix-wexitstatus (x)
   (sb-posix:wexitstatus x))
 
+#+sbcl
 (defun posix-pipe ()
   (sb-posix:pipe))
  
@@ -574,6 +583,10 @@
   (dolist (symbol symbols)
     (unintern symbol package)))
 
+(defun tp (package &optional (skip '()))
+   (do-symbols (set-difference (symbol package) skip)
+      (trace symbol)))
+
 (defun cp (package)
   (do-symbols (symbol package)
     (if (not (symbol-package symbol))
@@ -601,5 +614,14 @@
   (let ((lst ()))
    (do-symbols (s (find-package pkg)) (push s lst))
    lst))
+;or
+(defun fs (&optional (pkg :cl-user))
+ (let ((p (find-package pkg)))
+  (when p
+   (loop
+     for s being the symbols in p
+     when (eq p (symbol-package s))
+     do (format t "~a~%" s)))))
 
-(defun print-red  (a)  (format t "~c[31m ~a ~c[0m~%"  #\ESC a #\ESC)) 
+(defun print-red  (a)  (format t "~c[31m ~a ~c[0m~%"  #\ESC a #\ESC))
+(mapc 'require '(sb-bsd-sockets sb-posix sb-introspect sb-cltl2 asdf)) 
