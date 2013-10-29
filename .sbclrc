@@ -584,8 +584,8 @@
     (unintern symbol package)))
 
 (defun tp (package &optional (skip '()))
-   (do-symbols (set-difference (symbol package) skip)
-      (trace symbol)))
+   (do-symbols (symbol package) 
+     (unless (member symbol skip) (trace symbol))))
 
 (defun cp (package)
   (do-symbols (symbol package)
