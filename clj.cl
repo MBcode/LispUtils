@@ -55,3 +55,6 @@
 (defun seq (a) (coerce a 'list))
 (defun vec (a) (coerce a 'vector))
 (defun seq? (a) (typep a 'sequence))
+;will also try a cl.clj for fun as well, then look at some past clj code, now incl:
+; https://github.com/runa-dev/riemann & https://github.com/andrew-nguyen/titan-clj
+; & probably a little program first in cl then clj
