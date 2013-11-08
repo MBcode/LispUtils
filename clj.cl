@@ -58,3 +58,5 @@
 ;will also try a cl.clj for fun as well, then look at some past clj code, now incl:
 ; https://github.com/runa-dev/riemann & https://github.com/andrew-nguyen/titan-clj
 ; & probably a little program first in cl then clj
+;https://play.google.com/store/apps/details?id=com.sattvik.clojure_repl&hl=en on my phone now
+;might start calling out to: https://github.com/halgari/clojure-py ;could still go mq comm route too 
