@@ -60,3 +60,20 @@
 ; & probably a little program first in cl then clj
 ;https://play.google.com/store/apps/details?id=com.sattvik.clojure_repl&hl=en on my phone now
 ;might start calling out to: https://github.com/halgari/clojure-py ;could still go mq comm route too 
+(defun re-seq (a b) (cl-ppcre:all-matches a b))
+;nth&sort args switched
+;reduce fnc iv l -> (reduce #'fnc l :initial-value iv)
+;doseq -> dolist
+;write: (defun take (n l) ;loop n &remove )
+;reader/macro stuff (for non parens) if I don't want to change that/but probably would
+;write range
+(defun range (start end)
+    (when  (and  (numberp start)  (numberp end))
+              (loop for i from start to end collect i)))
+;assoc -> gethash
+;dissoc -> remhash
+;doseq -> maphash
+;all lets are let*s
+;& -> &optional
+;doc -> describe
+;apropos ->
