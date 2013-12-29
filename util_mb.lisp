@@ -2735,6 +2735,6 @@ is replaced with replacement."
     (if (null pos)
         (list string)
         (cons (subseq string 0 pos)
-              (explode (subseq string (1+ pos))
+              (explode= (subseq string (1+ pos))
                        delimiter)))))
  
