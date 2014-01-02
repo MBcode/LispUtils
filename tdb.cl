@@ -7,9 +7,11 @@
 (lu)
 ;(in-package :sqlite)
 (defvar *c* (sqlite:connect "reuters.db"))
+
 (defun ft2alst (t3)
   "freq table, docid term count -> term,count alist"
   (cons (second t3) (third t3)))
+
 ;should set up for any doc
 ;(defvar *l1* (sqlite:execute-to-list *c* "select * from frequency where docid='17035_txt_earn'"))
 ;(defvar *l2* (sqlite:execute-to-list *c* "select * from frequency where docid='10080_txt_crude'"))
@@ -56,9 +58,9 @@
        ;mx
        ))) ;get a loop max in there too ;have a version that does it
 
-(ql 'sqlite)
-;(in-package :sqlite)
-(defvar *c* (sqlite:connect "reuters.db"))
+;(ql 'sqlite)
+;;(in-package :sqlite)
+;(defvar *c* (sqlite:connect "reuters.db"))
 (defvar *qs* "select * from v where term='washington' union select * from v where term='taxes' union select * from v where term='treasury' group by docid")
 
 (defun f-dc2alst (t3)
@@ -153,12 +155,12 @@
        ))) 
 ;get a loop max in there too
 
-(ql 'sqlite)
-;(in-package :sqlite)
-(defvar *c* (sqlite:connect "reuters.db"))
-(defvar *qs* "select * from v where term='washington' union select * from v where term='taxes' union select * from v where term='treasury' group by docid")
-;use one below if another view named v hasn't been constructed
-;(defvar *qs* "select * from frequency where term='washington' union select * from frequency where term='taxes' union select * from frequency where term='treasury' group by docid")
+;(ql 'sqlite)
+;;(in-package :sqlite)
+;(defvar *c* (sqlite:connect "reuters.db"))
+;(defvar *qs* "select * from v where term='washington' union select * from v where term='taxes' union select * from v where term='treasury' group by docid")
+;;use one below if another view named v hasn't been constructed
+;;(defvar *qs* "select * from frequency where term='washington' union select * from frequency where term='taxes' union select * from frequency where term='treasury' group by docid")
 
 (defun f-dc2alst (t3)
   "freq table, docid term count -> term,count alist"
@@ -170,3 +172,5 @@
   "qry db convert2alst and count values"
   (count-alst  (mapcar f2alst (sqlite:execute-to-list db qs))))
  
+;;====
+(defun tdb ()  (int2docs))
