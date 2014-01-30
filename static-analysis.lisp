@@ -53,7 +53,7 @@
                       (setf changed nil)))))
        finally (return string))) 
 
-;=use:
+;=use: http://ryepup.unwashedmeme.com/blog/2012/01/03/visualizing-call-graphs-in-lisp-using-swank-and-graphviz/
 ;USER (2):  (in-package :static-analysis)
 ;
 ;#<PACKAGE "STATIC-ANALYSIS">
