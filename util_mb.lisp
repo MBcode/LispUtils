@@ -2738,3 +2738,35 @@ is replaced with replacement."
               (explode= (subseq string (1+ pos))
                        delimiter)))))
  
+;start w/: http://permalink.gmane.org/gmane.lisp.steel-bank.general/3536 ;altered by bobak@balisp.org
+(defun clean-symbol (sym)
+  (substitute #\2 #\> (remove #\- (format nil "~A" sym))))
+
+;lets turn this into a fnc:
+(defun pkg-who-calls (package-name) ;could convert to str 
+ "in: pkg-name-str find it's fnc's who calls"
+ (let ((lst ())
+      (fn-hash (make-hash-table))
+     ;(package-name "MY-PACKAGE-NAME")
+      )
+  (do-symbols (jj package-name)
+    (when (eq (find-package package-name) (symbol-package jj))
+      (progn 
+	(mapcar (lambda (n) 
+		  (if (not (member (car n) (gethash jj fn-hash)))
+		      (setf (gethash jj fn-hash) (push (car n) 
+						       (gethash jj
+								fn-hash)))))
+		(sb-introspect:who-calls jj))
+	(push jj lst))))
+
+;  (maphash (lambda (fun used) (format t "~A is used in ~A~%" fun used)) fn-hash)
+  (format t "digraph mytest {~%")
+  (maphash (lambda (fun used)
+	     (loop for x in used
+		do
+		  (format t "~A -> ~A;~%" (clean-symbol x) (clean-symbol fun))))
+	   fn-hash)
+  (format t "}~%")) 
+)
+ 
