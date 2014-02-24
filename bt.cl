@@ -53,3 +53,7 @@
      (loop for i from start to (length (swank-backend::compute-backtrace
                                         start end))
            do (ignore-errors (print-frame i))))))
+
+(defun bt- (&optional (n 12))
+    (bte :start 1 :end n)
+    ) 
