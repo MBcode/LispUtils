@@ -239,7 +239,7 @@
          collect (cons key value)))  
  
 ;=====
-;(ql 'swank)
+;(ql 'swank) ;for extended bt (backtrace)
 (defun clbt  ()  (ql 'swank)  (compile-file "/Users/bobak/lsp/bt.lisp" :print t)) 
 (defun lbt  ()  (load "/Users/bobak/lsp/bt" :print t)) ;instead of:
 #+IGNORE
