@@ -240,7 +240,8 @@
  
 ;=====
 ;(ql 'swank)
-(defun lbt  ()  (load "/Users/bobak/lsp/bt.cl" :print t)) ;instead of:
+(defun clbt  ()  (ql 'swank)  (compile-file "/Users/bobak/lsp/bt.lisp" :print t)) 
+(defun lbt  ()  (load "/Users/bobak/lsp/bt" :print t)) ;instead of:
 #+IGNORE
 (progn ;http://jsnell.iki.fi/blog/archive/2007-12-19-pretty-sbcl-backtraces.html
 (defun backtrace-with-extra-info (&key (start 1) (end 20))
