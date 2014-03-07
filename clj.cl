@@ -77,3 +77,7 @@
 ;& -> &optional
 ;doc -> describe
 ;apropos ->
+;=Look@ running https://github.com/takeoutweight/clojure-scheme from a scheme w/in lisp like
+;  http://mumble.net/~jar/pseudoscheme/ which unfortunately needs some help to load.
+;  can build clojure-scheme-0.1.0-SNAPSHOT.jar w/nightcode, but it might not keep up w/jvm ver/?
+;Still curious about abcl clj interaction too.
