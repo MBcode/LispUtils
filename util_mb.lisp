@@ -406,6 +406,7 @@ pathnames as well."
   (ccl:signal-external-process process-handle 9) )
 ;-
 #+sbcl (defun cd (path) (sb-posix:chdir path)) 
+
 (defun ls (&optional d) 
  (break2lines
   (if (stringp d) (run-ext "ls" d)
@@ -2743,6 +2744,7 @@ is replaced with replacement."
   (substitute #\2 #\> (remove #\- (format nil "~A" sym))))
 
 ;lets turn this into a fnc:
+#+sbcl
 (defun pkg-who-calls (package-name) ;could convert to str 
  "in: pkg-name-str find it's fnc's who calls"
  (let ((lst ())
