@@ -2455,6 +2455,10 @@ If HEADER-VALUE-PARSER return multiple values, they are concatenated together in
     (cond ((null word) nil)
           (t (goexplode (if upper (string-upcase word) word) 
                         1 lenword '())))))
+
+(defun set-diff  (a b) 
+ "diff from set or single"
+ (set-difference  (list+ a)  (list+ b)))
  
 ;set-difference reorders so
 ;need set_diff that doesn't reorder, picked small collect only if not memeber of it
@@ -2771,4 +2775,10 @@ is replaced with replacement."
 	   fn-hash)
   (format t "}~%")) 
 )
- 
+;== 
+(defun pkg-symbols (pkg &optional (pl '()))
+   (do-external-symbols (s pkg)
+     (push s pl)) pl)
+;(defun tpl (pkg &optional (skip '())) ;need to test
+;  "trace pkg list" ;trying as can't apply the trace macro
+;  (sb-debug::expand-trace (set-diff (pkg-symbols pkg) skip))) 
