@@ -1,3 +1,5 @@
+;get more sb functionality bobak@balisp.org
+;look in: http://ccl.clozure.com/ccl-documentation.html &elsewhere
 (require :asdf) ;this is old, load updates, so fix again
 ;(declaim (optimize (debug 3) (safety 3) (speed 0) (space 0))) 
 ;(sb-ext:restrict-compiler-policy 'debug 3)
@@ -163,10 +165,13 @@
     (let ((s (get-output-stream-string str))) s ))) 
 (defun to-str (s) (coerce s 'string))
 (defun ls () (ccl:run-program "ls" '() :output *standard-output*))
+#+CCL
 (ql 'trivial-shell)
 ;defun tshell-command (str)
+#+CCL
 (defun run-ext (str)
      (trivial-shell:shell-command (to-str str)))
+#+CCL
 (defun date () (run-ext "date"))
 (defvar *uptime* (date))
 (defun uptime () *uptime*)
