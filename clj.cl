@@ -82,4 +82,4 @@
 ;  can build clojure-scheme-0.1.0-SNAPSHOT.jar w/nightcode, but it might not keep up w/jvm ver/?
 ;Still curious about abcl clj interaction too.
 ;
-;http://lispm.dyndns.org/sbcl (april-1-2014  I wish;)
+;http://lispm.dyndns.org/sbcl (april-1-2014  I wish;)  ;Curious std clj libs java lib dependance
