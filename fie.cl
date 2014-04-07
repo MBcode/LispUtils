@@ -17,10 +17,15 @@
 ;(defun first-full-head   (first-lv (collect-if #'(lambda (l) (len-gt ln)) (head- lol)))
 ;first-full-line w/a depth restriction would be the same,  could skip collect&do more of find/search
 ;so like defun find-len-gt but no item
-(defun first-len-gt (loln ln)  ;not exactly but start w/  ;should look4list end vs -lv but..
-  "look down list of lengthable things, &ret 1st gt ln"
-   (if (len-gt (first-lv loln) ln) (first-lv loln)
-       (first-len-gt (rest loln) ln)))
+(defun first-len-gt (loln len)  ;not exactly but start w/  ;should look4list end vs -lv but..
+  "look down list of lengthable things, &ret 1st gt len"
+   (if (len-gt (first-lv loln) len) (first-lv loln)
+       (first-len-gt (rest loln) len))) 
+;---as I might want all the first full lines, for paper/file-IE, also try a collect&continue to use
+(defun all-len-gt (loln &optional (len 5) (ln 10))
+  "look down list of lengthable things, ln long, &ret all gt len"
+   (collect-if #'(lambda (l) (len-gt l len)) (head loln ln))) 
+ 
 ;---
 (defun fie  (csvfn fncs)
  "InfoExtraction for one file"
@@ -62,4 +67,18 @@
 ;so far using h1 only sometimes going further but will want to get a lot out &prob worth list-lines
 ;&have several IE fncs goin over it
 
+;go from f+ft to first-len-gt if just want something like title, but then all-len-gt and get more than title
+
 ;could use csv read&write fncs, incl map-csv, if just append save map-line txt&just append csv out
+ 
+;==testing
+;(load "fie.cl" :print t)
+;now can test it here
+(defvar *ft* (mapcar #'f+ft *p*))
+(mapcar #'(lambda  (tr)  (print  (last tr))) *ft*)
+;might get rid of string-trim &just get upto the 1st Newline
+;save-lines ;after lists turned to txt line, want to insert commas when imploding
+;(with-open-file (strm "out.csv" :direction :output :if-exists :overwrite :if-does-not-exist :create)
+;   ;(write-csv strm *ft*)
+;    (mapcar #'(lambda (l) (write-line strm (apply #'str-cat l))) *ft*))
+(save-lines (mapcar #'(lambda (l)  (substitute #\, #\Space  (implode-l l))) *ft*) "out.csv") 
