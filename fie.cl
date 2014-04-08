@@ -127,3 +127,6 @@
 (trace implode-l)
 ;(save-lines- (mapcar #'(lambda (l)  (substitute #\, #\Space  (implode-l l))) *ft*) "out.csv")
 (save-lines- (mapcar #'(lambda (l)  (format nil "~{~a, ~}" l)) *ft*) "out.csv")
+;use: https://github.com/mark-watson/lisp_practical_semantic_web/blob/master/knowledgebooks_nlp/summarize.lisp 
+;but don't see use of interestingness eg.tf-idf http://cs.unm.edu/~eschulte/data/tfidf.lisp.html
+;instead of mac-service look@ http://libots.sourceforge.net/ 
