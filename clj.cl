@@ -52,6 +52,11 @@
 (defun next (l) (rest l))
 (defun concat (a b) (append a b))
 ;filter remove-if-not
+;right fold (reverse l)
+(defun drop (v l) (nthcdr v l))
+;(defun replace (a b v) (setf (aref v a) b))
+;multimethod get on hash-table
+;multimethod count on hash-table
 (defun seq (a) (coerce a 'list))
 (defun vec (a) (coerce a 'vector))
 (defun seq? (a) (typep a 'sequence))
@@ -63,7 +68,7 @@
 (defun re-seq (a b) (cl-ppcre:all-matches a b))
 ;nth&sort args switched
 ;reduce fnc iv l -> (reduce #'fnc l :initial-value iv)
-;doseq -> dolist
+;doseq -> dolist  ;have work on hash too
 ;write: (defun take (n l) ;loop n &remove )
 ;reader/macro stuff (for non parens) if I don't want to change that/but probably would
 ;write range
@@ -77,6 +82,8 @@
 ;& -> &optional
 ;doc -> describe
 ;apropos ->
+;.exec -> run-program
+;*posix-argv* -> *command-line-args*
 ;=Look@ running https://github.com/takeoutweight/clojure-scheme from a scheme w/in lisp like
 ;  http://mumble.net/~jar/pseudoscheme/ which unfortunately needs some help to load.
 ;  can build clojure-scheme-0.1.0-SNAPSHOT.jar w/nightcode, but it might not keep up w/jvm ver/?
