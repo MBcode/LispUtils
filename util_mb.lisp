@@ -1,3 +1,4 @@
+;bobak@balisp.org a collection of utils
 ;threec utilities
 (defun km-seqp+ (s)  ;mv2 kmb/u2.lisp
   (km-seqp (list+ s)))
