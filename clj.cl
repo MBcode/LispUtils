@@ -90,3 +90,6 @@
 ;Still curious about abcl clj interaction too.
 ;
 ;http://lispm.dyndns.org/sbcl (april-1-2014  I wish;)  ;Curious std clj libs java lib dependance
+ 
+;Clojure OSS ‏@oss_clj  5h 
+;land-of-lisp-in-clojure - Code from Barski's Land of Lisp book done in Clojure https://github.com/quux00/land-of-lisp-in-clojure …
