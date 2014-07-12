@@ -95,3 +95,6 @@
 ;land-of-lisp-in-clojure - Code from Barski's Land of Lisp book done in Clojure https://github.com/quux00/land-of-lisp-in-clojure …
  
 ;http://www.meetup.com/ClojureUserGroupHH/events/189615172/ clj clos comparison
+ 
+;http://chriskohlhepp.wordpress.com/metacircular-adventures-in-functional-abstraction-challenging-clojure-in-common-lisp
+;(ql '(fset folio  cl-stmx  chanl calispel  cl-actors   optima cl-unification cl-algebraic-data-type))
