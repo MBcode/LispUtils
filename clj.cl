@@ -98,3 +98,5 @@
  
 ;http://chriskohlhepp.wordpress.com/metacircular-adventures-in-functional-abstraction-challenging-clojure-in-common-lisp
 ;(ql '(fset folio  cl-stmx  chanl calispel  cl-actors   optima cl-unification cl-algebraic-data-type))
+ 
+;https://github.com/demonview/disclojure to deal w/some sytax diffs/..
