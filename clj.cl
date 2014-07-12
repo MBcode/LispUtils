@@ -93,3 +93,5 @@
  
 ;Clojure OSS ‏@oss_clj  5h 
 ;land-of-lisp-in-clojure - Code from Barski's Land of Lisp book done in Clojure https://github.com/quux00/land-of-lisp-in-clojure …
+ 
+;http://www.meetup.com/ClojureUserGroupHH/events/189615172/ clj clos comparison
