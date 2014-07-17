@@ -100,3 +100,6 @@
 ;(ql '(fset folio  cl-stmx  chanl calispel  cl-actors   optima cl-unification cl-algebraic-data-type))
  
 ;https://github.com/demonview/disclojure to deal w/some sytax diffs/..
+ 
+;j16_:Rich Hickey will discuss Transit at @LambdaJam, a little something-something we've been cooking up over at Cognitect. http://a.confui.com/-39FAMF8L 
+;Yes, we love our programming languages. But what’s the most important language in a polyglot system? Hint: it’s not a programming language. It’s the language used between programming languages. Options are many, and tradeoffs abound. This talk will introduce Transit, a new solution to the problem of sending values between applications written in different languages.
