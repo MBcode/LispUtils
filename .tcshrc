@@ -1,0 +1,23 @@
+set MANPATH="/usr/local/man:/usr/local/share/man:/usr/share/man:/usr/X11R6/man:/sw/share/man"
+set path = (~/bin $path . ~/bin/sdb /opt/ros/indigo/bin) 
+setenv LIBPQXX_LIBRARY_DIRS /usr/lib
+setenv LIBPQXX_INCLUDE_DIRS /usr/include
+setenv LD_LIBRARY_PATH /usr/local/lib
+setenv LDFLAGS "-Wl,-O1"
+setenv CPLUS_INCLUDE_PATH
+setenv PKG_CONFIG_PATH /usr/local/lib/pkgconfig:/usr/bin/pkg-config:/usr/local/bin/pkg-config
+
+setenv JUBATUS_HOME "/opt/jubatus"
+setenv PATH "${JUBATUS_HOME}/bin:${PATH}"
+setenv LD_LIBRARY_PATH "${JUBATUS_HOME}/lib:${LD_LIBRARY_PATH}"
+setenv LDFLAGS "-L${JUBATUS_HOME}/lib ${LDFLAGS}"
+setenv CPLUS_INCLUDE_PATH "${JUBATUS_HOME}/include:${CPLUS_INCLUDE_PATH}"
+setenv PKG_CONFIG_PATH "${JUBATUS_HOME}/lib/pkgconfig:${PKG_CONFIG_PATH}"
+setenv TOMCAT_HOME /var/lib/tomcat6 
+setenv XDG_DATA_HOME ~/scipm
+setenv XDG_CONFIG_HOME ~
+setenv XDG_DATA_DIRS "/usr/local/share/:/usr/share:${XDG_DATA_HOME}/"
+setenv XDG_CONFIG_DIRS "/etc/xdg"
+setenv XDG_CACHE_HOME ~/.cache 
+setenv DISPLAY :0
+source ~/.login

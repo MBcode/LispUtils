@@ -67,16 +67,12 @@ map Q gq
 " text is lost and it only works for putting the current register.
 "vnoremap p "_dp
 
-"execute pathogen#infect() 
-
 " Switch syntax highlighting on, when the terminal has colors
 " Also switch on highlighting the last used search pattern.
 if &t_Co > 2 || has("gui_running")
-  syntax on  "maybe always have on?
+  syntax on
   set hlsearch
 endif
-
-syntax on  "try it
 
 " Only do this part when compiled with support for autocommands.
 if has("autocmd")
@@ -178,7 +174,7 @@ else
   set autoindent		" always set autoindenting on
 
 endif " has("autocmd")
-"nmap <Leader>lisp :source ~/.vim/lisp/vilisp/VIlisp.vim<CR>
+nmap <Leader>lisp :source ~/.vim/lisp/vilisp/VIlisp.vim<CR>
 
 set nrformats=hex
 
@@ -199,10 +195,7 @@ au BufRead *.art set ft=lisp
 au BufRead *.vdf set ft=lisp
 au BufRead [jfmasond][0-9]*[a-gl0-9_=-] set ft=lisp
 au BufRead *.go set ft=c
-"let g:nekthuth_sbcl = "/usr/local/bin/sbcl" 
-
-au BufNewFile,BufRead *.clj setf clojure
-au BufNewFile,BufRead *.cljs setf clojure
+let g:nekthuth_sbcl = "/usr/local/bin/sbcl" 
 
 au BufRead *.js set ft=java
 au BufRead *.json set ft=java
@@ -237,16 +230,3 @@ nmap <C-c><C-c> vip<C-c><C-c>
 
 nmap <C-c>v :call Screen_Vars()<CR> 
 
-"set rtp+=~/.vim/bundle/vundle/
-"call vundle#rc()
-
-" let Vundle manage Vundle
-" required!
-"Bundle 'gmarik/vundle' 
-
-"set relativenumber 
-"set number  
-"let g:slimv_impl = 'sbcl'
-"let g:slimv_swank_cmd = '!osascript -e "tell application \"Terminal\" to do script \"sbcl --load ~/.vim/slime/start-swank.lisp\""' 
-"let g:slimv_swank_cmd = '! xterm -e sbcl --load /usr/share/common-lisp/source/slime/start-swank.lisp &' 
-"let g:slimv_swank_cmd = '! rlwrap sbcl --load /usr/share/common-lisp/source/slime/start-swank.lisp &' 
