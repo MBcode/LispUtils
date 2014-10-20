@@ -1,0 +1,134 @@
+
+(require :asdf) ;this is old, load updates, so fix again
+;(load "/Users/bobak/Documents/downloads/lang/lsp/asdf/asdf.lisp")
+(setf asdf:*central-registry* 
+      '(*default-pathname-defaults* 
+               #p"/usr/share/lisp/systems/" ;ln to bbelow
+       #p"/usr/share/common-lisp/source/" 
+ #p"/Users/bobak/dwn/lang/lsp/code/project/"
+;        #p"/Users/bobak/Documents/downloads/lang/lsp/asdf/registry"
+))
+(defun lp (l) 
+ "load w/print of symbol"
+  (load (format nil "~A" l) :print t))
+(defun lsp (l) 
+  (load (format nil "~A.lsp" l) :print t))
+;(defun pwd () (sb-unix:posix-getcwd))
+;(defun al (l) "asdf load" (asdf:oos 'asdf:load-op l))
+(defun l1 () (load "ld.cl" :print t)) 
+(defun l2 () (load "ld2.cl" :print t)) 
+(defvar *clocc-root* "/Users/bobak/Documents/downloads/lang/lsp/code/clocc/clocc/") 
+(defun loc ()
+   "load clocc"
+ ;(setq *clocc-root* "/Users/bobak/Documents/downloads/lang/lsp/code/clocc/clocc/") ; or whatever ...
+  (load (concatenate 'string *clocc-root* "clocc"))
+  (load (translate-logical-pathname "clocc:src;cllib;base")) ; or whatever ...
+)
+;defun sai ()
+;(defun lai ()
+;   "load asdf install"
+; (load #p"/usr/share/common-lisp/inst.cl" :print t)) 
+(defun ll () ;&opt f
+  (load "load.cl" :print t)
+  ;(when f (apply f))
+  )
+(defun pwd- ()
+ (progn *default-pathname-defaults*))
+(defun ex () 
+  (print "byE")
+  (quit))
+;;; Make SBCL act like Allegro REPL. It's optional but fun to do for productivity.
+;;; If you don't want it, just delete it.
+;got rid of this
+;(defun bt (n)
+; (sb-debug:backtrace n)) ;bt
+;;;=easier.cl
+;Easier ASDF?
+;Currently ASDF is not very user-friendly. I can think about at least two improvements: a separate function instead of (asdf:oos 'asdf:load-op :foo), and asking for path when some library is not found. I tried to write a function that solves both of these problems: 
+#+IGNORE
+(defun load-lib (library) 
+  "Loads a library using ASDF" 
+  (handler-bind ((asdf:missing-component (lambda (c) (print-object c *standard-output*) 
+                                           (format t "~%~%Enter the path of its possible location:") 
+                                           (let ((path (read-line))) 
+                                             (if (zerop (length path)) 
+                                               (invoke-restart 'abort-request) 
+                                               ;or (abort) ;in SLIME-less ;environment 
+                                               (progn (push path asdf:*central-registry*) 
+                                                      (invoke-restart 'asdf:retry))))))) 
+    (asdf:oos 'asdf:load-op library)))
+;Unfortunately it doesn't work, because there is no RETRY restart available at the time of searching through *central-registry*. At the time the missing-component error occurs there is no way to fix it, without patching up asdf.lisp. There must be another way, for example through *system-definition-search-functions*. Or maybe it's better to encourage ASDF developers to provide retry restart for the missing-component error? 
+
+;-
+(defun add-package-nickname (name nickname)
+ (let ((p (find-package name)))
+   (rename-package p (package-name p)
+        (cons nickname (package-nicknames name)))))
+
+(add-package-nickname :cl-user :user) 
+;;; More shortcuts & conveniences: 
+(defun ap (string &optional package)    ; be more liberal about 2nd arg 
+     (apply #'apropos string (when package (list (find-package package))))) 
+(defun de (&rest rest) (apply #'describe rest)) 
+(defun dis (&rest rest) (apply #'disassemble rest))   
+(defun mxp (&rest rest) (pprint (apply #'macroexpand rest))) 
+(defun mxp0 (&rest rest) (apply #'macroexpand rest))     ; same, but w/o PP 
+(defun mxp1 (&rest rest) (apply #'macroexpand-1 rest)) 
+;(defun mxp* (&rest rest) (apply #'walker:macroexpand-all rest)) ; CMUCL only 
+
+;;; For REPL compiles of functions with non-NIL lexical environments, 
+;;; e.g, (COMPILE* (let ((y 5)) (defun add5 (x) (+ x y)))). 
+(defmacro compile* (&body body) 
+     `(funcall (compile nil (lambda () ,@body)))) 
+
+;;; I don't know why I find myself needing this so often, but I do... 
+(defun hash-table-alist (hash-table &key (test (constantly t))) 
+     (loop for key being each hash-key in hash-table using (hash-value value) 
+       when (funcall test key value) 
+         collect (cons key value)))  
+;
+;(defun ex () (print "byE") (sb-ext:quit))
+;(defun date () (run-ext "date"))
+;(defvar *uptime* (date))
+;(defun uptime () *uptime*)
+;(defun lo () (format t "~&start:~a to-now:~a" (uptime) (date)) (ex)) 
+(defun lo () (format t "~&quit") (quit)) 
+;
+;(require :asdf)
+;#-:asdf (load "/Users/bobak/Documents/downloads/lang/lsp/asdf/asdf-install/load-asdf-install.lisp")
+#-:asdf (load "/usr/local/lib/cmucl/lib/contrib/asdf/asdf") 
+(defun al (l) 
+ "asdf load"
+  (asdf:oos 'asdf:load-op l))
+;
+;(in-package "COMMON-LISP")
+  
+  (defvar *last-package* nil)
+  (defvar *cached-prompt*)
+  
+  (defun tpl-prompt ()
+    (unless (eq *last-package* *package*)
+      (setf *cached-prompt*
+        (concatenate 'string (or (first (package-nicknames *package*))
+                                 (package-name *package*))
+                             "> "))
+      (setf *last-package* *package*))
+    *cached-prompt*)
+
+
+  (setf *prompt* #'tpl-prompt)
+;== 
+;(defun date () (run-ext "date"))
+;(defvar *uptime* (date))
+;(defun uptime () *uptime*)
+;(defun lo () (format t "~&start:~a to-now:~a" (uptime) (date)) (ex))
+;== 
+(defun lql ()
+    (load #P"/Users/bobak/quicklisp/setup.lisp"))
+(lql) ;just do it 
+#+quicklisp
+(defun ql (a) (ql:quickload  a))
+#+quicklisp
+(defun qa (a) (ql:system-apropos  a))
+#+quicklisp
+(defun qd (a) (ql:who-depends-on  a))
