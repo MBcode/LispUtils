@@ -73,3 +73,5 @@
  
 (defun save-js (js filename)
   (save-s (encode-json2str js) filename))
+ 
+;also looked at xml2json xmlstarlet xsltproc xml2json-xslt jq underscore jsonpp ppjson
