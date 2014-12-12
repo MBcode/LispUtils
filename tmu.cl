@@ -75,3 +75,10 @@
   (save-s (encode-json2str js) filename))
  
 ;also looked at xml2json xmlstarlet xsltproc xml2json-xslt jq underscore jsonpp ppjson
+; some output already csv or similar
+;(defun csv-bar (l) (csv_parse-str l :separator #\|))
+(defun csv-slash (l) (csv_parse-str l :separator #\/))
+
+(defun prs-slash-file (fn) (mapcar #'csv-slash (list-lines fn)))
+(defun t1 () (prs-slash-file "af/a1.txt"))
+ 
