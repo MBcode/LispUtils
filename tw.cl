@@ -35,3 +35,8 @@
 (parse-tw-strm)
 ;test w/:
 ;cat o8t | sbcl --load t.cl
+ 
+;can also sed stream to stnd csv like break, like:
+;(defun csv-bar (l) (csv_parse-str l :separator #\|))
+(defun csv-slash (l) (csv_parse-str l :separator #\/))
+ 
