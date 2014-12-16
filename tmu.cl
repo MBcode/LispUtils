@@ -1,4 +1,5 @@
 ;playing w/some xml 2json files,  bobak
+;;had (lu)  but now: (lkm3)
 (ql 'xmls)
 (defun parse-xmlsfile (filename &key (output-type nil))
   "might have better output than s-xml"
@@ -73,12 +74,13 @@
  
 (defun save-js (js filename)
   (save-s (encode-json2str js) filename))
- 
+
 ;also looked at xml2json xmlstarlet xsltproc xml2json-xslt jq underscore jsonpp ppjson
-; some output already csv or similar
+; then-get some output already csv or similar, w/some sed (for extra slashes)
 ;(defun csv-bar (l) (csv_parse-str l :separator #\|))
 (defun csv-slash (l) (csv_parse-str l :separator #\/))
 
 (defun prs-slash-file (fn) (mapcar #'csv-slash (list-lines fn)))
 (defun t1 () (prs-slash-file "af/a1.txt"))
- 
+(defvar *t1* (t1))
+;can: (mapcar #'len *t1*) 
