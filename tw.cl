@@ -39,4 +39,5 @@
 ;can also sed stream to stnd csv like break, like:
 ;(defun csv-bar (l) (csv_parse-str l :separator #\|))
 (defun csv-slash (l) (csv_parse-str l :separator #\/))
- 
+
+;maybe back2 cl-twitter/cl-twit-repl &just parse my https://twitter.com/favorites into KM 
