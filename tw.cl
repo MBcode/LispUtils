@@ -41,3 +41,4 @@
 (defun csv-slash (l) (csv_parse-str l :separator #\/))
 
 ;maybe back2 cl-twitter/cl-twit-repl &just parse my https://twitter.com/favorites into KM 
+;as I have taken2mobile filtering via favs
