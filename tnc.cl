@@ -359,3 +359,4 @@
 (defun tst3 (&optional (cts '("sf" "ny"))) 
   (mapcar #'do_city_ cts)
   (taxonomy))
+;Look over http://www.cliki.net/HTML%20parser &use https://github.com/eslick/cl-langutils &other nlp tagged libs for some scraping2concept tagging 
