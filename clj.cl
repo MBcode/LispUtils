@@ -107,3 +107,8 @@
 ;http://www.pixelmonkey.org/2014/11/02/clojonic .. clj-s in py  hy/etc
  
 ;Look into using MakeALisp https://github.com/kanaka/mal/tree/master/clojure
+ 
+;http://www.meetup.com/The-Bay-Area-Clojure-User-Group/events/220972863/ had some pre conj talks
+;I was reminded of some work from http://cliki.net/concurrency eg. lparallel's pmap,preduce...  (&lfarm)
+;also cl-future, cl-async, chanl, ..  ;pcall, patron ..                   ; http://www.cliki.net/distributed
+;persistance vivace-graph-v3 .. &re rdf stores
