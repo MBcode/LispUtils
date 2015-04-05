@@ -111,4 +111,6 @@
 ;http://www.meetup.com/The-Bay-Area-Clojure-User-Group/events/220972863/ had some pre conj talks
 ;I was reminded of some work from http://cliki.net/concurrency eg. lparallel's pmap,preduce...  (&lfarm)
 ;also cl-future, cl-async, chanl, ..  ;pcall, patron ..                   ; http://www.cliki.net/distributed
+;http://quickdocs.org/search?q=concurrency 
 ;persistance vivace-graph-v3 .. &re rdf stores
+;http://www.cliki.net/current%20recommended%20libraries
