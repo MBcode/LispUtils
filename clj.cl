@@ -114,3 +114,6 @@
 ;http://quickdocs.org/search?q=concurrency 
 ;persistance vivace-graph-v3 .. &re rdf stores
 ;http://www.cliki.net/current%20recommended%20libraries
+
+;datasci: https://twitter.com/ds_ldn/status/588764440146870273 https://github.com/henrygarner/clojure-data-science/blob/master/talk.org 
+; http://clojure-datascience.herokuapp.com/ cl-ml clj-vw  ;sw: grafter loom semantic-csv
