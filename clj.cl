@@ -117,3 +117,6 @@
 
 ;datasci: https://twitter.com/ds_ldn/status/588764440146870273 https://github.com/henrygarner/clojure-data-science/blob/master/talk.org 
 ; http://clojure-datascience.herokuapp.com/ cl-ml clj-vw  ;sw: grafter loom semantic-csv
+;https://github.com/liebke/incanter.git
+;Drew Conway ‏@drewconway Data science in Clojure, nice talk by @sorenmacbeth https://www.youtube.com/watch?v=omSTAwSjYc8 … 
+ 
