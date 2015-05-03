@@ -119,4 +119,5 @@
 ; http://clojure-datascience.herokuapp.com/ cl-ml clj-vw  ;sw: grafter loom semantic-csv
 ;https://github.com/liebke/incanter.git
 ;Drew Conway ‏@drewconway Data science in Clojure, nice talk by @sorenmacbeth https://www.youtube.com/watch?v=omSTAwSjYc8 … 
+; @sorenmacbeth hadoop(cacalog);to storm & yieldbot/marceline on trident;to spark clj-spark yieldbot/flambo ; cubert web-repl data explore(ipy like);  use s3, parquet 
  
