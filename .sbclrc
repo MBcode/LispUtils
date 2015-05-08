@@ -102,6 +102,8 @@
   (ql 'alexandria) (load "/Users/bobak/lsp/cl-linq.lisp"))
 (defun cu () (compile-file "/Users/bobak/lsp/util_mb.lisp"))
 (defun cu2 () (compile-file "/Users/bobak/lsp/u2.lisp"))
+(defun cu3 () (compile-file "/home/bobak/lsp/km_2-5-33.lisp"))
+(defun cub () (cu) (cu2) (cu3)) ;run after every sbcl upgrade
 (defun cgl () (load "/Users/bobak/lsp/cg.cl")) ;load cg callgraph
 (defun ct () (compile-file "t.cl")) 
 (defun lt- () (load "t.fasl" :print t)) 
