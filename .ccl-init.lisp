@@ -1,4 +1,4 @@
-;get more sb functionality bobak@balisp.org
+;get more sb functionality bobak@computer.org old: balisp.org
 ;look in: http://ccl.clozure.com/ccl-documentation.html &elsewhere
 (require :asdf) ;this is old, load updates, so fix again
 ;(declaim (optimize (debug 3) (safety 3) (speed 0) (space 0))) 
