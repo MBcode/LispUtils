@@ -121,3 +121,4 @@
 ;Drew Conway ‏@drewconway Data science in Clojure, nice talk by @sorenmacbeth https://www.youtube.com/watch?v=omSTAwSjYc8 … 
 ; @sorenmacbeth hadoop(cacalog);to storm & yieldbot/marceline on trident;to spark clj-spark yieldbot/flambo ; cubert web-repl data explore(ipy like);  use s3, parquet 
  
+;Reddit Lisp ‏@reddit_lisp  ;#lisp Cloje: A Clojure dialect on top of Scheme | http://redd.it/3fevo8 ; https://gitlab.com/cloje/cloje
