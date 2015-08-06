@@ -1196,7 +1196,8 @@ If HEADER-VALUE-PARSER return multiple values, they are concatenated together in
 ;====================================================
 ;"int/ffi/cl-objc/src/utils.lisp" 104 lines --33%--     35,8-15       72%
 ;defun split-string (string separator &key (test-fn #'char-equal))
-(defun split-string (string &optional (separator " ") &key (test-fn #'char-equal)) ;soCanReplace other
+;defun split-string (string &optional (separator " ") &key (test-fn #'char-equal)) ;soCanReplace other
+(defun split-string (string &optional (separator #\Space) &key (test-fn #'char-equal)) 
   "Split STRING containing items separated by SEPARATOR into a list."
   (let ((ret)
         (part))
