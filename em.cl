@@ -68,6 +68,12 @@
     "sv :seq"
     (let ((wsv (words-seq vals)))
       (when (full wsv) (sv i sn wsv nil t))))
+;---from tel.cl:
+(defun set-hash (h key val)
+   ;(setf (gethash key h) val)
+    (pushnew (first-lv val) (gethash key h))
+   ;(pushnew (first-lv (first-lv val)) (gethash key h))
+   )
 ;---
 (defun email-person (atstr) (str-trim (first-lv (split-string atstr #\@))))
 (defun email_person (atstr) (replace-all (email-person atstr) "." "_"))
@@ -83,6 +89,9 @@
 ;from --~subj--> all-of: to/cc/bcc (could put b/cc svs's into to) ;could just pull out cl-graph 
 ;Easier to start w/ ~subj/threads from a top candidate list sketch, so have less to load;(if easy to filter)
 ;each thread/~subj could have it's own graph/set of instances; len could have re/loops
+(ql 'md5) ;md5 of ~body as key,& msg-id as val
+(defvar *b2mid* (make-hash-table :test #'equal)) ;body to msd-id
+(defvar *bl2mid* (make-hash-table :test #'equal)) ;body-len(key):blk to msd-id
 (defun js2mh (&optional (l1 *j1*))
   "make mail header KM instance"
   (when (full l1)
@@ -120,8 +129,17 @@
       (sv efn "email-Date" (get-date l1))
       (sv efn "email-Message-ID" (get-msgid l1)) 
      (let* ((body (get-body l1))
-            (omp (has-om-p body)))
-       (format t "~%bl:~a omp:~a" (len body) omp)
+            (omp (has-om-p body))
+            (past-body (when (numberp omp) (subseq body (+ omp 26))))
+            (body-use (or past-body body))
+            (m5 (md5:md5sum-string body-use)) ;will use body after omp
+            (blk (when body-use (round (/ (len body-use) 2)))) ;body-len-key w/fzy match
+            ) ;esp. w/fzy round, have to make 2nd pass to be sure same body, but if same thread, might be enough
+       (format t "~%bl:~a omp:~a prev-body:~a:~a blk:~a:~a~%" (len body) omp (len past-body) (gethash m5 *b2mid*) blk (gethash blk *bl2mid*))
+       ;could test hash, or just store all nil key's vals together:
+       ;(setf (gethash m5 *b2mid*) efn)
+       (set-hash *b2mid* m5 efn)
+       (set-hash *bl2mid* blk efn)
        )
       (show efn)
       efn))) 
@@ -135,7 +153,7 @@
 ;Do so can have further sense of that subj(thread)is being passed -&sv chain
 ;..
 ;(trace get-head-key assoc_v get-to)
-(trace get-to str-trim)
+;(trace get-to str-trim)
 (defun tjl (&optional (l *j*)) (mapcar- #'js2mh l))
 (defun tj1 (&optional (l1 *j1*)) (js2mh l1))
 (defun tj8 (&optional (l1 *j8*)) (js2mh l1))
