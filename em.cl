@@ -2,6 +2,7 @@
 (lkm3) ;setup KM env (in my .sbclrc)
 (load-kb "em.km") ;*Email* &re .km class files ; http://www.cs.utexas.edu/users/mfkb/RKF/tree/ 
 ;helper code at: https://github.com/MBcode/LispUtils &soon only updates of this there too.
+; https://github.com/MBcode/LispUtils/blob/master/em.cl u2.lisp util_mb.lisp
 ;------------------
 ;bobak@computer.org
 ;after loading Email classes, try to make some instances
@@ -38,6 +39,7 @@
 (defvar *j1* (first *j*))
 (defvar *j8* (elt *j* 8))
 (defun get-fn (l1) (assoc_v :FILENAME l1))
+(defun get-body (l1) (assoc_v :BODY l1))
 ;(defun get-header (l1) (assoc_v :HEADERS l1))
 (defun get-header (l1) (let ((ha (assoc :HEADERS l1))) (when (consp ha) (rest ha))))
 (defun get-head-key (l1 k) (let ((h (get-header l1))) (when h (assoc_v k h))))
@@ -55,6 +57,7 @@
 (defun get-cc (l1) (get-heads-key l1 :*Cc)) 
 (defun get-bcc (l1) (get-heads-key l1 :*Bcc)) 
 (defun get-date (l1) (parse-date-time (get-head-key l1 :*DATE)))
+(defun get-msgid (l1) (get-heads-key l1 :*Message-ID)) 
 ;could just attach key to slot-name, &if a plural/multi-slot
 #+no ;get all header fields from header once:
 (defun get-sft (l1)
@@ -86,7 +89,7 @@
     (let* ((fn (get-fn l1))
            (efn (str-cat "efn" (remove #\. fn))))
       (format t "~%New-ins:~a" efn)
-      (sv-cls efn "Email-Header")
+      (sv-cls efn "Email-Header") ;might have to use part of msgid, as efn not unique (beyond this test)
       ;(sv efn "email-Subject" (get-subj l1))
      (let ((es (get-subj l1)))
         (sv efn "email-Subject" es)
@@ -115,8 +118,22 @@
        ;(svs-if efn "email-To" bcc)
       )
       (sv efn "email-Date" (get-date l1))
+      (sv efn "email-Message-ID" (get-msgid l1)) 
+     (let* ((body (get-body l1))
+            (omp (has-om-p body)))
+       (format t "~%bl:~a omp:~a" (len body) omp)
+       )
       (show efn)
       efn))) 
+;what is enough for linking, msgid needed?
+;look for -----Original Message----- in body
+(defun has-om-p (tx &optional (om "-----Original Message-----"))
+  (search om tx))
+; if om-p hash past it, if not the whole thing, assoc w/ the email-id
+;  if not full-txt then hash-check/like from dwnlded sofware/later
+;  hash-table will need :test #'equal ;also push(new?) all IDs
+;Do so can have further sense of that subj(thread)is being passed -&sv chain
+;..
 ;(trace get-head-key assoc_v get-to)
 (trace get-to str-trim)
 (defun tjl (&optional (l *j*)) (mapcar- #'js2mh l))
@@ -141,3 +158,4 @@
 ;/ \*/s//] [/g
 ;--then on (save-kb "output") run: agrep -i -d '^('  'instance-of' 
 ;which can be used in em.pins for protege&clips
+;Have taken it from 1 to 10 to 100, then 1124 of the hopefully longest email thread, so can hook up the links to get the length.
