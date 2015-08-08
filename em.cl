@@ -92,27 +92,70 @@
 (ql 'md5) ;md5 of ~body as key,& msg-id as val
 (defvar *b2mid* (make-hash-table :test #'equal)) ;body to msd-id
 (defvar *bl2mid* (make-hash-table :test #'equal)) ;body-len(key):blk to msd-id
-(defun js2mh (&optional (l1 *j1*))
+;(ql 'cl-graph)
+;;(use-package :cl-graph)
+;(defvar *g*  (cl-graph::make-container 'graph-container))
+ ;(load "tg.cl" :print t)
+(defun js2mh (&optional (l1 *j1*) (out t))
   "make mail header KM instance"
   (when (full l1)
     (let* ((fn (get-fn l1))
-           (efn (str-cat "efn" (remove #\. fn))))
+           (efn (str-cat "efn" (remove #\. fn))) ;ok in short runs, but not full guid
+           (date (get-date l1))
+           (mid (get-msgid l1)) 
+           (from (get-from l1))
+           (from_ (email_person from))
+           (to (get-to l1))
+           (cc (get-cc l1))
+           (bcc (get-bcc l1))
+           (ta (flatten- (list to cc bcc))) ;toall=to+cc+bcc
+           (tap (mapcar- #'email_person ta)) ;just ppl names
+           (body (get-body l1))
+           (om-p (has-om-p body)) ;where/if there is an 'original msg' in the body
+           (past-body (when (numberp om-p) (subseq body (+ om-p 26)))) ;orig-msg body
+           (body-use (or past-body body))    ;orig-body if available
+           (m5 (md5:md5sum-string body-use)) ;will use body after om-p
+           (blk (when body-use (round (/ (len body-use) 2)))) ;body-len-key w/fzy match
+            ) ;esp. w/fzy round, have to make 2nd pass to be sure same body, but if same thread, might be enough
+       (format t "~%bl:~a om-p:~a prev-body:~a:~a blk:~a:~a~%" (len body) om-p (len past-body) (gethash m5 *b2mid*) blk (gethash blk *bl2mid*))
+       ;could test hash, or just store all nil key's vals together:
+       ;(setf (gethash m5 *b2mid*) efn)
+       (set-hash *b2mid* m5 efn)
+       (set-hash *bl2mid* blk efn)
+   ;(sv efn "email-Date" (get-date l1))
+   ;(sv efn "email-Message-ID" (get-msgid l1)) 
+      (sv efn "email-Date" date)
+      (sv efn "email-Message-ID" mid) 
+       ;
+    ;let* ((fn (get-fn l1))
+    ;      (efn (str-cat "efn" (remove #\. fn))))
       (format t "~%New-ins:~a" efn)
       (sv-cls efn "Email-Header") ;might have to use part of msgid, as efn not unique (beyond this test)
       ;(sv efn "email-Subject" (get-subj l1))
      (let ((es (get-subj l1)))
-        (sv efn "email-Subject" es)
-        (sv efn "email-thread" (rm-strs '("RE:" "RE" "Re:" "Re" "FWD:" "FW:" "Fwd:" "fw") es)) )
-     (let* ((from (get-from l1))
-            (from_ (email_person from))
-            (to (get-to l1))
-            (cc (get-cc l1))
-            (bcc (get-bcc l1))
-            (ta (flatten- (list to cc bcc)))
-            (tap (mapcar- #'email_person ta))
-            )
+        (sv efn "email-Subject" es) ;might incl flag for existance of 'fwd' as well as om-p
+       ;(sv efn "email-thread" (rm-strs '("RE:" "RE" "Re:" "Re" "FWD:" "FW:" "Fwd:" "fw") es))  ;mk case insensative
+       ;(sv efn "email-thread" (rm-strs '("RE_" "RE" "Re_" "Re" "FWD_" "FW_" "Fwd_" "fw") es)) 
+        (sv efn "email-thread" (rm-strs '("RE_" "RE_" "Re_"  "FWD_" "FW_" "Fwd_" "fw_") es)) 
+        ;would rather have a fnc that splits all fwd etc strs, and orig subj, &store seperately
+        ; if thread works can just diff w/orig subj
+        )
+     ;let* ((from (get-from l1))
+           ;(from_ (email_person from))
+           ;(to (get-to l1))
+           ;(cc (get-cc l1))
+           ;(bcc (get-bcc l1))
+           ;(ta (flatten- (list to cc bcc)))
+           ;(tap (mapcar- #'email_person ta))
+           ;)
        (format t "~%to:~a" tap)
        (svs efn "email-To" tap)
+       ;(mapcar #'(lambda (ato) (cl-graph:add-edge-between-vertexes *g* from_ ato)) tap)
+        ;(mapcar #'(lambda (ato) (add-edge-between-v from_ ato)) tap)
+        ;could just dump the pairs here&read in elsewhere
+        ;(mapcar #'(lambda (ato) (format out "~%~a, ~a" from_ ato)) tap) ;could incl date ..
+        ;(mapcar #'(lambda (ato) (format out "~%~a, ~a, ~a, ~a" from_ ato date om-p)) tap) 
+        (mapcar #'(lambda (ato) (format out "~%~a, ~a, ~a" date from_ ato)) tap) 
        ;(sv efn "email-From" (get-from l1)) 
        ;(svs efn "email-From" from) 
        ;(svs efn "email-From" (email_person from)) 
@@ -125,24 +168,9 @@
        ;;(svs efn "email-Bcc" (get-bcc l1))
        ;(svs-if efn "email-To" cc)
        ;(svs-if efn "email-To" bcc)
-      )
-      (sv efn "email-Date" (get-date l1))
-      (sv efn "email-Message-ID" (get-msgid l1)) 
-     (let* ((body (get-body l1))
-            (omp (has-om-p body))
-            (past-body (when (numberp omp) (subseq body (+ omp 26))))
-            (body-use (or past-body body))
-            (m5 (md5:md5sum-string body-use)) ;will use body after omp
-            (blk (when body-use (round (/ (len body-use) 2)))) ;body-len-key w/fzy match
-            ) ;esp. w/fzy round, have to make 2nd pass to be sure same body, but if same thread, might be enough
-       (format t "~%bl:~a omp:~a prev-body:~a:~a blk:~a:~a~%" (len body) omp (len past-body) (gethash m5 *b2mid*) blk (gethash blk *bl2mid*))
-       ;could test hash, or just store all nil key's vals together:
-       ;(setf (gethash m5 *b2mid*) efn)
-       (set-hash *b2mid* m5 efn)
-       (set-hash *bl2mid* blk efn)
-       )
+      ;
       (show efn)
-      efn))) 
+      efn)))  ;clean up old commented code/in a bit
 ;what is enough for linking, msgid needed?
 ;look for -----Original Message----- in body
 (defun has-om-p (tx &optional (om "-----Original Message-----"))
@@ -155,6 +183,7 @@
 ;(trace get-head-key assoc_v get-to)
 ;(trace get-to str-trim)
 (defun tjl (&optional (l *j*)) (mapcar- #'js2mh l))
+(defun tjlo (&optional (l *j*)) (with-open-file (strm "pairs.csv" :direction :output) (mapcar- #'(lambda (x) (js2mh x strm)) l)))
 (defun tj1 (&optional (l1 *j1*)) (js2mh l1))
 (defun tj8 (&optional (l1 *j8*)) (js2mh l1))
 ;Have rule that said if same thread, &no send w/a from, then you are the start
@@ -177,3 +206,7 @@
 ;--then on (save-kb "output") run: agrep -i -d '^('  'instance-of' 
 ;which can be used in em.pins for protege&clips
 ;Have taken it from 1 to 10 to 100, then 1124 of the hopefully longest email thread, so can hook up the links to get the length.
+;Jess> (mapclass USER) ;get: :THING  ;then could try a rule like:
+;Jess> (defrule apass (object (is-a Email-Header) (email-From ?from1) (email-To ?to1) (email-Date ?date1)) 
+;                     (object (is-a Email-Header) (email-From ?to1) (email-To ?To2) (email-Date ?date2)) 
+;=> (printout t "from=" ?from1 " to-from=" ?to1 " and " ?date2 " > " ?date1) ) ;can put in a test
