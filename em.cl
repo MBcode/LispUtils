@@ -95,7 +95,14 @@
 ;(ql 'cl-graph)
 ;;(use-package :cl-graph)
 ;(defvar *g*  (cl-graph::make-container 'graph-container))
- ;(load "tg.cl" :print t)
+;-----
+;(load "tg.cl" :print t)
+(ql 'cl-graph)
+(defvar *g*  (cl-containers:make-container 'cl-graph:graph-container))
+(defun add-edge-between-v (from to) 
+  (cl-graph:add-edge-between-vertexes *g* from to))
+(defun dpth (&optional (g *g*)) (cl-graph:depth g))
+;-----
 (defun js2mh (&optional (l1 *j1*) (out t))
   "make mail header KM instance"
   (when (full l1)
@@ -151,7 +158,7 @@
        (format t "~%to:~a" tap)
        (svs efn "email-To" tap)
        ;(mapcar #'(lambda (ato) (cl-graph:add-edge-between-vertexes *g* from_ ato)) tap)
-        ;(mapcar #'(lambda (ato) (add-edge-between-v from_ ato)) tap)
+        (mapcar #'(lambda (ato) (add-edge-between-v from_ ato)) tap)
         ;could just dump the pairs here&read in elsewhere
         ;(mapcar #'(lambda (ato) (format out "~%~a, ~a" from_ ato)) tap) ;could incl date ..
         ;(mapcar #'(lambda (ato) (format out "~%~a, ~a, ~a, ~a" from_ ato date om-p)) tap) 
