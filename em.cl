@@ -44,7 +44,8 @@
 (defun get-header (l1) (let ((ha (assoc :HEADERS l1))) (when (consp ha) (rest ha))))
 (defun get-head-key (l1 k) (let ((h (get-header l1))) (when h (assoc_v k h))))
 ;(defun get-subj (l1) (let ((h (get-header l1))) (when h (assoc :*SUBJECT h))))
-(defun get-subj (l1) (get-head-key l1 :*SUBJECT)) ;might rm re/fw/etc &put in a thread slot
+;(defun get-subj (l1) (get-head-key l1 :*SUBJECT)) ;might rm re/fw/etc &put in a thread slot
+(defun get-subj (l1) (replace-all (get-head-key l1 :*SUBJECT) "\"" "_")) 
 (defun get-from (l1) (get-head-key l1 :*FROM))
 ;could be serveral, also need b/cc
 ;(defun get-to (l1) (split-string (get-head-key l1 :*TO) #\Space)) 
@@ -75,8 +76,14 @@
    ;(pushnew (first-lv (first-lv val)) (gethash key h))
    )
 ;---
-(defun email-person (atstr) (str-trim (first-lv (split-string atstr #\@))))
+;(defun email-person (atstr) (str-trim (first-lv (split-string atstr #\@))))
+(defun email-person (atstr) (str-trim 
+                              (string-trim '(#\< #\> #\' #\.)
+                                  ;rm-str "e-mail "
+                                  (rm-strs '("e-mail " "e-<")
+                                      (first-lv (split-string atstr #\@))))))
 (defun email_person (atstr) (replace-all (email-person atstr) "." "_"))
+(trace split-string)
 ;---
 (load-kb "Person.km")
 (defun mk-person (name)
@@ -191,6 +198,7 @@
 ;(trace get-to str-trim)
 (defun tjl (&optional (l *j*)) (mapcar- #'js2mh l))
 (defun tjlo (&optional (l *j*)) (with-open-file (strm "pairs.csv" :direction :output) (mapcar- #'(lambda (x) (js2mh x strm)) l)))
+  ;could inhibit pairs.csv now that cl-graph loaded, but keep for a bit; even though it can do a dot/etc dump
 (defun tj1 (&optional (l1 *j1*)) (js2mh l1))
 (defun tj8 (&optional (l1 *j8*)) (js2mh l1))
 ;Have rule that said if same thread, &no send w/a from, then you are the start
