@@ -111,10 +111,12 @@
 (defun dpth (&optional (g *g*)) (cl-graph:depth g))
 ;-----
 (defun js2mh (&optional (l1 *j1*) (out t))
-  "make mail header KM instance"
+  "make js mail header KM instance"
   (when (full l1)
     (let* ((fn (get-fn l1))
-           (efn (str-cat "efn" (remove #\. fn))) ;ok in short runs, but not full guid
+          ;(efn (str-cat "efn" (remove #\. fn))) ;ok in short runs, but not full guid
+           (efn (gentemp (str-cat "efn" fn))) ;guid
+           (subj (get-subj l1))
            (date (get-date l1))
            (mid (get-msgid l1)) 
            (from (get-from l1))
@@ -146,14 +148,16 @@
       (format t "~%New-ins:~a" efn)
       (sv-cls efn "Email-Header") ;might have to use part of msgid, as efn not unique (beyond this test)
       ;(sv efn "email-Subject" (get-subj l1))
-     (let ((es (get-subj l1)))
-        (sv efn "email-Subject" es) ;might incl flag for existance of 'fwd' as well as om-p
-       ;(sv efn "email-thread" (rm-strs '("RE:" "RE" "Re:" "Re" "FWD:" "FW:" "Fwd:" "fw") es))  ;mk case insensative
-       ;(sv efn "email-thread" (rm-strs '("RE_" "RE" "Re_" "Re" "FWD_" "FW_" "Fwd_" "fw") es)) 
-        (sv efn "email-thread" (rm-strs '("RE_" "RE_" "Re_"  "FWD_" "FW_" "Fwd_" "fw_") es)) 
-        ;would rather have a fnc that splits all fwd etc strs, and orig subj, &store seperately
-        ; if thread works can just diff w/orig subj
-        )
+       (sv efn "email-Subject" subj) 
+       (sv efn "email-thread" (rm-strs '("RE_" "RE_" "Re_"  "FWD_" "FW_" "Fwd_" "fw_") subj)) 
+     ;let ((es (get-subj l1)))
+      ; (sv efn "email-Subject" es) ;might incl flag for existance of 'fwd' as well as om-p
+      ;;(sv efn "email-thread" (rm-strs '("RE:" "RE" "Re:" "Re" "FWD:" "FW:" "Fwd:" "fw") es))  ;mk case insensative
+      ;;(sv efn "email-thread" (rm-strs '("RE_" "RE" "Re_" "Re" "FWD_" "FW_" "Fwd_" "fw") es)) 
+      ; (sv efn "email-thread" (rm-strs '("RE_" "RE_" "Re_"  "FWD_" "FW_" "Fwd_" "fw_") es)) 
+      ; ;would rather have a fnc that splits all fwd etc strs, and orig subj, &store seperately
+      ; ; if thread works can just diff w/orig subj
+      ; )
      ;let* ((from (get-from l1))
            ;(from_ (email_person from))
            ;(to (get-to l1))
@@ -169,7 +173,8 @@
         ;could just dump the pairs here&read in elsewhere
         ;(mapcar #'(lambda (ato) (format out "~%~a, ~a" from_ ato)) tap) ;could incl date ..
         ;(mapcar #'(lambda (ato) (format out "~%~a, ~a, ~a, ~a" from_ ato date om-p)) tap) 
-        (mapcar #'(lambda (ato) (format out "~%~a, ~a, ~a" date from_ ato)) tap) 
+        ;(mapcar #'(lambda (ato) (format out "~%~a, ~a, ~a" date from_ ato)) tap) 
+        (mapcar #'(lambda (ato) (format out "~%~a, ~a, ~a, ~a" date from_ ato subj)) tap) 
        ;(sv efn "email-From" (get-from l1)) 
        ;(svs efn "email-From" from) 
        ;(svs efn "email-From" (email_person from)) 
