@@ -1,10 +1,10 @@
 ;bobak@computer.org load bson2json dump of emails into KM
+;streaming version of em.cl 
 (lkm3) ;setup KM env (in my .sbclrc)
 (load-kb "em.km") ;*Email* &re .km class files ; http://www.cs.utexas.edu/users/mfkb/RKF/tree/ 
 ;helper code at: https://github.com/MBcode/LispUtils &soon only updates of this there too.
 ; https://github.com/MBcode/LispUtils/blob/master/em.cl u2.lisp util_mb.lisp
 ;------------------
-;bobak@computer.org
 ;after loading Email classes, try to make some instances
 (ql 'cl-date-time-parser)
 (use-package :cl-date-time-parser)
@@ -17,9 +17,7 @@
   (sv "efn5" "email-To" "bert")
   (show "efn5"))
 ;------------------
-;from bobak@computer.org 's j.cl
-(ql 'cl-json)
-;excerpt
+(ql 'cl-json) ;excerpt of another file:
 (defun jsonsp (s) (prefixp "{" s))  ;after running 'strings' on an avro file
 (defun decode-jsonsp (a) (when (jsonsp a) (json:decode-json-from-string a)))
 (defun decode-jsonsp2 (a) (or (json:decode-json-from-string a) a))
@@ -29,15 +27,18 @@
 (defun decode-json (s)
   (if (stringp s) (decode-jsonsp s)
     (format t "~%Not a json str:~a" s)))
-
+;---
 ;load some bson dump (after small sed cleanup), then turn into KM instances
 ;(defun tj (&optional (file "h10.json")) (load-jsonsp file))
-(defun tj (&optional (file "h1.json")) (load-jsonsp file))
-(defvar *j* (tj))
+(defun tj- (&optional (file "h1.json")) (load-jsonsp file))  ;can't load huge files easily
+;(defvar *j* (tj))
+(defvar *j* (tj-)) ;will map-file from now on
 ;testing this by loading whole file, but want to do it via streaming, given number coming through
 ;so set up to process one line at a time, starting w/json accessors, then build instances
 (defvar *j1* (first *j*))
 (defvar *j8* (elt *j* 8))
+;---
+;;b/json sexp accessors:
 (defun get-fn (l1) (assoc_v :FILENAME l1))
 (defun get-body (l1) (assoc_v :BODY l1))
 ;(defun get-header (l1) (assoc_v :HEADERS l1))
@@ -169,30 +170,11 @@
        (sv efn "email-Subject" subj) 
       ;(sv efn "email-thread" (rm-strs '("RE_" "RE_" "Re_"  "FWD_" "FW_" "Fwd_" "fw_") subj)) 
        (sv efn "email-thread" thread) 
-     ;let ((es (get-subj l1)))
-      ; (sv efn "email-Subject" es) ;might incl flag for existance of 'fwd' as well as om-p
-      ;;(sv efn "email-thread" (rm-strs '("RE:" "RE" "Re:" "Re" "FWD:" "FW:" "Fwd:" "fw") es))  ;mk case insensative
-      ;;(sv efn "email-thread" (rm-strs '("RE_" "RE" "Re_" "Re" "FWD_" "FW_" "Fwd_" "fw") es)) 
-      ; (sv efn "email-thread" (rm-strs '("RE_" "RE_" "Re_"  "FWD_" "FW_" "Fwd_" "fw_") es)) 
-      ; ;would rather have a fnc that splits all fwd etc strs, and orig subj, &store seperately
-      ; ; if thread works can just diff w/orig subj
-      ; )
-     ;let* ((from (get-from l1))
-           ;(from_ (email_person from))
-           ;(to (get-to l1))
-           ;(cc (get-cc l1))
-           ;(bcc (get-bcc l1))
-           ;(ta (flatten- (list to cc bcc)))
-           ;(tap (mapcar- #'email_person ta))
-           ;)
        (format t "~%to:~a" tap)
        (svs efn "email-To" tap)
        ;(mapcar #'(lambda (ato) (cl-graph:add-edge-between-vertexes *g* from_ ato)) tap)
         (mapcar #'(lambda (ato) (add-edge-between-v from_ ato)) tap)
         ;could just dump the pairs here&read in elsewhere
-        ;(mapcar #'(lambda (ato) (format out "~%~a, ~a" from_ ato)) tap) ;could incl date ..
-        ;(mapcar #'(lambda (ato) (format out "~%~a, ~a, ~a, ~a" from_ ato date om-p)) tap) 
-        ;(mapcar #'(lambda (ato) (format out "~%~a, ~a, ~a" date from_ ato)) tap) 
       ; (mapcar #'(lambda (ato) (format out "~%~a, ~a, ~a, ~a" date from_ ato subj)) tap) 
         (mapcar #'(lambda (ato) (format out "~%~a, ~a, ~a, ~a" date from_ ato thread)) tap) 
        ;(sv efn "email-From" (get-from l1)) 
@@ -201,13 +183,6 @@
        (svs efn "email-From" from_) 
        ;(mapcar- #'mk-person (append (list (email_person from)) tap))
        (mapcar- #'mk-person (append (list from_) tap))
-       ;;(svs efn "email-To" (get-to l1))
-       ;(svs efn "email-To" to)
-       ;;(svs efn "email-Cc" (get-cc l1))
-       ;;(svs efn "email-Bcc" (get-bcc l1))
-       ;(svs-if efn "email-To" cc)
-       ;(svs-if efn "email-To" bcc)
-      ;
       (show efn)
       efn)))  ;clean up old commented code/in a bit
 ;what is enough for linking, msgid needed?
@@ -221,8 +196,19 @@
 ;..
 ;(trace get-head-key assoc_v get-to)
 ;(trace get-to str-trim)
+;(defun collect-jsonsp (l) (mapcar_ #'json:decode-json-from-string (collect-if #'jsonsp l)))
+;collect-jsonsp is pulling strs out of list, but here we just have a str&need2use it
+;(defun map-json-lines (fn fnc) (map-lines fn #'(lambda (l) (funcall fnc (collect-jsonsp (list l))))))
+(defun map-json-lines (fn fnc) (map-lines fn #'(lambda (l) (funcall fnc (decode-jsonsp l)))))
+(defun map-js2mh (fn) (map-json-lines fn #'js2mh))
+(defun map-js2mh-s (fn &optional (strm t)) (map-json-lines fn #'(lambda (x) (js2mh x strm))))
+;(defun tj  (&optional (file "h1.json")) (load-jsonsp file))  ;can't load huge files easily
+(defun tj  (&optional (file "h1.json")) (map-js2mh file))  ;can't load huge files easily
 (defun tjl (&optional (l *j*)) (mapcar- #'js2mh l))
+(defun tjf (&optional (fn "om-p.json")) (map-js2mh fn))
+;(trace map-js2mh collect-jsonp jsonsp)
 (defun tjlo (&optional (l *j*)) (with-open-file (strm "pairs.csv" :direction :output) (mapcar- #'(lambda (x) (js2mh x strm)) l)))
+(defun tjlf (&optional (fn "om-p.json") (strm t)) (with-open-file (strm "pairs.csv" :direction :output) (map-js2mh-s fn strm)))
   ;could inhibit pairs.csv now that cl-graph loaded, but keep for a bit; even though it can do a dot/etc dump
 (defun tj1 (&optional (l1 *j1*)) (js2mh l1))
 (defun tj8 (&optional (l1 *j8*)) (js2mh l1))
