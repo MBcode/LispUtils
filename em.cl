@@ -76,13 +76,30 @@
    ;(pushnew (first-lv (first-lv val)) (gethash key h))
    )
 ;---
+(ql 'mime4cl) ;so can write a better email_person
+(defun mime (addr) (first-lv (mime4cl:parse-addresses addr)))
+;(defun get-user (mbx) (mime4cl:mbx-user mbx))
+(defun get-user (mbx) (when mbx (mime4cl:mbx-user mbx)))
+;-----
 ;(defun email-person (atstr) (str-trim (first-lv (split-string atstr #\@))))
-(defun email-person (atstr) (str-trim 
-                              (string-trim '(#\< #\> #\' #\.)
-                                  ;rm-str "e-mail "
-                                  (rm-strs '("e-mail " "e-<")
-                                      (first-lv (split-string atstr #\@))))))
-(defun email_person (atstr) (replace-all (email-person atstr) "." "_"))
+;(defun email-person (atstr) (str-trim 
+;                              (string-trim '(#\< #\> #\' #\.)
+;                                  ;rm-str "e-mail "
+;                                  (rm-strs '("e-mail " "e-<")
+;                                      (first-lv (split-string atstr #\@))))))
+(defun get-usr (atstr) (first-lv (split-string atstr #\@)))
+(defun clean-usr (usr) 
+  (str-trim (string-trim '(#\< #\> #\' #\.)
+                          ;rm-str "e-mail "
+                              (rm-strs '("e-mail " "e-<") usr))))
+(defun email-person (atstr)  (clean-usr (get-usr atstr)))
+;(defun email_person (atstr) (replace-all (email-person atstr) "." "_"))
+(defun email_person1 (atstr) (replace-all (email-person atstr) "." "_"))
+;(defun email_person (atstr) (get-user (mime atstr)))
+(defun email_person (atstr)  ;try new&fallback w/old
+  (let ((usr (get-user (mime atstr))))
+    (if usr (clean-usr usr)
+      (email_person1 atstr))))
 (trace split-string)
 ;---
 (load-kb "Person.km")
@@ -117,6 +134,7 @@
           ;(efn (str-cat "efn" (remove #\. fn))) ;ok in short runs, but not full guid
            (efn (gentemp (str-cat "efn" fn))) ;guid
            (subj (get-subj l1))
+           (thread (rm-strs '("RE_" "RE_" "Re_"  "FWD_" "FW_" "Fwd_" "fw_") subj)) 
            (date (get-date l1))
            (mid (get-msgid l1)) 
            (from (get-from l1))
@@ -149,7 +167,8 @@
       (sv-cls efn "Email-Header") ;might have to use part of msgid, as efn not unique (beyond this test)
       ;(sv efn "email-Subject" (get-subj l1))
        (sv efn "email-Subject" subj) 
-       (sv efn "email-thread" (rm-strs '("RE_" "RE_" "Re_"  "FWD_" "FW_" "Fwd_" "fw_") subj)) 
+      ;(sv efn "email-thread" (rm-strs '("RE_" "RE_" "Re_"  "FWD_" "FW_" "Fwd_" "fw_") subj)) 
+       (sv efn "email-thread" thread) 
      ;let ((es (get-subj l1)))
       ; (sv efn "email-Subject" es) ;might incl flag for existance of 'fwd' as well as om-p
       ;;(sv efn "email-thread" (rm-strs '("RE:" "RE" "Re:" "Re" "FWD:" "FW:" "Fwd:" "fw") es))  ;mk case insensative
@@ -174,7 +193,8 @@
         ;(mapcar #'(lambda (ato) (format out "~%~a, ~a" from_ ato)) tap) ;could incl date ..
         ;(mapcar #'(lambda (ato) (format out "~%~a, ~a, ~a, ~a" from_ ato date om-p)) tap) 
         ;(mapcar #'(lambda (ato) (format out "~%~a, ~a, ~a" date from_ ato)) tap) 
-        (mapcar #'(lambda (ato) (format out "~%~a, ~a, ~a, ~a" date from_ ato subj)) tap) 
+      ; (mapcar #'(lambda (ato) (format out "~%~a, ~a, ~a, ~a" date from_ ato subj)) tap) 
+        (mapcar #'(lambda (ato) (format out "~%~a, ~a, ~a, ~a" date from_ ato thread)) tap) 
        ;(sv efn "email-From" (get-from l1)) 
        ;(svs efn "email-From" from) 
        ;(svs efn "email-From" (email_person from)) 
@@ -230,3 +250,4 @@
 ;Jess> (defrule apass (object (is-a Email-Header) (email-From ?from1) (email-To ?to1) (email-Date ?date1)) 
 ;                     (object (is-a Email-Header) (email-From ?to1) (email-To ?To2) (email-Date ?date2)) 
 ;=> (printout t "from=" ?from1 " to-from=" ?to1 " and " ?date2 " > " ?date1) ) ;can put in a test
+;use http://www.cliki.net/email sometime  http://wcp.sdf-eu.org/software/
