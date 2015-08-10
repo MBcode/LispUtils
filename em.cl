@@ -151,7 +151,10 @@
            (body-use (or past-body body))    ;orig-body if available
            (m5 (md5:md5sum-string body-use)) ;will use body after om-p
            (blk (when body-use (round (/ (len body-use) 2)))) ;body-len-key w/fzy match
-            ) ;esp. w/fzy round, have to make 2nd pass to be sure same body, but if same thread, might be enough
+              ;esp. w/fzy round, have to make 2nd pass to be sure same body, but if same thread, might be enough
+           ;(tn (wordize thread)) ;try thread-name obj, to collect #froms to make sure not a email blast
+  ;        (tn (ki_ thread)) 
+           )
        (format t "~%bl:~a om-p:~a prev-body:~a:~a blk:~a:~a~%" (len body) om-p (len past-body) (gethash m5 *b2mid*) blk (gethash blk *bl2mid*))
        ;could test hash, or just store all nil key's vals together:
        ;(setf (gethash m5 *b2mid*) efn)
@@ -167,7 +170,10 @@
       (format t "~%New-ins:~a" efn)
       (sv-cls efn "Email-Header") ;might have to use part of msgid, as efn not unique (beyond this test)
       ;(sv efn "email-Subject" (get-subj l1))
-       (sv efn "email-Subject" subj) 
+  ;    (sv efn "email-Subject" subj) 
+  ;   (sv-cls tn "Email_Thread") ;tmp
+  ;   (sv tn "thread-from" from)
+      ;(sv (ki_ thread) "thread-from" from) ;it will underscore thread-str &don't need a class
       ;(sv efn "email-thread" (rm-strs '("RE_" "RE_" "Re_"  "FWD_" "FW_" "Fwd_" "fw_") subj)) 
        (sv efn "email-thread" thread) 
        (format t "~%to:~a" tap)
@@ -237,3 +243,4 @@
 ;                     (object (is-a Email-Header) (email-From ?to1) (email-To ?To2) (email-Date ?date2)) 
 ;=> (printout t "from=" ?from1 " to-from=" ?to1 " and " ?date2 " > " ?date1) ) ;can put in a test
 ;use http://www.cliki.net/email sometime  http://wcp.sdf-eu.org/software/
+;have R-studio w/data &rgexf/igraph, also other code I haven't tried.
