@@ -7,3 +7,7 @@ http://malisper.me/category/debugging-common-lisp/ at last a 4 part series
 @HNTweets Aug 25 State of the Common Lisp Ecosystem, 2015: http://eudoxia.me/article/common-lisp-sotu-2015/ … Comments: https://news.ycombinator.com/item?id=10119730 … 
 
 @LispDaily  https://leanpub.com/fullstacklisp  - "Full Stack #Lisp" book. Looks neat. Came across the link via @RainerJoswig on /r/lisp. 
+
+Floyd James Argüello @ffdtm  Simplified Common Lisp reference #lisp http://jtra.cz/stuff/lisp/sclr/index.html …  ;longtime ref aliases:
+    alias osclr 'maccp file:///home/bobak/Documents/www/jtra.cz/stuff/lisp/sclr/index.html' alias ohss 'ohs2;sbman;opcl;onlisp;ohsl;oclc;osclr;ocltl'
+ 
