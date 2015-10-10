@@ -190,8 +190,8 @@
         (sb-aclrepl:alias ("require" 0 "Require module") (sys) (require sys))
         (setq cl:*features* (delete :aclrepl cl:*features*))) 
 ;
-(defun bt (&optional (n 7))
- (sb-debug:backtrace n)) ;bt
+;(defun bt (&optional (n 7)) (sb-debug:backtrace n)) ;bt
+(defun bt () (sb-debug:print-backtrace)) ;bt
 ;;;=easier.cl
 ;Easier ASDF?
 ;Currently ASDF is not very user-friendly. I can think about at least two improvements: a separate function instead of (asdf:oos 'asdf:load-op :foo), and asking for path when some library is not found. I tried to write a function that solves both of these problems: 
