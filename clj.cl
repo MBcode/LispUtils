@@ -91,7 +91,7 @@
 ;
 ;http://lispm.dyndns.org/sbcl (april-1-2014  I wish;)  ;Curious std clj libs java lib dependance
  
-;Clojure OSS ‏@oss_clj  5h 
+;Clojure OSS @oss_clj  5h 
 ;land-of-lisp-in-clojure - Code from Barski's Land of Lisp book done in Clojure https://github.com/quux00/land-of-lisp-in-clojure …
  
 ;http://www.meetup.com/ClojureUserGroupHH/events/189615172/ clj clos comparison
@@ -121,4 +121,6 @@
 ;Drew Conway ‏@drewconway Data science in Clojure, nice talk by @sorenmacbeth https://www.youtube.com/watch?v=omSTAwSjYc8 … 
 ; @sorenmacbeth hadoop(cacalog);to storm & yieldbot/marceline on trident;to spark clj-spark yieldbot/flambo ; cubert web-repl data explore(ipy like);  use s3, parquet 
  
-;Reddit Lisp ‏@reddit_lisp  ;#lisp Cloje: A Clojure dialect on top of Scheme | http://redd.it/3fevo8 ; https://gitlab.com/cloje/cloje
+;Reddit Lisp @reddit_lisp  ;#lisp Cloje: A Clojure dialect on top of Scheme | http://redd.it/3fevo8 ; https://gitlab.com/cloje/cloje
+
+;would rather focus on clj2cl(or a bridge, w/even abcl)but good to keep tabs on: @LispDaily  Porting Common #Lisp code to Clojure - http://bit.ly/1Ibg8by 
