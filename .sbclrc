@@ -53,7 +53,7 @@
 #+quicklisp (defun qa (a) (ql:system-apropos  a))
 #+quicklisp (defun qd (a) (ql:who-depends-on  a))
 ;#<SYSTEM km / km-2-5-33 / quicklisp 2012-09-09>
-(defun lkm () (load "/Users/bobak/lsp/km_2-5-33"))
+(defun lkm () (load "/Users/bobak/lsp/km_2-5-45")) ;sed def global constant warnings away from http://www.cs.utexas.edu/users/mfkb/km/km-2-5-45.lisp
 ;(defun lkm () (ql 'km))
 (defun lkm2 () (lkm) (load "/Users/bobak/lsp/u2"))
 ;#p"/usr/share/common-lisp/source/" ; #p"/Users/bobak/Documents/downloads/lang/lsp/asdf/registry"
@@ -102,7 +102,7 @@
   (ql 'alexandria) (load "/Users/bobak/lsp/cl-linq.lisp"))
 (defun cu () (compile-file "/Users/bobak/lsp/util_mb.lisp"))
 (defun cu2 () (compile-file "/Users/bobak/lsp/u2.lisp"))
-(defun cu3 () (compile-file "/home/bobak/lsp/km_2-5-33.lisp"))
+(defun cu3 () (compile-file "/home/bobak/lsp/km_2-5-45.lisp"))
 (defun cub () (cu) (cu2) (cu3)) ;run after every sbcl upgrade
 (defun cgl () (load "/Users/bobak/lsp/cg.cl")) ;load cg callgraph
 (defun ct () (compile-file "t.cl")) 
