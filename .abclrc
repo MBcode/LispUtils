@@ -1,0 +1,40 @@
+;mike.bobak .abclrc file  (only a few lines from my .sbclrc) w/additions
+;abcl is pick in odd ways, eg:
+;(defun getobj (a b) (printout t "not yet"))
+;;; The following lines (should have been) added by ql:add-to-init-file:
+#-quicklisp
+(let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp"
+				       (user-homedir-pathname))))
+  (when (probe-file quicklisp-init)
+    (load quicklisp-init))) 
+
+#+quicklisp (defun ql (a) (ql:quickload  a :verbose t :explain t))
+#+quicklisp (defun qa (a) (ql:system-apropos  a))
+#+quicklisp (defun qd (a) (ql:who-depends-on  a))
+(defun l-1 () (load "ld1.cl" :print t)) 
+(defun l1 () (load "ld.cl" :print t)) 
+(defun l2 () (load "ld2.cl" :print t)) 
+(defun l3 () (load "ld3.cl" :print t)) 
+(defun l4 () (load "ld4.cl" :print t)) 
+(defun l5 () (load "ld5.cl" :print t)) 
+(defun l6 () (load "ld6.cl" :print t)) 
+(defun lo () (exit))
+(defun lu () (load "/home/bobak/lsp/util_mb"))
+;(defun lkm () (load "/home/bobak/lsp/km_2-5-45"))
+(defun lkm () 
+    (load "/home/bobak/lsp/go") ;just getobj
+    (load "/home/bobak/lsp/km_2-5-45"))
+(defun lkm2 () (lkm) (load "/home/bobak/lsp/u2"))
+(defun lkm3 () (lu) (lkm2))
+(defun cu () (compile-file "/home/bobak/lsp/util_mb.lisp"))
+(defun cu2 () (compile-file "/home/bobak/lsp/u2.lisp"))
+;(defun cu3 () (compile-file "/home/bobak/lsp/km_2-5-33.lisp"))
+(defun cu3 () (compile-file "/home/bobak/lsp/km_2-5-45.lisp")) ;might need my scl2 alias
+(defun cub () (cu) (cu2) (cu3))
+;java specific additions
+(require 'java-collections)
+(require 'extensible-sequences)
+(require 'abcl-contrib)
+(require 'jss)
+(add-to-classpath "/home/bobak/dwn/lang/lsp/lng/j/clojure/clojure-1.8.0/clojure-1.8.0.jar")
+;then maybe try https://uxul.wordpress.com/2009/02/04/ Calling Clojure from ABCL
