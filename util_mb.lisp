@@ -958,7 +958,7 @@ pathnames as well."
 (defmacro explode-string (string)
     "Converts a string to a list of chars, this is an aux function used
   for string processing.
-  ex: (EXPLODE-STRING (\"Hello\") --> (#\H #\e #\l #\l #\o)"
+  ex: (EXPLODE-STRING \"Hello\") --> (#\H #\e #\l #\l #\o)"
 		        `(concatenate 'list ,string)
 			)
 (defun implode-string (char-list)
@@ -2033,7 +2033,8 @@ If HEADER-VALUE-PARSER return multiple values, they are concatenated together in
 (defun collect-if-eq (to seq &key (key #'nop)) 
   (collect-if #'(lambda (it) (equal (funcall key it) to)) seq))
 
-(defun collect (fnc lst) ;== remove-nils on mapcar
+;defun collect (fnc lst) ;== remove-nils on mapcar
+(defun collect- (fnc lst) ;rename so not like loop keyword
     (collect-if #'nop (mapcar fnc lst))) 
 ;(collect #'(lambda (n) (when (evenp n) n)) '(1 2 3 4 5 6 7 8)) ;(2 4 6 8)
 
@@ -2596,7 +2597,7 @@ If HEADER-VALUE-PARSER return multiple values, they are concatenated together in
 
 (defun explode-by-tab (s) (csv_parse-str s))  ;or csv-parse-str but that gives an array
 (defun explode-by-space (s) (collect-if #'full (explode- s))) ;1or more spaces treated as one  
-(defun explode-by-ctrl-a (s) (explode- s #\^A)) ;in mh2t will use csv-parse-str to get Tabs
+;(defun explode-by-ctrl-a (s) (explode- s #\^A)) ;in mh2t will use csv-parse-str to get Tabs ;abcl has a problem w/this
  
 
 (defun txt-p (s) (suffixp ".txt" s))
