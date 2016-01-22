@@ -35,4 +35,7 @@
      (setq slime-complete-symbol-function
   'slime-fuzzy-complete-symbol)))
 
+;https://common-lisp.net/project/linedit/
+(setq inferior-lisp-program "sbcl --noinform --no-linedit") 
+
 (require 'slime)
