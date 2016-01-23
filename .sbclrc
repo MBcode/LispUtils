@@ -12,7 +12,7 @@
 ;       #p"/Users/bobak/quicklisp/local-projects/" same as:
         ;#p"/Users/bobak/Documents/downloads/lang/lsp/code/project/"
         #p"/Users/bobak/dwn/lang/lsp/code/project/"
-   ;    #p"/usr/share/common-lisp/systems/" ;ln to below
+  ;     #p"/usr/share/common-lisp/systems/" ;ln to below
 ))
         ;#p"/Users/bobak/.sbcl/systems/"
          ;#p"/Users/bobak/lsp/y"
@@ -50,3 +50,5 @@
 #+quicklisp (defun qd (a) (ql:who-depends-on  a))
 ;=might try breaking rest out here
 (load "/home/bobak/lsp/sbclrc")
+;switched scl&scl- aliases, but s1,s2... isn't loading files now, have to run (l1),(l2)..
+;I might go to having a fnc in sbclrc that explicitly loads le.lisp, so I can always start w/o it 

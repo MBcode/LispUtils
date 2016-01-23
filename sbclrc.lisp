@@ -1,3 +1,4 @@
+;in fact I should break out and compile more of the sbclrc: faster, more modular, easier2skip sb specific parts
 
 ;=might try breaking rest out here
 (defun lut () (load "/home/bobak/lsp/util_mb"))
@@ -598,6 +599,10 @@
     lst))
 
 ;https://gist.github.com/bdsatish/5403002 etc in:
-(unless (member "--no-linedit" sb-ext:*posix-argv* :test 'equal) (load "/home/bobak/lsp/le"))
+;(unless (member "--no-linedit" sb-ext:*posix-argv* :test 'equal) (load "/home/bobak/lsp/le"))
 
-;in fact I should break out and compile more of the sbclrc: faster, more modular, easier2skip sb specific parts
+;I might go to having a fnc in sbclrc that explicitly loads le.lisp, so I can always start w/o it
+(defun sic ()
+  "start(linedit)if can"
+    (unless (member "--no-linedit" sb-ext:*posix-argv* :test 'equal) (load "/home/bobak/lsp/le"))
+    )
