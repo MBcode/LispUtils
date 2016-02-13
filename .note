@@ -12,3 +12,6 @@ Floyd James Argüello @ffdtm  Simplified Common Lisp reference #lisp http://jtra
     alias osclr 'maccp file:///home/bobak/Documents/www/jtra.cz/stuff/lisp/sclr/index.html' alias ohss 'ohs2;sbman;opcl;onlisp;ohsl;oclc;osclr;ocltl'
  
 In clj.cl have some comparison's w/clj, would like to pull in some functionality / have interop; even havins a few similar fnc names for ppl using both; want same for py see cl-kme/src/py.cl etc
+
+https://twitter.com/dk_jackdaniel/status/698157022483771392 Daniel Kochmański @dk_jackdaniel
+ Hey #lisp, thanks to help from @RainerJoswig and others I've created a graph which illustrates CL implementations :) 
