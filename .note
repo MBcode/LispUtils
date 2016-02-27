@@ -15,3 +15,6 @@ In clj.cl have some comparison's w/clj, would like to pull in some functionality
 
 https://twitter.com/dk_jackdaniel/status/698157022483771392 Daniel Kochmański @dk_jackdaniel
  Hey #lisp, thanks to help from @RainerJoswig and others I've created a graph which illustrates CL implementations :) 
+
+@LispDaily  Metering is a portable CL profiler written in 1990-94 by Mark Kantrowitz. Adapted it to 2016: https://gitlab.common-lisp.net/dkochmanski/metering … #necromancy #lisp 
+ https://gitlab.common-lisp.net
