@@ -128,3 +128,4 @@
 ;@thelittlelisper How to control your iPhone over telnet with Lisp http://blog.fikesfarm.com/posts/2015-11-11-ambly-and-socket-repl.html … via @mfikes
 
 ;pyjure is an implementation (still incomplete) of a pure dialect of Python, written in Clojure. Its main repository is currently on github: https://github.com/qitab/pyjure.
+;from https://common-lisp.net/project/qitab/ incl leijure
