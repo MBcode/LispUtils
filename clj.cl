@@ -126,3 +126,5 @@
 ;would rather focus on clj2cl(or a bridge, w/even abcl)but good to keep tabs on: @LispDaily  Porting Common #Lisp code to Clojure - http://bit.ly/1Ibg8by 
 
 ;@thelittlelisper How to control your iPhone over telnet with Lisp http://blog.fikesfarm.com/posts/2015-11-11-ambly-and-socket-repl.html … via @mfikes
+
+;pyjure is an implementation (still incomplete) of a pure dialect of Python, written in Clojure. Its main repository is currently on github: https://github.com/qitab/pyjure.
