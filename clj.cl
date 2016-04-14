@@ -118,7 +118,7 @@
 ;datasci: https://twitter.com/ds_ldn/status/588764440146870273 https://github.com/henrygarner/clojure-data-science/blob/master/talk.org 
 ; http://clojure-datascience.herokuapp.com/ cl-ml clj-vw  ;sw: grafter loom semantic-csv
 ;https://github.com/liebke/incanter.git
-;Drew Conway ‏@drewconway Data science in Clojure, nice talk by @sorenmacbeth https://www.youtube.com/watch?v=omSTAwSjYc8 … 
+;Drew Conway @drewconway Data science in Clojure, nice talk by @sorenmacbeth https://www.youtube.com/watch?v=omSTAwSjYc8 … 
 ; @sorenmacbeth hadoop(cacalog);to storm & yieldbot/marceline on trident;to spark clj-spark yieldbot/flambo ; cubert web-repl data explore(ipy like);  use s3, parquet 
  
 ;Reddit Lisp @reddit_lisp  ;#lisp Cloje: A Clojure dialect on top of Scheme | http://redd.it/3fevo8 ; https://gitlab.com/cloje/cloje
@@ -129,3 +129,5 @@
 
 ;pyjure is an implementation (still incomplete) of a pure dialect of Python, written in Clojure. Its main repository is currently on github: https://github.com/qitab/pyjure.
 ;from https://common-lisp.net/project/qitab/ incl leijure
+
+;https://en.wikibooks.org/wiki/Clojure_Programming/Tutorials_and_Tips#Clojure_for_Common_Lisp_Programmers
