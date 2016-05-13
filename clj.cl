@@ -131,3 +131,5 @@
 ;from https://common-lisp.net/project/qitab/ incl leijure
 
 ;https://en.wikibooks.org/wiki/Clojure_Programming/Tutorials_and_Tips#Clojure_for_Common_Lisp_Programmers
+
+;http://hn.premii.com/#/article/11689766 The epistemology of pizza
