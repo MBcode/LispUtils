@@ -54,3 +54,6 @@
  ;*which that ML code has IO for,  (as well as many envs incl weka/...)
 
 ;having a sharable data-table would be nice, maybe even pass via(feather when more in use),though arff,etc ok now too
+
+;in end would like to do a study somewhat similar to:
+;How do you make someone feel better? NLP to promote #mentalhealth. See TACL paper at http://stanford.io/1XrwOjL . With @jure & @stanfordnlp
