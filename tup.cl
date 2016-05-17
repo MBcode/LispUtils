@@ -27,6 +27,23 @@
 (defun get-m (typ) (assoc typ *mesgs*))
 (defvar *pd* (assoc-col-names (cl-csv:read-csv (make-pathname :name "pd.csv"))))
 (defvar *leg* (cl-csv:read-csv (make-pathname :name "pleg.csv")))
+
+(ql 'xml-emitter)
+(defun st (pr) (xml-emitter:simple-tag (car pr) (cdr pr)))
+(defun xo (al ;&optional (strm *standard-output*)
+              )
+  (xml-emitter:with-xml-output (*standard-output*) ;strm
+                   (mapcar #'st al)))
+(defun lxo (lal)
+  (with-open-file (strm "out.xml" :direction :output :if-exists :append) 
+    (let ((*standard-output* strm))
+      (mapcar #'xo lal))))
+(defun tox ()
+  "test output of xml"
+ ;(lxo *pd*) ;works &only small chage to import2protege frames
+  (mapcar #'(lambda (x) (lxo (assoc-col-names (cdr x)))) *mesgs*)
+  )
+
 ;can also try: ;works but in arrays/use if want re ops
 ;(ql 'cl-simple-table)
 ;(defvar *st* (simple-table:read-csv "pd.csv"))
@@ -55,5 +72,6 @@
 
 ;having a sharable data-table would be nice, maybe even pass via(feather when more in use),though arff,etc ok now too
 
-;in end would like to do a study somewhat similar to:
+;end goal somewhat similar to:
+;"Natural Language Processing for Mental Health: Large Scale Discourse Analysis of Counseling Conversations": arxiv.org/abs/1605.04462
 ;How do you make someone feel better? NLP to promote #mentalhealth. See TACL paper at http://stanford.io/1XrwOjL . With @jure & @stanfordnlp
