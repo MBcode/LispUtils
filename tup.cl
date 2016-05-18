@@ -31,7 +31,7 @@
 (ql 'xml-emitter)
 (defun st (pr) (xml-emitter:simple-tag (car pr) (cdr pr)))
 (defun xo (al ;&optional (strm *standard-output*)
-              )
+              );replace xml version line w/people or msg tags
   (xml-emitter:with-xml-output (*standard-output*) ;strm
                    (mapcar #'st al)))
 (defun lxo (lal)
@@ -42,7 +42,9 @@
   "test output of xml"
  ;(lxo *pd*) ;works &only small chage to import2protege frames
   (mapcar #'(lambda (x) (lxo (assoc-col-names (cdr x)))) *mesgs*)
-  )
+  ) ;could deal w/multibytechars or ignore
+;by using: alias iconv8 'iconv -c -f UTF-8 -t ISO-8859-1 '
+;still missed some emojii/etc. Will have to automate/use multibyte-chars
 
 ;can also try: ;works but in arrays/use if want re ops
 ;(ql 'cl-simple-table)
