@@ -12,19 +12,6 @@
    ;)
     ))
 (ql 'cl-csv)
-;could map over the files but keep seperate4a bit
-;;(cl-csv:read-csv "m-cc.csv")
-;;(cl-csv:read-csv "m-cp.csv")
-;;(cl-csv:read-csv "m-pp.csv")
-;(trace cl-csv:read-csv)
-;(defun read-msg-csv (typ)
-;  (cons (intern typ) 
-;        (cl-csv:read-csv 
-;          (make-pathname :name (str-cat "m-" typ ".csv")))))
-;(defvar *mesgs* (mapcar #'read-msg-csv '("cc" "cp" "pp")))
-;typ= '|cc| etc
-;(defun get_m (typ) (assoc_v typ *mesgs*))
-;(defun get-m (typ) (assoc typ *mesgs*))
 ;replace 3msg types w/ascii version of all3files in ma.csv ;as type is a col only
 (defvar *ma* (assoc-col-names (cl-csv:read-csv (make-pathname :name "ma.csv"))))
 (defvar *pd* (assoc-col-names (cl-csv:read-csv (make-pathname :name "pd.csv"))))
@@ -42,12 +29,25 @@
       (mapcar #'xo lal))))
 (defun tox ()
   "test output of xml"
-;;(lxo *pd*) ;works &only small chage to import2protege frames
-; (mapcar #'(lambda (x) (lxo (assoc-col-names (cdr x)))) *mesgs*)
+ ;(lxo *pd*) ;works &only small chage to import2protege frames
   (lxo *ma*) ;iconv -c -f utf8 -t ASCII  keeps away hand edits like utf8 version
   ) ;could deal w/multibytechars or ignore
 ;;by using: alias iconv8 'iconv -c -f UTF-8 -t ISO-8859-1 '
 ;still missed some emojii/etc. Will have to automate/use multibyte-chars
+
+(defun but-ext (s) (first-str2by-end s #\.))
+;USER(1): (len (remove-duplicates (mapcar #'(lambda (x) (but-ext (car x))) (first *pd*)) :test #'equal))
+; 62 
+;now for clp pont &maybe km, get others slots to be subslots of related
+(defun str-ext (s) (last-str2by-end s #\.))
+;could alter 1col w/_ instead of ., or deal w/below
+(defun print-s-re (s &optional (frmt "~%~a -> ~a") (strm nil)) 
+  (let ((base (but-ext s)))
+    (when (len< base s) (format strm frmt base s))))
+(defun slot-hier (lalst) ;list of alsits
+  (remove-duplicates
+    (mapcar #'(lambda (x) (print-s-re (car x))) (first lalst))
+    :test #'equal))
 
 ;can also try: ;works but in arrays/use if want re ops
 ;(ql 'cl-simple-table)
