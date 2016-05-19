@@ -40,14 +40,17 @@
 ; 62 
 ;now for clp pont &maybe km, get others slots to be subslots of related
 (defun str-ext (s) (last-str2by-end s #\.))
+(defvar *clp* "~%(single-slot ~a~%  (type INTEGER)~%;+    (cardinality 0 1)~%;+    (subslot-of ~a)~%   (create-accessor read-write))")
 ;could alter 1col w/_ instead of ., or deal w/below
-(defun print-s-re (s &optional (frmt "~%~a -> ~a") (strm nil)) 
+(defun print-s-re (s &optional (frmt *clp*) ;(frmt "~%~a -> ~a") 
+                                 (strm nil)) 
   (let ((base (but-ext s)))
     (when (len< base s) (format strm frmt base s))))
 (defun slot-hier (lalst) ;list of alsits
   (remove-duplicates
     (mapcar #'(lambda (x) (print-s-re (car x))) (first lalst))
     :test #'equal))
+
 
 ;can also try: ;works but in arrays/use if want re ops
 ;(ql 'cl-simple-table)
