@@ -29,15 +29,21 @@
       (mapcar #'xo lal))))
 (defun tox ()
   "test output of xml"
- ;(lxo *pd*) ;works &only small chage to import2protege frames
+  (lxo *pd*) ;works &only small chage to import2protege frames
   (lxo *ma*) ;iconv -c -f utf8 -t ASCII  keeps away hand edits like utf8 version
   ) ;could deal w/multibytechars or ignore
 ;;by using: alias iconv8 'iconv -c -f UTF-8 -t ISO-8859-1 '
 ;still missed some emojii/etc. Will have to automate/use multibyte-chars
+;protege xml-tab can load these w/only a little clean up
+;-Did each ppl/msg dump to seperate xml file; might want to split out msgs, otherwise
+;  might programatically take convestaion-type slot to split them into subclasses.
+;Had msg xls sheets seperate at start, might want to wait for sql or ..;mv on2txt/# analysis
 
 (defun but-ext (s) (first-str2by-end s #\.))
 ;USER(1): (len (remove-duplicates (mapcar #'(lambda (x) (but-ext (car x))) (first *pd*)) :test #'equal))
-; 62 
+; 62 ;Will also need slot defn of these to have the rest be subslots of
+(defvar *clp0* "~%(single-slot ~a~%  (type INTEGER)~%;+    (cardinality 0 1)~% (create-accessor read-write))")
+;(mapcar #'(lambda (s0) (format nil *clp0* s0)) (remove-duplicates (mapcar #'(lambda (x) (but-ext (car x))) (first *pd*)) :test #'equal))
 ;now for clp pont &maybe km, get others slots to be subslots of related
 (defun str-ext (s) (last-str2by-end s #\.))
 (defvar *clp* "~%(single-slot ~a~%  (type INTEGER)~%;+    (cardinality 0 1)~%;+    (subslot-of ~a)~%   (create-accessor read-write))")
@@ -45,12 +51,15 @@
 (defun print-s-re (s &optional (frmt *clp*) ;(frmt "~%~a -> ~a") 
                                  (strm nil)) 
   (let ((base (but-ext s)))
-    (when (len< base s) (format strm frmt base s))))
+    (when (and base 
+               (len< base s)) ;(format strm frmt base s)
+                               (format strm frmt s base)
+      )))
 (defun slot-hier (lalst) ;list of alsits
   (remove-duplicates
     (mapcar #'(lambda (x) (print-s-re (car x))) (first lalst))
     :test #'equal))
-
+;(slot-hier *pd*) ;not needed for *ma*
 
 ;can also try: ;works but in arrays/use if want re ops
 ;(ql 'cl-simple-table)
