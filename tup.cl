@@ -1,21 +1,32 @@
 ;getting some xls/.. into a format for reasoning/learning over, incl joins/conversions/.. ;mike.bobak@gmail
 ;csv are confidential
-(lu) ;assumed
-(defun val=dot-p (c) (equal (cdr c) "."))
+(lu) ;my load-utils, sometimes assumed
+(defun val=dot-p (c) (equal (cdr c) ".")) ;no value given, so skip
+(defun snumstr (s) (if (> (len s) 9) s (numstr s)))
 (defun assoc-lists (keys vals)
-  (mapcar #'cons keys vals))
+ ;(mapcar #'cons keys vals)
+  (mapcar #'(lambda (k v) (cons k (num-str v))) keys vals)
+  )
 (defun assoc-col-names (lol)
-  (let ((cnames (first lol))
+  (let ((cnames (mapcar #'underscore (first lol))) ;get rid of spaces in colnames
         (vals (rest lol))) ;ListOfLists
    ;(remove-if #'val=dot-p
         (mapcar #'(lambda (vl) (assoc-lists cnames vl)) vals)
    ;)
     ))
 (ql 'cl-csv)
+(defun csv2alst (fn) (assoc-col-names (cl-csv:read-csv (make-pathname :name fn))))
 ;replace 3msg types w/ascii version of all3files in ma.csv ;as type is a col only
-(defvar *ma* (assoc-col-names (cl-csv:read-csv (make-pathname :name "ma.csv"))))
-(defvar *pd* (assoc-col-names (cl-csv:read-csv (make-pathname :name "pd.csv"))))
-(defvar *leg* (cl-csv:read-csv (make-pathname :name "pleg.csv")))
+;(defvar *ma* (assoc-col-names (cl-csv:read-csv (make-pathname :name "ma.csv"))))
+;(defvar *pd* (assoc-col-names (cl-csv:read-csv (make-pathname :name "pd.csv"))))
+ ;(defvar *ma* (csv2alst "ma.csv")) ;found multiline text slot that messed up csv
+;consider libs to read xls &/or open equivalents
+(defvar *ma-cc* (csv2alst "m-cc.csv"))
+(defvar *ma-cp* (csv2alst "m-cp.csv"))
+(defvar *ma-pp* (csv2alst "m-pp.csv"))
+(defvar *pd* (csv2alst "pd.csv"))
+(defvar *leg* (cl-csv:read-csv (make-pathname :name "pleg.csv"))) ;might use
+;when I used parts of a csv lib, I used to turn colname spaces to underscores;do again
 
 (ql 'xml-emitter)
 (defun st (pr) (xml-emitter:simple-tag (car pr) (cdr pr)))
@@ -23,14 +34,17 @@
               );replace xml version line w/people or msg tags
   (xml-emitter:with-xml-output (*standard-output*) ;strm
                    (mapcar #'st al)))
-(defun lxo (lal)
-  (with-open-file (strm "out.xml" :direction :output :if-exists :append) 
+(defun lxo (lal &optional (fn "out.xml"))
+  (with-open-file (strm fn :direction :output :if-exists :supersede) 
     (let ((*standard-output* strm))
       (mapcar #'xo lal))))
 (defun tox ()
   "test output of xml"
-  (lxo *pd*) ;works &only small chage to import2protege frames
-  (lxo *ma*) ;iconv -c -f utf8 -t ASCII  keeps away hand edits like utf8 version
+  (lxo *pd* "out-p.xml") ;works &only small chage to import2protege frames
+ ;(lxo *ma* "out-m.xml") ;iconv -c -f utf8 -t ASCII  keeps away hand edits like utf8 version
+  (lxo *ma-cc* "out-m-cc.xml") 
+  (lxo *ma-cp* "out-m-cp.xml") 
+  (lxo *ma-pp* "out-m-pp.xml") 
   ) ;could deal w/multibytechars or ignore
 ;;by using: alias iconv8 'iconv -c -f UTF-8 -t ISO-8859-1 '
 ;still missed some emojii/etc. Will have to automate/use multibyte-chars
@@ -38,6 +52,10 @@
 ;-Did each ppl/msg dump to seperate xml file; might want to split out msgs, otherwise
 ;  might programatically take convestaion-type slot to split them into subclasses.
 ;Had msg xls sheets seperate at start, might want to wait for sql or ..;mv on2txt/# analysis
+
+;Started to look@Jambalaya-tab, and realize it would be nice to have inter instance links vs integer-ids
+; so can viz not just isa but hasa
+;If I could just get the table schema,&load my test data somplace, I could play w/programatically doing it all;still can.
 
 (defun but-ext (s) (first-str2by-end s #\.))
 ;USER(1): (len (remove-duplicates (mapcar #'(lambda (x) (but-ext (car x))) (first *pd*)) :test #'equal))
