@@ -1,6 +1,6 @@
 ;getting some xls/.. into a format for reasoning/learning over, incl joins/conversions/.. ;mike.bobak@gmail
 ;csv are confidential
-(lu) ;my load-utils, sometimes assumed
+;(lu) ;my load-utils, sometimes assumed
 (defun val=dot-p (c) (equal (cdr c) ".")) ;no value given, so skip
 (defun snumstr (s) (if (> (len s) 9) s (numstr s)))
 (defun assoc-lists (keys vals)
@@ -28,8 +28,11 @@
 (defvar *leg* (cl-csv:read-csv (make-pathname :name "pleg.csv"))) ;might use
 ;when I used parts of a csv lib, I used to turn colname spaces to underscores;do again
 
+(defun splural (s) (str-cat s "s"))
+
 (ql 'xml-emitter)
 (defun st (pr) (xml-emitter:simple-tag (car pr) (cdr pr)))
+
 (defun xo (al ;&optional (strm *standard-output*)
               );replace xml version line w/people or msg tags
   (xml-emitter:with-xml-output (*standard-output*) ;strm
@@ -38,6 +41,33 @@
   (with-open-file (strm fn :direction :output :if-exists :supersede) 
     (let ((*standard-output* strm))
       (mapcar #'xo lal))))
+
+;now rework to get the <ens> <en></en>..... </ens> wrapping
+(defun xo2 (al en)
+  ;xml-emitter:with-xml-output (*standard-output*) 
+  (xml-emitter:with-tag (en)
+                   (mapcar #'st al)))
+;defun lxo2 (lal &optional (fn "out.xml"))
+;defun lxo2 (lal &optional (en "msg")) 
+(defun lxo2 (lal &optional (en "msg") (ens (splural en))) 
+  (let (;(*standard-output* strm)
+       ;;(ens (splural en))
+        (fn (str-cat ens ".xml")))
+    (with-open-file (strm fn :direction :output :if-exists :supersede) 
+     (let ((*standard-output* strm))
+      (xml-emitter:with-xml-output (*standard-output*) 
+         (xml-emitter:with-tag (ens)
+           (mapcar #'(lambda (x) (xo2 x en)) lal)))))))
+(defun tox2 (lal &optional (en "msg") (ens (splural en)))
+  ;w/lxo2 having optionals this could call w/all globals again
+  (format t "~%mk-xml ~a ~a" ens en)
+ ;(lxo2 lal (str-cat ens ".xml"))
+ ;(lxo2 lal ens)
+  (lxo2 lal en ens)
+  )
+;(tox2 *pd* "person")
+;(tox2 *ma-pp* "msg-pp") ..
+ 
 (defun tox ()
   "test output of xml"
   (lxo *pd* "out-p.xml") ;works &only small chage to import2protege frames
