@@ -17,9 +17,6 @@
 (ql 'cl-csv)
 (defun csv2alst (fn) (assoc-col-names (cl-csv:read-csv (make-pathname :name fn))))
 ;replace 3msg types w/ascii version of all3files in ma.csv ;as type is a col only
-;(defvar *ma* (assoc-col-names (cl-csv:read-csv (make-pathname :name "ma.csv"))))
-;(defvar *pd* (assoc-col-names (cl-csv:read-csv (make-pathname :name "pd.csv"))))
- ;(defvar *ma* (csv2alst "ma.csv")) ;found multiline text slot that messed up csv
 ;consider libs to read xls &/or open equivalents
 (defvar *ma-cc* (csv2alst "m-cc.csv"))
 (defvar *ma-cp* (csv2alst "m-cp.csv"))
@@ -32,15 +29,6 @@
 
 (ql 'xml-emitter)
 (defun st (pr) (xml-emitter:simple-tag (car pr) (cdr pr)))
-
-;(defun xo (al ;&optional (strm *standard-output*)
-;              );replace xml version line w/people or msg tags
-;  (xml-emitter:with-xml-output (*standard-output*) ;strm
-;                   (mapcar #'st al)))
-;(defun lxo (lal &optional (fn "out.xml"))
-;  (with-open-file (strm fn :direction :output :if-exists :supersede) 
-;    (let ((*standard-output* strm))
-;      (mapcar #'xo lal))))
 
 ;now rework to get the <ens> <en></en>..... </ens> wrapping
 (defun xo2 (al en)
@@ -62,14 +50,7 @@
   (lxo2 *ma-pp* "msg-pp") 
   )
  
-;(defun tox ()
-;  "test output of xml"
-;  (lxo *pd* "out-p.xml") ;works &only small chage to import2protege frames
-; ;(lxo *ma* "out-m.xml") ;iconv -c -f utf8 -t ASCII  keeps away hand edits like utf8 version
-;  (lxo *ma-cc* "out-m-cc.xml") 
-;  (lxo *ma-cp* "out-m-cp.xml") 
-;  (lxo *ma-pp* "out-m-pp.xml") 
-;  ) ;could deal w/multibytechars or ignore
+;could deal w/multibytechars or ignore
 ;;by using: alias iconv8 'iconv -c -f UTF-8 -t ISO-8859-1 '
 ;still missed some emojii/etc. Will have to automate/use multibyte-chars
 ;protege xml-tab can load these w/only a little clean up
@@ -104,7 +85,11 @@
 ;(slot-hier *pd*) ;not needed for *ma*
 
 ;can also try: ;works but in arrays/use if want re ops
-;(ql 'cl-simple-table)
+;(ql 'cl-simple-table) ;looking at clml mgl etc &nlp..
+ ;find ml code that has io for protege frames files
+ ;https://github.com/MBcode/malecoli/tree/master/kbs
+ ;https://github.com/MBcode/malecoli/tree/master/malecoli/cl-kb
+ ;malecoli/mlcl/resources loads algorithm&dataset would be nice
 ;(defvar *st* (simple-table:read-csv "pd.csv"))
 
 ;w/assoc-col-names alists json would be very easy, but old protege frames xmltab is 1st target
