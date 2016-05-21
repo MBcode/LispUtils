@@ -33,49 +33,43 @@
 (ql 'xml-emitter)
 (defun st (pr) (xml-emitter:simple-tag (car pr) (cdr pr)))
 
-(defun xo (al ;&optional (strm *standard-output*)
-              );replace xml version line w/people or msg tags
-  (xml-emitter:with-xml-output (*standard-output*) ;strm
-                   (mapcar #'st al)))
-(defun lxo (lal &optional (fn "out.xml"))
-  (with-open-file (strm fn :direction :output :if-exists :supersede) 
-    (let ((*standard-output* strm))
-      (mapcar #'xo lal))))
+;(defun xo (al ;&optional (strm *standard-output*)
+;              );replace xml version line w/people or msg tags
+;  (xml-emitter:with-xml-output (*standard-output*) ;strm
+;                   (mapcar #'st al)))
+;(defun lxo (lal &optional (fn "out.xml"))
+;  (with-open-file (strm fn :direction :output :if-exists :supersede) 
+;    (let ((*standard-output* strm))
+;      (mapcar #'xo lal))))
 
 ;now rework to get the <ens> <en></en>..... </ens> wrapping
 (defun xo2 (al en)
-  ;xml-emitter:with-xml-output (*standard-output*) 
   (xml-emitter:with-tag (en)
                    (mapcar #'st al)))
-;defun lxo2 (lal &optional (fn "out.xml"))
-;defun lxo2 (lal &optional (en "msg")) 
 (defun lxo2 (lal &optional (en "msg") (ens (splural en))) 
-  (let (;(*standard-output* strm)
-       ;;(ens (splural en))
-        (fn (str-cat ens ".xml")))
+  (let ((fn (str-cat ens ".xml")))
     (with-open-file (strm fn :direction :output :if-exists :supersede) 
      (let ((*standard-output* strm))
       (xml-emitter:with-xml-output (*standard-output*) 
          (xml-emitter:with-tag (ens)
            (mapcar #'(lambda (x) (xo2 x en)) lal)))))))
-(defun tox2 (lal &optional (en "msg") (ens (splural en)))
-  ;w/lxo2 having optionals this could call w/all globals again
-  (format t "~%mk-xml ~a ~a" ens en)
- ;(lxo2 lal (str-cat ens ".xml"))
- ;(lxo2 lal ens)
-  (lxo2 lal en ens)
-  )
-;(tox2 *pd* "person")
-;(tox2 *ma-pp* "msg-pp") ..
- 
-(defun tox ()
+;defun tox2 (lal &optional (en "msg") (ens (splural en)))
+(defun tox2 ()
   "test output of xml"
-  (lxo *pd* "out-p.xml") ;works &only small chage to import2protege frames
- ;(lxo *ma* "out-m.xml") ;iconv -c -f utf8 -t ASCII  keeps away hand edits like utf8 version
-  (lxo *ma-cc* "out-m-cc.xml") 
-  (lxo *ma-cp* "out-m-cp.xml") 
-  (lxo *ma-pp* "out-m-pp.xml") 
-  ) ;could deal w/multibytechars or ignore
+  (lxo2 *pd* "person")
+  (lxo2 *ma-cc* "msg-cc") 
+  (lxo2 *ma-cp* "msg-cp") 
+  (lxo2 *ma-pp* "msg-pp") 
+  )
+ 
+;(defun tox ()
+;  "test output of xml"
+;  (lxo *pd* "out-p.xml") ;works &only small chage to import2protege frames
+; ;(lxo *ma* "out-m.xml") ;iconv -c -f utf8 -t ASCII  keeps away hand edits like utf8 version
+;  (lxo *ma-cc* "out-m-cc.xml") 
+;  (lxo *ma-cp* "out-m-cp.xml") 
+;  (lxo *ma-pp* "out-m-pp.xml") 
+;  ) ;could deal w/multibytechars or ignore
 ;;by using: alias iconv8 'iconv -c -f UTF-8 -t ISO-8859-1 '
 ;still missed some emojii/etc. Will have to automate/use multibyte-chars
 ;protege xml-tab can load these w/only a little clean up
