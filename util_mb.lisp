@@ -113,6 +113,12 @@ Copyright (c) 2000-2006, Sunil Mishra All rights reserved. for99lines
   (let ((a1 (a1)))
     (format t "~%(al '~a)" a1)
     (al a1)))
+;-alias s11 "sbcl --eval '(ql1)'"
+(defun ql1 () 
+  "load most likely .asd file in this dir"
+  (let ((a1 (a1)))
+    (format t "~%(ql '~a)" a1)
+    (ql a1)))
 ;-
 ;(load-bps) ;mine is much nicer
 (defun c-load (f) (compile-load f))
