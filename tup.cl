@@ -1,8 +1,9 @@
 ;getting some xls/.. into a format for reasoning/learning over, incl joins/conversions/.. ;mike.bobak@gmail
 ;csv are confidential
 ;(lu) ;my load-utils, sometimes assumed
-(ql 'cl-unicode)
-(ql 'cl-rfc2047) (defun decod (s) (cl-rfc2047:decode* s))
+;(ql 'cl-unicode) ;these where un-needed when using latest cl-csv from git/vs ql version
+;(ql 'cl-rfc2047) (defun decod (s) (cl-rfc2047:decode* s))
+;(ql 'babel) ;also has decoders
 (defun val=dot-p (c) (equal (cdr c) ".")) ;no value given, so skip
 (defun snumstr (s) (if (> (len s) 9) s (numstr s)))
 (defun assoc-lists (keys vals)
@@ -94,6 +95,23 @@
  ;https://github.com/MBcode/malecoli/tree/master/kbs
  ;https://github.com/MBcode/malecoli/tree/master/malecoli/cl-kb
  ;malecoli/mlcl/resources loads algorithm&dataset would be nice
+(ql 'mlcl)  ;to read&write the protege-files, and start some machine-leanring work
+;cl/kb/io/io.lisp :":"::::::::::"       "   ;3 *.p* files now,will-go2->.pprj&.xml
+;(defun kb-import-from-protege-file (pprj-file xml-file &optional (kb *kb*))
+;(defun kb-export-to-protege-file (pprj-file xml-file &optional (kb *kb*) (xml-supersedep t) (pprj-supersedep nil))
+;io/pprj.lisp ::::::::::::::
+;(defvar *empty-pprj-pathname* (find-kb-file "empty"))
+;(defun kb-import-from-protege-pprj (pathname kb)
+;(defun kb-export-to-protege-pprj (pprj-file xml-file kb &key (supersedep t))
+;(defun put-info-into-protege-pprj (pprj xml-file  included-pprj-file-list)
+;(defun extract-info-from-protege-pprj (pathname)
+;io/xml.lisp ::::::::::::::kb has assoc xml(data/ins&cls info, instead of pins/pont files)
+;(defun kb-import-from-protege-xml (pathname kb)
+;(defun kb-export-to-protege-xml (pathname kb &key (supersedep t))
+;..
+;(defun tp () (cl-kb:kb-import-from-protege-file "../up/up.pprj" "")) ;fnc not exported
+;Looked at the big dir of pprj/xml files, getting a better sense of them /notes elsewhere
+
 ;(defvar *st* (simple-table:read-csv "pd.csv"))
 
 ;w/assoc-col-names alists json would be very easy, but old protege frames xmltab is 1st target
