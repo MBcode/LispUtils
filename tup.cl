@@ -1,6 +1,8 @@
 ;getting some xls/.. into a format for reasoning/learning over, incl joins/conversions/.. ;mike.bobak@gmail
 ;csv are confidential
 ;(lu) ;my load-utils, sometimes assumed
+(ql 'cl-unicode)
+(ql 'cl-rfc2047) (defun decod (s) (cl-rfc2047:decode* s))
 (defun val=dot-p (c) (equal (cdr c) ".")) ;no value given, so skip
 (defun snumstr (s) (if (> (len s) 9) s (numstr s)))
 (defun assoc-lists (keys vals)
@@ -17,10 +19,12 @@
 (ql 'cl-csv)
 (defun csv2alst (fn) (assoc-col-names (cl-csv:read-csv (make-pathname :name fn))))
 ;replace 3msg types w/ascii version of all3files in ma.csv ;as type is a col only
-;consider libs to read xls &/or open equivalents
-(defvar *ma-cc* (csv2alst "m-cc.csv"))
-(defvar *ma-cp* (csv2alst "m-cp.csv"))
-(defvar *ma-pp* (csv2alst "m-pp.csv"))
+;consider libs to read xls &/or open equivalents  ;get csv from each xls sheet
+ ;had m-*.csv files(where split from fixed merged file),now back to3original file ma-*.csv
+  ;but then have to use latest https://github.com/AccelerationNet/cl-csv vs ql ver or heap prob
+(defvar *ma-cc* (csv2alst "ma-cc.csv"))
+(defvar *ma-cp* (csv2alst "ma-cp.csv"))
+(defvar *ma-pp* (csv2alst "ma-pp.csv"))
 (defvar *pd* (csv2alst "pd.csv"))
 (defvar *leg* (cl-csv:read-csv (make-pathname :name "pleg.csv"))) ;might use
 ;when I used parts of a csv lib, I used to turn colname spaces to underscores;do again
@@ -28,12 +32,12 @@
 (defun splural (s) (str-cat s "s"))
 
 (ql 'xml-emitter)
-(defun st (pr) (xml-emitter:simple-tag (car pr) (cdr pr)))
+(defun s-tag (pr) (xml-emitter:simple-tag (car pr) (cdr pr)))
 
 ;now rework to get the <ens> <en></en>..... </ens> wrapping
 (defun xo2 (al en)
   (xml-emitter:with-tag (en)
-                   (mapcar #'st al)))
+                   (mapcar #'s-tag al)))
 (defun lxo2 (lal &optional (en "msg") (ens (splural en))) 
   (let ((fn (str-cat ens ".xml")))
     (with-open-file (strm fn :direction :output :if-exists :supersede) 
@@ -45,9 +49,9 @@
 (defun tox2 ()
   "test output of xml"
   (lxo2 *pd* "person")
-  (lxo2 *ma-cc* "msg-cc") 
-  (lxo2 *ma-cp* "msg-cp") 
-  (lxo2 *ma-pp* "msg-pp") 
+  (lxo2 *ma-cc* "msg_cc") 
+  (lxo2 *ma-cp* "msg_cp") 
+  (lxo2 *ma-pp* "msg_pp") 
   )
  
 ;could deal w/multibytechars or ignore
