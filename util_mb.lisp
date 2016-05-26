@@ -2451,6 +2451,10 @@ If HEADER-VALUE-PARSER return multiple values, they are concatenated together in
 
 ;;from: http://www.cs.ut.ee/~isotamm/PKeeled/AllarOja_LISP/LISP/HangMan.cl
 ;USER(1): (explode "abc") -> (|a| |b| |c|) ;w/small cleaning 
+(defun explode (word)
+     (let* ((lenword (length (string word)))) 
+       (cond ((null word) nil) 
+             (t (goexplode word 1 lenword '()))))) 
 (defun goexplode (word cur last fword)
    (cond ((equal cur last)
           (append fword
