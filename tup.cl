@@ -15,7 +15,7 @@
         (vals (rest lol))) ;ListOfLists
    ;(remove-if #'val=dot-p
         (mapcar #'(lambda (vl) (assoc-lists cnames vl)) vals)
-   ;)
+   ;)   ;;if I get rid of some keys, then couldn't use some data-table conv routines/but could be ok
     ))
 (ql 'cl-csv)
 (defun csv2alst (fn) (assoc-col-names (cl-csv:read-csv (make-pathname :name fn))))
@@ -29,6 +29,8 @@
 (defvar *pd* (csv2alst "pd.csv"))
 (defvar *leg* (cl-csv:read-csv (make-pathname :name "pleg.csv"))) ;might use
 ;when I used parts of a csv lib, I used to turn colname spaces to underscores;do again
+;cl-csv has get-data-table-from-csv, &data-table has data-table-to-aslists
+(ql 'cl-csv-data-table) (defun alst2dt (lal) (data-table:alists-to-data-table lal))
 
 (defun splural (s) (str-cat s "s"))
 
@@ -66,6 +68,7 @@
 ;Started to look@Jambalaya-tab, and realize it would be nice to have inter instance links vs integer-ids
 ; so can viz not just isa but hasa
 ;If I could just get the table schema,&load my test data somplace, I could play w/programatically doing it all;still can.
+;I did get the schema but have no data in that format; might wait on that; looking at openIE from stanford now too
 
 (defun but-ext (s) (first-str2by-end s #\.))
 ;USER(1): (len (remove-duplicates (mapcar #'(lambda (x) (but-ext (car x))) (first *pd*)) :test #'equal))
@@ -141,3 +144,5 @@
 ;end goal somewhat similar to:
 ;"Natural Language Processing for Mental Health: Large Scale Discourse Analysis of Counseling Conversations": arxiv.org/abs/1605.04462
 ;How do you make someone feel better? NLP to promote #mentalhealth. See TACL paper at http://stanford.io/1XrwOjL . With @jure & @stanfordnlp
+;http://nlp.stanford.edu/blog/how-to-help-someone-feel-better-nlp-for-mental-health/ has: http://snap.stanford.edu/counseling/
+;http://wiki.knoesis.org/index.php/Modeling_Social_Behavior_for_Healthcare_Utilization_in_Depression
