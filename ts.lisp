@@ -11,3 +11,6 @@
 (defun tsh (str)
  (trivial-shell:shell-command (to-str str)))
  
+(defun run-sh (&rest strs)  
+  "easier replacement for run-ext"
+  (tsh (str-cat strs))) 
