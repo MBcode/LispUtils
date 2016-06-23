@@ -1,7 +1,6 @@
-(ql 'km) ;mike.bobak@gmail
-(in-package :km)
-;then can just: (use-package :km)
-;===same as u2.lisp below
+(ql 'km) ;mike.bobak@gmail   
+;(in-package :km)
+(use-package :km)
 (defvar *dbg* t)
 (defun quote_str (s) (rm-colon (quote-str s)))
 ;;make so ins can also be [] vs just * (by convention) so easier to interoperate w/clips/pprj:pins
@@ -38,7 +37,8 @@
 ;it should build on more generic work, some of which will be in ../c/tools ..
 (defun eval-str2km (s)  ;now ka below as well, starting to prefer ka-, even through sv/gv
   (when (stringp s)
-      (eval-str (str-cat "(km '#$" (rm_comma s) ")"))))
+      (eval-str (str-cat "(km::km '#$" ;"(km '#$" 
+                         (rm_comma s) ")"))))
 
 ;consider a eval2km that could also take a list,  which could be tricky
 ;well at least get a :set formatting4assert:
@@ -101,7 +101,7 @@
 ;assume keep the same, but..
 (defmethod ki ((s Symbol) &optional (pre ""))
  ;(intern (ki (symbol-name s) pre))
-  (intern (ki (underscore (safe-trim (symbol-name s))) pre))
+  (intern (ki (underscore (safe-trim (symbol-name s))) pre) :km)
  ;;if (prefixp "*" s) s
  ;(if (or *nostar* (prefixp "*" (symbol-name s))) s
  ;  (sym-cat "*" pre s))
@@ -131,7 +131,7 @@
   "km id  interned"
   (let ((i (ki s)))  ;2bad can't make where cls&relation names not *ed
     (if (symbolp i) i 
-      (intern i))))
+      (intern i :km))))
 ;
 (defun ins-of-p (i cls)
   "is ins member of the class"
@@ -139,7 +139,7 @@
 ;
 (defun show- (s)
   "w/o*"
-  (showme (intern s)))
+  (km::showme (intern s :km)))
 ;
 (defun show2 (s)
   "show ins then cls"
@@ -185,7 +185,7 @@
 ;defun show (s)
 (defmethod show (s)
   "km showme for sym|str even w/o *"
-  (showme (kin s)))
+  (km::showme (kin s)))
 (defmethod show ((l List))
   (mapcar #'show l)) ;was show already a fnc?check/looks ok
 ;
@@ -217,8 +217,8 @@
  (when (full s) ;so no ""
   (let* ((sl (if (prefixp "(" s) s
 	      (strl s)))
-	 (ret (eval-str (str-cat "(km '#$" (rm_comma 
-                                         (rm-bslash sl) ;(safe-trim sl) ;sl
+	 (ret (eval-str (str-cat "(km::km '#$" ;"(km '#$" 
+                             (rm_comma (rm-bslash sl) ;(safe-trim sl) ;sl
                                          ) ")"))))
     (if (full1 ret) (first-lv ret) 
       ret)))) ;if 1thing get it, else get list, ka+ 
@@ -418,7 +418,7 @@
 (defmethod safe_v ((sy symbol))  ;already in utr2.lisp
   (let* ((s (symbol-name sy))
      (p (position ":" s :test #'equal)))
-    (if (and (numberp p) (> p 1)) (intern (safe_v s)) ;
+    (if (and (numberp p) (> p 1)) (intern (safe_v s) :km) ;
       sy)))
 (defmethod safe_v ((c cons))
   (when *dbg* (warn "do not send safe_v a cons"))

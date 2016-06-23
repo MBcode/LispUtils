@@ -50,6 +50,8 @@
 #+quicklisp (defun qd (a) (ql:who-depends-on  a))
 ;=might try breaking rest out here
 (defun cu- () (compile-file "/home/bobak/lsp/sbclrc.lisp"))
+(defun cuq () (compile-file "/home/bobak/lsp/u2q.lisp"))
+(defun lkmq ()  (load "/home/bobak/lsp/u2q")) ;(lu) (lkm2)
 (load "/home/bobak/lsp/sbclrc")
 ;switched scl&scl- aliases, but s1,s2... isn't loading files now, have to run (l1),(l2)..
 ;I might go to having a fnc in sbclrc that explicitly loads le.lisp, so I can always start w/o it 
