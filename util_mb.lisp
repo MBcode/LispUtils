@@ -2397,6 +2397,64 @@ If HEADER-VALUE-PARSER return multiple values, they are concatenated together in
 (defun prs-csv (str) (csv_parse-str str  :separator #\,))
 (defun prs-csv-nums (str) 
   (mapcar- #'numstr- (prs-csv str)))
+
+;;; (string-to-words "the cat on the mat") -> ("the" "cat" "on" "the" "mat")  ;in KM too
+;;; (string-to-words "the cat_n1 is big" :wordchars '(not whitespace)) -> ("the" "cat_n1" "is" "big")
+(defun string-to-words (string &key (wordchars 'alphanum))
+    (remove-delimeters (string-to-list string :wordchars wordchars)))
+
+;;; USER(3): (string-to-list "the cat sat")
+;;; ("" "the" " " "cat" " " "sat")
+;;; [1] This is a special-purpose bit of code which makes sure "." within
+;;;     a string (eg. "Section 2.2.1") is *not* categorized as a delimeter.
+(defun string-to-list (string &key (wordchars 'alphanum))
+  (scan-to wordchars string 0 0 (length string)))
+
+(defun scan-to (delimeter string m n nmax)
+  (cond ((= n nmax) (list (subseq string m n)))		; reached the end.
+	(t (let ( (curr-char (char string n))
+		  (next-char (cond ((< (1+ n) nmax) (char string (1+ n)))
+				   (t #\ ))) )
+	     (cond ((and (is-type curr-char delimeter)
+			 (not (and (char= curr-char #\.) 	; [1]
+				   (alphanumericp next-char))))
+		    (cons (subseq string m n)
+			  (scan-to (invert-type delimeter) string n n nmax)))
+		   (t (scan-to delimeter string m (1+ n) nmax)))))))
+
+;;; x -> (not x); (not x) -> x
+(defun invert-type (type)
+  (cond ((and (listp type)
+	      (eql (first type) 'not))
+	 (second type))
+	(t `(not ,type))))
+
+;(defun embedded-delimeter (curr-char next-char type)
+;  (declare (ignore type))
+;  (and (char= curr-char #\.)
+;       (alphanumericp next-char)))
+
+(defun is-type (char type)
+  (cond ((and (listp type)
+	      (eql (first type) 'not))
+	 (not (is-type char (second type))))
+        ((eql type 'alphanum) (not (delimeter char)))
+	((eql type 'whitespace) (member char *whitespace-chars* :test #'char=))
+	(t (format t "ERROR! is-type: Unrecognized delimeter type ~a!~%" type))))
+
+;;; 5/7/99: *Do* want to break up software/hardware into two words.
+;;; (defun delimeter (char)
+;;;  (and (not (alphanumericp char))
+;;;       (not (char= char #\-))
+;;;       (not (char= char #\/))))
+(defun delimeter (char) (not (alphanumericp char)))
+
+;;; Remove the delimeter components:
+(defun remove-delimeters (list)
+  (cond ((eql (cdr list) nil) nil)		;;; length 0 or 1
+	(t (cons (cadr list) (remove-delimeters (cddr list))))))
+
+;===================================== 
  
 (defun under_f (str) ;better than cache version ;see m16_
   (let* ((wrds (string-to-words str))
