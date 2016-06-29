@@ -61,3 +61,4 @@
 ;(defun cwd (p) (cl-cwd:cwd p))
 ;(load "/home/bobak/lsp/ts.cl") ;trivial-shell (tsh str) 
 ;(ql 'cl-cwd) (defun pwd () (cl-cwd:get-cwd)) (defun cd (d) (cl-cwd:cwd d)) ;already have it
+(defun qlud () (ql:update-dist "quicklisp"))

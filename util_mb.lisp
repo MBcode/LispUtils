@@ -1,4 +1,4 @@
-;bobak@balisp.org a collection of utils
+;mike.bobak@gmail a collection of utils
 ;threec utilities
 (defun km-seqp+ (s)  ;mv2 kmb/u2.lisp
   (km-seqp (list+ s)))
@@ -2249,6 +2249,9 @@ If HEADER-VALUE-PARSER return multiple values, they are concatenated together in
 (defun butfirst-n (s n)
   "everything after1st n in a seq"
     (subseq s n (len s))) 
+
+(defun butfirst (s &optional (n 1)) (butfirst-n s n))
+(defun butfirstlast (s &optional (n 1)) (butlast-n (butfirst s n) n))
 
 (defun rm-ext (s)
   "rm extention"
