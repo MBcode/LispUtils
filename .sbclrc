@@ -62,3 +62,16 @@
 ;(load "/home/bobak/lsp/ts.cl") ;trivial-shell (tsh str) 
 ;(ql 'cl-cwd) (defun pwd () (cl-cwd:get-cwd)) (defun cd (d) (cl-cwd:cwd d)) ;already have it
 (defun qlud () (ql:update-dist "quicklisp"))
+;http://bnmcgn.github.io/lisp-guide/lisp-exploration.html
+(defun qlsl () (ql:system-list))
+(defun lap () (list-all-packages))
+(defun ls-pkgs () (list-all-packages))
+(defun pkg-use (p) (package-use-list (find-package p)))
+(defun all-sym () (apropos "" *package*))
+(defun pkg-appropos (s) (apropos s *package*))
+(defun lsp-ver () (format t "~%~a~a" (lisp-implementation-type) (lisp-implementation-version)))
+(defun w-ver () (format t "~%~a, ~a" (software-version) (machine-version)))
+(defun version () (w-ver) (lsp-ver))
+(defun ql-init () (ql-impl-util::init-file-name-for (lisp-implementation-type)))
+(defun qlws (s) (ql:where-is-system s))
+(defun dti (v) (describe v) (print (type-of v)) (inspect v))
