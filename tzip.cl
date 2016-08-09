@@ -2,7 +2,7 @@
 ;uses my utils,            & (ql 'zipcode-distance-api.git)
 (use-package :ZIPCODE-DISTANCE-API)
 (setf (get :zipcodedistanceapi.redline13.com :token)
-    "y2keUOOev6RiiAcLjUhPO3emTrWR0bDzeYO9MCoiJfB1QON9J4Yy7dU1FRSG2wfh")
+     "eqnvqIjAK---you-actual-key-here---B33LUUpt0u");have2get your own from: http://www.zipcodeapi.com/
 
 (defun zip-dist (a b) 
   (distance-between (to-str a) (to-str b)))
