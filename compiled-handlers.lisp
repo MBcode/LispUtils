@@ -21,10 +21,13 @@
 ;;; ==================== START OF MACHINE-GENERATED FILE ====================
 ;Why couldn't we have gotten the code that generates this? W/o it I had to hand edit this:
 ;  well it could have been automated, but not that many   ..we'll see where this goes, might feed into some other updates/?
+;   there is a write-compiled-handlers but don't think is or should be called
 
 ;KM: km_2-5-45.lisp &quicklisp: :KM both can crap out on: compiled-handlers.lisp, so starting to rework the file;need2get around return-from block ..
 ;   pulled out 34 handler blocks of code, and made seperate functions, it compiles, but need2test that ret vals all passed up properly
 ;   This finally allows a version of KM to be used on an old 32bit PPC Linux box I have sitting around.
+
+;I can get 'tax' of Thing, but when components/core classes are loaded via nlp/lcc.lisp then I see similar probs, so dbg here
 
 ;If need be can rename the main/original block, but shouldn't be a problem
 
@@ -3690,6 +3693,7 @@ instances, or :seq/:bag/:pair of instances), but instead returned:
                                                        (t (km-multi-slotvals frames slot :fail-mode fmode))))))))))
                            f-mode target x)
                   '?path)))))
+(trace compiled-km-handler-function) ;not sure how compiled&if would see a trace
 
 (setq *km-handler-function* #'compiled-km-handler-function)
 
