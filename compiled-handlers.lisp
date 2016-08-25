@@ -20,15 +20,17 @@
 ;;;
 ;;; ==================== START OF MACHINE-GENERATED FILE ====================
 ;Why couldn't we have gotten the code that generates this? W/o it I had to hand edit this:
+;  well it could have been automated, but not that many   ..we'll see where this goes, might feed into some other updates/?
 
 ;KM: km_2-5-45.lisp &quicklisp: :KM both can crap out on: compiled-handlers.lisp, so starting to rework the file;need2get around return-from block ..
-;   pulled out 26 handler blocks of code, and made seperate functions, it compiles, but need2test that ret vals all passed up properly
+;   pulled out 34 handler blocks of code, and made seperate functions, it compiles, but need2test that ret vals all passed up properly
 ;   This finally allows a version of KM to be used on an old 32bit PPC Linux box I have sitting around.
 
+;If need be can rename the main/original block, but shouldn't be a problem
 
 (setq *compile-handlers* t)
 
-(defun h--the (x xl xr) (block km-handler
+(defun h--the (x xl xr f-mode target) (block km-handler
     (let ((xrl (first xr)) (xrr (rest xr)))
       (or (when (consp xrr)
             (let ((xrrl (first xrr)) (xrrr (rest xrr)))
@@ -136,7 +138,7 @@
                                f-mode target xrl)
                       '(|the| ?frame))))))
 ))
-(defun h--a (x xl xr) (block km-handler
+(defun h--a (x xl xr f-mode target) (block km-handler
     (let ((xrl (first xr)) (xrr (rest xr)))
       (or (when (eql xrr 'nil)
             (return-from km-handler
@@ -252,7 +254,7 @@
                                        f-mode target xrl xrrr)
                               '(|a| ?class |with| &rest)))))))))
   ))
-(defun h--a-prototype (x xl xr) (block km-handler
+(defun h--a-prototype (x xl xr f-mode target) (block km-handler
     (let ((xrl (first xr)) (xrr (rest xr)))
       (or (when (eql xrr 'nil)
             (return-from km-handler
@@ -302,7 +304,7 @@
                                    f-mode target xrl xrrr)
                           '(|a-prototype| ?class |with| &rest))))))))
   ))
-(defun h--clone (x xl xr) (block km-handler
+(defun h--clone (x xl xr f-mode target) (block km-handler
     (let ((xrl (first xr)) (xrr (rest xr)))
       (when (eql xrr 'nil)
         (return-from km-handler
@@ -313,7 +315,7 @@
                            f-mode target xrl)
                   '(|clone| ?expr)))))
   ))
-(defun h--must-be-a (x xl xr) (block km-handler
+(defun h--must-be-a (x xl xr f-mode target) (block km-handler
     (let ((xrl (first xr)) (xrr (rest xr)))
       (or (when (eql xrr 'nil)
             (return-from km-handler
@@ -335,7 +337,7 @@
                                    f-mode target xrl xrrr)
                           '(|must-be-a| ?class |with| &rest))))))))
   ))
-(defun h--every (x xl xr) (block km-handler
+(defun h--every (x xl xr f-mode target) (block km-handler
     (let ((xrl (first xr)) (xrr (rest xr)))
       (or (when (consp xrr)
             (let ((xrrl (first xrr)) (xrrr (rest xrr)))
@@ -550,7 +552,7 @@
                                f-mode target xrl)
                       '(|every| ?frame))))))
   ))
-(defun h--xr (x xl xr) (block km-handler
+(defun h--xr (x xl xr f-mode target) (block km-handler
   (let ((xrl (first xr)) (xrr (rest xr)))
     (or (when (eql xrl '|has|)
           (return-from km-handler
@@ -1314,7 +1316,7 @@
                         '(?expr + &rest)))))))
   ))
     ;--edge
-(defun h--the+ (x xl xr) (block km-handler
+(defun h--the+ (x xl xr f-mode target) (block km-handler
     (let ((xrl (first xr)) (xrr (rest xr)))
       (or (when (consp xrr)
             (let ((xrrl (first xrr)) (xrrr (rest xrr)))
@@ -1368,7 +1370,7 @@
                                f-mode target xrl)
                       '(|the+| ?frame))))))
   ))
-(defun h--allof (x xl xr) (block km-handler
+(defun h--allof (x xl xr f-mode target) (block km-handler
     (let ((xrl (first xr)) (xrr (rest xr)))
       (when (consp xrr)
         (let ((xrrl (first xrr)) (xrrr (rest xrr)))
@@ -1462,7 +1464,7 @@
                                                        f-mode target xrl xrrrl xrrrrrl)
                                               '(|allof| ?var |in| ?set |must| ?test)))))))))))))))))
   ))
-(defun h--forall (x xl xr) (block km-handler
+(defun h--forall (x xl xr f-mode target) (block km-handler
     (let ((xrl (first xr)) (xrr (rest xr)))
       (when (consp xrr)
         (let ((xrrl (first xrr)) (xrrr (rest xrr)))
@@ -1545,7 +1547,7 @@
                                                            f-mode target xrl xrrrl xrrrrrl xrrrrrrl)
                                                   '(|forall| ?var |in| ?set |where| ?constraint ?value)))))))))))))))))))
   ))
-(defun h--forall-seq (x xl xr) (block km-handler
+(defun h--forall-seq (x xl xr f-mode target) (block km-handler
     (let ((xrl (first xr)) (xrr (rest xr)))
       (when (consp xrr)
         (let ((xrrl (first xrr)) (xrrr (rest xrr)))
@@ -1668,7 +1670,7 @@
                                                   '(|forall-seq| ?var |in| ?seq |where| ?constraint
                                                     ?value)))))))))))))))))))
   ))
-(defun h--forall-bag (x xl xr) (block km-handler
+(defun h--forall-bag (x xl xr f-mode target) (block km-handler
     (let ((xrl (first xr)) (xrr (rest xr)))
       (when (consp xrr)
         (let ((xrrl (first xrr)) (xrrr (rest xrr)))
@@ -1794,7 +1796,7 @@
                                                   '(|forall-bag| ?var |in| ?bag |where| ?constraint
                                                     ?value)))))))))))))))))))
   ))
-(defun h--forall-seq2 (x xl xr) (block km-handler
+(defun h--forall-seq2 (x xl xr f-mode target) (block km-handler
     (let ((xrl (first xr)) (xrr (rest xr)))
       (when (consp xrr)
         (let ((xrrl (first xrr)) (xrrr (rest xrr)))
@@ -1843,7 +1845,7 @@
                                    f-mode target xrl xrrl)
                           '(|forall-seq2| ?seq ?value))))))))
   ))
-(defun h--forall-bag2 (x xl xr) (block km-handler
+(defun h--forall-bag2 (x xl xr f-mode target) (block km-handler
     (let ((xrl (first xr)) (xrr (rest xr)))
       (when (consp xrr)
         (let ((xrrl (first xrr)) (xrrr (rest xrr)))
@@ -1893,7 +1895,7 @@
                                    f-mode target xrl xrrl)
                           '(|forall-bag2| ?bag ?value))))))))
   ))
-(defun h--allof2 (x xl xr)  (block km-handler
+(defun h--allof2 (x xl xr f-mode target)  (block km-handler
     (let ((xrl (first xr)) (xrr (rest xr)))
       (when (consp xrr)
         (let ((xrrl (first xrr)) (xrrr (rest xrr)))
@@ -1937,7 +1939,7 @@
                                          f-mode target xrl xrrrl)
                                 '(|allof2| ?set |must| ?test)))))))))))
   ))
-(defun h--forall2 (x xl xr)  (block km-handler
+(defun h--forall2 (x xl xr f-mode target)  (block km-handler
     (let ((xrl (first xr)) (xrr (rest xr)))
       (when (consp xrr)
         (let ((xrrl (first xrr)) (xrrr (rest xrr)))
@@ -1967,7 +1969,7 @@
                                              f-mode target xrl xrrrl xrrrrl)
                                     '(|forall2| ?set |where| ?constraint ?value)))))))))))))
   ))
-(defun h--theoneof2 (x xl xr)  (block km-handler
+(defun h--theoneof2 (x xl xr f-mode target)  (block km-handler
     (let ((xrl (first xr)) (xrr (rest xr)))
       (when (consp xrr)
         (let ((xrrl (first xrr)) (xrrr (rest xrr)))
@@ -1986,7 +1988,7 @@
                                      f-mode target xrl xrrrl)
                             '(|theoneof2| ?set |where| ?test))))))))))
   ))
-(defun h--the1 (x xl xr)  (block km-handler
+(defun h--the1 (x xl xr f-mode target)  (block km-handler
     (let ((xrl (first xr)) (xrr (rest xr)))
       (or (when (consp xrr)
             (let ((xrrl (first xrr)) (xrrr (rest xrr)))
@@ -2018,7 +2020,7 @@
                                      f-mode target xrrl)
                             '(|the1| |of| ?frameadd)))))))))
   ))
-(defun h--the2 (x xl xr)  (block km-handler
+(defun h--the2 (x xl xr f-mode target)  (block km-handler
     (let ((xrl (first xr)) (xrr (rest xr)))
       (or (when (consp xrr)
             (let ((xrrl (first xrr)) (xrrr (rest xrr)))
@@ -2049,7 +2051,7 @@
                                      f-mode target xrrl)
                             '(|the2| |of| ?frameadd)))))))))
   ))
-(defun h--the3 (x xl xr)  (block km-handler
+(defun h--the3 (x xl xr f-mode target)  (block km-handler
     (let ((xrl (first xr)) (xrr (rest xr)))
       (or (when (consp xrr)
             (let ((xrrl (first xrr)) (xrrr (rest xrr)))
@@ -2080,7 +2082,7 @@
                                      f-mode target xrrl)
                             '(|the3| |of| ?frameadd)))))))))
   ))
-(defun h--theN (x xl xr)  (block km-handler
+(defun h--theN (x xl xr f-mode target)  (block km-handler
     (let ((xrl (first xr)) (xrr (rest xr)))
       (when (consp xrr)
         (let ((xrrl (first xrr)) (xrrr (rest xrr)))
@@ -2108,7 +2110,7 @@
                                      f-mode target xrl xrrrl)
                             '(|theN| ?nexpr |of| ?frameadd))))))))))
   ))
-(defun h--theNth (x xl xr)  (block km-handler
+(defun h--theNth (x xl xr f-mode target)  (block km-handler
     (let ((xrl (first xr)) (xrr (rest xr)))
       (when (consp xrr)
         (let ((xrrl (first xrr)) (xrrr (rest xrr)))
@@ -2128,7 +2130,7 @@
                                      f-mode target xrl xrrrl)
                             '(|theNth| ?nexpr |of| ?frameadd))))))))))
   ))
-(defun h--triple (x xl xr)  (block km-handler
+(defun h--triple (x xl xr f-mode target)  (block km-handler
     (let ((xrl (first xr)) (xrr (rest xr)))
       (when (consp xrr)
         (let ((xrrl (first xrr)) (xrrr (rest xrr)))
@@ -2156,7 +2158,7 @@
                                    f-mode target xrl xrrl xrrrl)
                           '(:|triple| ?frame-expr ?slot-expr ?val-expr)))))))))
   ))
-(defun h--showme (x xl xr)  (block km-handler
+(defun h--showme (x xl xr f-mode target)  (block km-handler
     (let ((xrl (first xr)) (xrr (rest xr)))
       (or (when (eql xrr 'nil)
             (return-from km-handler
@@ -2180,7 +2182,7 @@
                                    f-mode target xrl xrrl)
                           '(|showme| ?km-expr ?file))))))))
   ))
-(defun h--explanation (x xl xr)  (block km-handler
+(defun h--explanation (x xl xr f-mode target)  (block km-handler
     (let ((xrl (first xr)) (xrr (rest xr)))
       (when (consp xrl)
         (let ((xrll (first xrl)) (xrlr (rest xrl)))
@@ -2209,7 +2211,7 @@
                                                    f-mode target xrlrl xrlrrl xrlrrrl xrrl)
                                           '(|explanation| (:|triple| ?f0 ?s ?v0) ?explanations)))))))))))))))))
   ))
-(defun h--an (x xl xr)  (block km-handler
+(defun h--an (x xl xr f-mode target)  (block km-handler
     (let ((xrl (first xr)) (xrr (rest xr)))
       (when (eql xrl '|instance|)
         (when (consp xrr)
@@ -2251,6 +2253,249 @@
                                                f-mode target xrrrl xrrrrr)
                                       '(|an| |instance| |of| ?expr |with| &rest))))))))))))))
   ))
+(defun h--in-situation (x xl xr f-mode target)  (block km-handler
+    (let ((xrl (first xr)) (xrr (rest xr))) 
+      (or (when (eql xrr 'nil)
+            (return-from km-handler
+              (values (funcall #'(lambda (_fmode _target situation-expr)
+                                   (declare (ignore _fmode _target))
+                                   (in-situation situation-expr))
+                               f-mode target xrl)
+                      '(|in-situation| ?situation-expr))))
+          (when (consp xrr)
+            (let ((xrrl (first xrr)) (xrrr (rest xrr)))
+              (or (when (consp xrrl)
+                    (let ((xrrll (first xrrl)) (xrrlr (rest xrrl)))
+                      (when (eql xrrll '|the|)
+                        (when (consp xrrlr)
+                          (let ((xrrlrl (first xrrlr)) (xrrlrr (rest xrrlr)))
+                            (when (consp xrrlrr)
+                              (let ((xrrlrrl (first xrrlrr)) (xrrlrrr (rest xrrlrr)))
+                                (when (eql xrrlrrl '|of|)
+                                  (when (consp xrrlrrr)
+                                    (let ((xrrlrrrl (first xrrlrrr)) (xrrlrrrr (rest xrrlrrr)))
+                                      (when (eql xrrlrrrr 'nil)
+                                        (when (eql xrrr 'nil)
+                                          (return-from km-handler
+                                            (values (funcall #'(lambda (_fmode _target situation slot frame)
+                                                                 (declare (ignore _fmode _target))
+                                                                 (cond ((and (kb-objectp situation)
+                                                                             (isa situation '|Situation|)
+                                                                             (already-done frame slot))
+                                                                        (remove-constraints (get-vals
+                                                                                             frame
+                                                                                             slot
+                                                                                             :situation
+                                                                                             (target-situation
+                                                                                              situation
+                                                                                              frame
+                                                                                              slot))))
+                                                                       (t
+                                                                        (in-situation situation
+                                                                                      `(|the| ,slot |of| ,frame)))))
+                                                             f-mode target xrl xrrlrl xrrlrrrl)
+                                                    '(|in-situation| ?situation (|the| ?slot |of| ?frame))))))))))))))))
+                  (when (eql xrrr 'nil)
+                    (return-from km-handler
+                      (values (funcall #'(lambda (_fmode _target situation-expr km-expr)
+                                           (declare (ignore _fmode _target))
+                                           (in-situation situation-expr km-expr))
+                                       f-mode target xrl xrrl)
+                              '(|in-situation| ?situation-expr ?km-expr)))))))))
+  ))
+(defun h--if (x xl xr f-mode target)  (block km-handler
+    (let ((xrl (first xr)) (xrr (rest xr)))
+      (when (consp xrr)
+        (let ((xrrl (first xrr)) (xrrr (rest xrr)))
+          (when (eql xrrl '|then|)
+            (when (consp xrrr)
+              (let ((xrrrl (first xrrr)) (xrrrr (rest xrrr)))
+                (or (when (eql xrrrr 'nil)
+                      (return-from km-handler
+                        (values (funcall #'(lambda (fmode target condition action)
+                                             (km-int `(|if| ,condition |then| ,action |else| nil)
+                                               :fail-mode fmode
+                                               :target target
+                                               :rewritep t))
+                                         f-mode target xrl xrrrl)
+                                '(|if| ?condition |then| ?action))))
+                    (when (consp xrrrr)
+                      (let ((xrrrrl (first xrrrr)) (xrrrrr (rest xrrrr)))
+                        (when (eql xrrrrl '|else|)
+                          (when (consp xrrrrr)
+                            (let ((xrrrrrl (first xrrrrr)) (xrrrrrr (rest xrrrrr)))
+                              (when (eql xrrrrrr 'nil)
+                                (return-from km-handler
+                                  (values (funcall #'(lambda (fmode target condition action altaction)
+                                                       (declare (ignore target))
+                                                       (let ((test-result (km-int condition)))
+                                                         (cond ((not (member test-result '(nil |f| f)))
+                                                                (km-int action :fail-mode fmode))
+                                                               (t (km-int altaction :fail-mode fmode)))))
+                                                   f-mode target xrl xrrrl xrrrrrl)
+                                          '(|if| ?condition |then| ?action |else| ?altaction))))))))))))))))
+  ))
+(defun h--oneof (x xl xr f-mode target)  (block km-handler
+    (let ((xrl (first xr)) (xrr (rest xr)))
+      (when (consp xrr)
+        (let ((xrrl (first xrr)) (xrrr (rest xrr)))
+          (or (when (eql xrrl '|where|)
+                (when (consp xrrr)
+                  (let ((xrrrl (first xrrr)) (xrrrr (rest xrrr)))
+                    (when (eql xrrrr 'nil)
+                      (return-from km-handler
+                        (values (funcall #'(lambda (fmode target set test)
+                                             (declare (ignore fmode target))
+                                             (let ((answer
+                                                    (find-if #'(lambda (member) (km-int (subst member '|It| test)))
+                                                             (km-int set))))
+                                               (cond (answer (list answer)))))
+                                         f-mode target xrl xrrrl)
+                                '(|oneof| ?set |where| ?test)))))))
+              (when (eql xrrl '|in|)
+                (when (consp xrrr)
+                  (let ((xrrrl (first xrrr)) (xrrrr (rest xrrr)))
+                    (when (consp xrrrr)
+                      (let ((xrrrrl (first xrrrr)) (xrrrrr (rest xrrrr)))
+                        (when (eql xrrrrl '|where|)
+                          (when (consp xrrrrr)
+                            (let ((xrrrrrl (first xrrrrr)) (xrrrrrr (rest xrrrrr)))
+                              (when (eql xrrrrrr 'nil)
+                                (return-from km-handler
+                                  (values (funcall #'(lambda (fmode target var set test)
+                                                       (declare (ignore fmode target))
+                                                       (oneof-where var set test))
+                                                   f-mode target xrl xrrrl xrrrrrl)
+                                          '(|oneof| ?var |in| ?set |where| ?test))))))))))))))))
+  ))
+(defun h--theoneof (x xl xr f-mode target)  (block km-handler
+    (let ((xrl (first xr)) (xrr (rest xr)))
+      (when (consp xrr)
+        (let ((xrrl (first xrr)) (xrrr (rest xrr)))
+          (or (when (eql xrrl '|where|)
+                (when (consp xrrr)
+                  (let ((xrrrl (first xrrr)) (xrrrr (rest xrrr)))
+                    (when (eql xrrrr 'nil)
+                      (return-from km-handler
+                        (values (funcall #'(lambda (fmode target set test)
+                                             (let ((val
+                                                    (km-unique-int `(|forall| ,set |where| ,test |It|)
+                                                      :fail-mode fmode
+                                                      :target target
+                                                      :rewritep t)))
+                                               (cond (val (list val)))))
+                                         f-mode target xrl xrrrl)
+                                '(|theoneof| ?set |where| ?test)))))))
+              (when (eql xrrl '|in|)
+                (when (consp xrrr)
+                  (let ((xrrrl (first xrrr)) (xrrrr (rest xrrr)))
+                    (when (consp xrrrr)
+                      (let ((xrrrrl (first xrrrr)) (xrrrrr (rest xrrrr)))
+                        (when (eql xrrrrl '|where|)
+                          (when (consp xrrrrr)
+                            (let ((xrrrrrl (first xrrrrr)) (xrrrrrr (rest xrrrrr)))
+                              (when (eql xrrrrrr 'nil)
+                                (return-from km-handler
+                                  (values (funcall #'(lambda (fmode target var set test)
+                                                       (cond ((not (km-varp var))
+                                                              (report-error 'user-error
+                                                                            "~a: Second argument should be a variable (e.g., ?x)!~%"
+                                                                            `(|theoneof| ,var |in| ,set |where| ,test)))
+                                                             (t
+                                                              (let ((val
+                                                                     (km-unique-int
+                                                                        `(|forall| ,var |in| ,set |where| ,test ,var)
+                                                                       :fail-mode fmode
+                                                                       :target target
+                                                                       :rewritep t)))
+                                                                (cond (val (list val)))))))
+                                                   f-mode target xrl xrrrl xrrrrrl)
+                                          '(|theoneof| ?var |in| ?set |where| ?test))))))))))))))))
+  ))
+(defun h--oneof2 (x xl xr f-mode target)  (block km-handler
+    (let ((xrl (first xr)) (xrr (rest xr)))
+      (when (consp xrr)
+        (let ((xrrl (first xrr)) (xrrr (rest xrr)))
+          (when (eql xrrl '|where|)
+            (when (consp xrrr)
+              (let ((xrrrl (first xrrr)) (xrrrr (rest xrrr)))
+                (when (eql xrrrr 'nil)
+                  (return-from km-handler
+                    (values (funcall #'(lambda (fmode target set test)
+                                         (declare (ignore fmode target))
+                                         (let ((answer
+                                                (find-if #'(lambda (member) (km-int (subst member '|It2| test)))
+                                                         (km-int set))))
+                                           (cond (answer (list answer)))))
+                                     f-mode target xrl xrrrl)
+                            '(|oneof2| ?set |where| ?test))))))))))
+  ))
+(defun h--the-class (x xl xr f-mode target)  (block km-handler
+    (let ((xrl (first xr)) (xrr (rest xr)))
+      (or (when (eql xrr 'nil)
+            (return-from km-handler
+              (values (funcall #'(lambda (fmode target class)
+                                   (declare (ignore fmode target))
+                                   (process-unquotes `((|the-class| ,class))))
+                               f-mode target xrl)
+                      '(|the-class| ?class))))
+          (when (consp xrr)
+            (let ((xrrl (first xrr)) (xrrr (rest xrr)))
+              (when (eql xrrl '|with|)
+                (return-from km-handler
+                  (values (funcall #'(lambda (fmode target class slotsvals)
+                                       (declare (ignore fmode target))
+                                       (cond ((are-slotsvals slotsvals)
+                                              (process-unquotes `((|the-class| ,class |with| ,@slotsvals))))))
+                                   f-mode target xrl xrrr)
+                          '(|the-class| ?class |with| &rest))))))))
+  ))
+(defun h--constraints-for (x xl xr f-mode target)  (block km-handler
+    (let ((xrl (first xr)) (xrr (rest xr)))
+      (when (consp xrl)
+        (let ((xrll (first xrl)) (xrlr (rest xrl)))
+          (when (eql xrll '|the|)
+            (when (consp xrlr)
+              (let ((xrlrl (first xrlr)) (xrlrr (rest xrlr)))
+                (when (consp xrlrr)
+                  (let ((xrlrrl (first xrlrr)) (xrlrrr (rest xrlrr)))
+                    (when (eql xrlrrl '|of|)
+                      (when (consp xrlrrr)
+                        (let ((xrlrrrl (first xrlrrr)) (xrlrrrr (rest xrlrrr)))
+                          (when (eql xrlrrrr 'nil)
+                            (when (eql xrr 'nil)
+                              (return-from km-handler
+                                (values (funcall #'(lambda (fmode0 target slot frameadd)
+                                                     (declare (ignore fmode0 target))
+                                                     (let ((frame (km-unique-int frameadd :fail-mode 'error)))
+                                                       (mapcar #'quotify (collect-constraints-on-instance frame slot))))
+                                                 f-mode target xrlrl xrlrrrl)
+                                        '(|constraints-for| (|the| ?slot |of| ?frameadd)))))))))))))))))
+  ))
+(defun h--rules-for (x xl xr f-mode target)  (block km-handler
+    (let ((xrl (first xr)) (xrr (rest xr)))
+      (when (consp xrl)
+        (let ((xrll (first xrl)) (xrlr (rest xrl)))
+          (when (eql xrll '|the|)
+            (when (consp xrlr)
+              (let ((xrlrl (first xrlr)) (xrlrr (rest xrlr)))
+                (when (consp xrlrr)
+                  (let ((xrlrrl (first xrlrr)) (xrlrrr (rest xrlrr)))
+                    (when (eql xrlrrl '|of|)
+                      (when (consp xrlrrr)
+                        (let ((xrlrrrl (first xrlrrr)) (xrlrrrr (rest xrlrrr)))
+                          (when (eql xrlrrrr 'nil)
+                            (when (eql xrr 'nil)
+                              (return-from km-handler
+                                (values (funcall #'(lambda (fmode0 target slot frameadd)
+                                                     (declare (ignore fmode0 target))
+                                                     (let ((rules (rules-for slot frameadd)))
+                                                       (cond ((null rules) nil)
+                                                             ((km-setp rules) (mapcar #'quotify (set-to-list rules)))
+                                                             (t (list (quotify rules))))))
+                                                 f-mode target xrlrl xrlrrrl)
+                                        '(|rules-for| (|the| ?slot |of| ?frameadd)))))))))))))))))
+  ))
 ;--edge
 (defun compiled-km-handler-function (f-mode target x)
    #+harlequin-pc-lisp (declare (optimize (debug 0)))     ; patch for Lispworks from Francis Leboutte [1]  
@@ -2258,13 +2503,13 @@
     (or (when (consp x)
           (let ((xl (first x)) (xr (rest x))) (or
             (when (eql xl '|the|)
-              (when (consp xr) (h--the x xl xr)
+              (when (consp xr) (h--the x xl xr f-mode target)
                 ))
             (when (eql xl '|a|)
-              (when (consp xr) (h--a x xl xr)
+              (when (consp xr) (h--a x xl xr f-mode target)
                 ))
             (when (eql xl '|a-prototype|)
-              (when (consp xr) (h--a-prototype x xl xr)
+              (when (consp xr) (h--a-prototype x xl xr f-mode target)
                 ))
             (when (eql xl '|end-prototype|)
               (when (eql xr 'nil)
@@ -2278,7 +2523,7 @@
                                    f-mode target)
                           '(|end-prototype|)))))
             (when (eql xl '|clone|)
-              (when (consp xr) (h--clone x xl xr)
+              (when (consp xr) (h--clone x xl xr f-mode target)
                 ))
             (when (eql xl '|evaluate-paths|)
               (when (eql xr 'nil)
@@ -2293,7 +2538,7 @@
                                  f-mode target xr)
                         '(|default-fluent-status| &rest))))
             (when (eql xl '|must-be-a|)
-              (when (consp xr) (h--must-be-a x xl xr)
+              (when (consp xr) (h--must-be-a x xl xr f-mode target)
                 ))
             (when (eql xl '|possible-values|)
               (when (consp xr)
@@ -2451,9 +2696,9 @@
                                        f-mode target xrl)
                               '(|retain-expr| ?expr)))))))
             (when (eql xl '|every|)
-              (when (consp xr) (h--every x xl xr)
+              (when (consp xr) (h--every x xl xr f-mode target)
                 ))
-            (when (consp xr) (h--xr x xl xr)
+            (when (consp xr) (h--xr x xl xr f-mode target)
               )
             (when (eql xl '|in-theory|)
               (when (consp xr)
@@ -2508,55 +2753,8 @@
                   (values (funcall #'(lambda (_fmode _target) (declare (ignore _fmode _target)) (visible-theories)) f-mode target)
                           '(|visible-theories|)))))
             (when (eql xl '|in-situation|)
-              (when (consp xr)
-                (let ((xrl (first xr)) (xrr (rest xr)))
-                  (or (when (eql xrr 'nil)
-                        (return-from km-handler
-                          (values (funcall #'(lambda (_fmode _target situation-expr)
-                                               (declare (ignore _fmode _target))
-                                               (in-situation situation-expr))
-                                           f-mode target xrl)
-                                  '(|in-situation| ?situation-expr))))
-                      (when (consp xrr)
-                        (let ((xrrl (first xrr)) (xrrr (rest xrr)))
-                          (or (when (consp xrrl)
-                                (let ((xrrll (first xrrl)) (xrrlr (rest xrrl)))
-                                  (when (eql xrrll '|the|)
-                                    (when (consp xrrlr)
-                                      (let ((xrrlrl (first xrrlr)) (xrrlrr (rest xrrlr)))
-                                        (when (consp xrrlrr)
-                                          (let ((xrrlrrl (first xrrlrr)) (xrrlrrr (rest xrrlrr)))
-                                            (when (eql xrrlrrl '|of|)
-                                              (when (consp xrrlrrr)
-                                                (let ((xrrlrrrl (first xrrlrrr)) (xrrlrrrr (rest xrrlrrr)))
-                                                  (when (eql xrrlrrrr 'nil)
-                                                    (when (eql xrrr 'nil)
-                                                      (return-from km-handler
-                                                        (values (funcall #'(lambda (_fmode _target situation slot frame)
-                                                                             (declare (ignore _fmode _target))
-                                                                             (cond ((and (kb-objectp situation)
-                                                                                         (isa situation '|Situation|)
-                                                                                         (already-done frame slot))
-                                                                                    (remove-constraints (get-vals
-                                                                                                         frame
-                                                                                                         slot
-                                                                                                         :situation
-                                                                                                         (target-situation
-                                                                                                          situation
-                                                                                                          frame
-                                                                                                          slot))))
-                                                                                   (t
-                                                                                    (in-situation situation
-                                                                                                  `(|the| ,slot |of| ,frame)))))
-                                                                         f-mode target xrl xrrlrl xrrlrrrl)
-                                                                '(|in-situation| ?situation (|the| ?slot |of| ?frame))))))))))))))))
-                              (when (eql xrrr 'nil)
-                                (return-from km-handler
-                                  (values (funcall #'(lambda (_fmode _target situation-expr km-expr)
-                                                       (declare (ignore _fmode _target))
-                                                       (in-situation situation-expr km-expr))
-                                                   f-mode target xrl xrrl)
-                                          '(|in-situation| ?situation-expr ?km-expr)))))))))))
+              (when (consp xr) (h--in-situation x xl xr f-mode target)
+                ))
             (when (eql xl '|end-situation|)
               (when (eql xr 'nil)
                 (return-from km-handler
@@ -2888,7 +3086,7 @@
                                        f-mode target xrl)
                               '(|thelast| ?frame)))))))
             (when (eql xl '|the+|)
-              (when (consp xr) (h--the+ x xl xr)
+              (when (consp xr) (h--the+ x xl xr f-mode target)
                 ))
             (when (eql xl '|a+|)
               (return-from km-handler
@@ -2896,37 +3094,8 @@
                                  f-mode target xr)
                         '(|a+| &rest))))
             (when (eql xl '|if|)
-              (when (consp xr)
-                (let ((xrl (first xr)) (xrr (rest xr)))
-                  (when (consp xrr)
-                    (let ((xrrl (first xrr)) (xrrr (rest xrr)))
-                      (when (eql xrrl '|then|)
-                        (when (consp xrrr)
-                          (let ((xrrrl (first xrrr)) (xrrrr (rest xrrr)))
-                            (or (when (eql xrrrr 'nil)
-                                  (return-from km-handler
-                                    (values (funcall #'(lambda (fmode target condition action)
-                                                         (km-int `(|if| ,condition |then| ,action |else| nil)
-                                                           :fail-mode fmode
-                                                           :target target
-                                                           :rewritep t))
-                                                     f-mode target xrl xrrrl)
-                                            '(|if| ?condition |then| ?action))))
-                                (when (consp xrrrr)
-                                  (let ((xrrrrl (first xrrrr)) (xrrrrr (rest xrrrr)))
-                                    (when (eql xrrrrl '|else|)
-                                      (when (consp xrrrrr)
-                                        (let ((xrrrrrl (first xrrrrr)) (xrrrrrr (rest xrrrrr)))
-                                          (when (eql xrrrrrr 'nil)
-                                            (return-from km-handler
-                                              (values (funcall #'(lambda (fmode target condition action altaction)
-                                                                   (declare (ignore target))
-                                                                   (let ((test-result (km-int condition)))
-                                                                     (cond ((not (member test-result '(nil |f| f)))
-                                                                            (km-int action :fail-mode fmode))
-                                                                           (t (km-int altaction :fail-mode fmode)))))
-                                                               f-mode target xrl xrrrl xrrrrrl)
-                                                      '(|if| ?condition |then| ?action |else| ?altaction))))))))))))))))))
+              (when (consp xr) (h--if x xl xr f-mode target)
+                ))
             (when (eql xl '|not|)
               (when (consp xr)
                 (let ((xrl (first xr)) (xrr (rest xr)))
@@ -2946,126 +3115,40 @@
                                        f-mode target xrl)
                               '(|numberp| ?x)))))))
             (when (eql xl '|allof|)
-              (when (consp xr) (h--allof x xl xr)
+              (when (consp xr) (h--allof x xl xr f-mode target)
                 ))
             (when (eql xl '|oneof|)
-              (when (consp xr)
-                (let ((xrl (first xr)) (xrr (rest xr)))
-                  (when (consp xrr)
-                    (let ((xrrl (first xrr)) (xrrr (rest xrr)))
-                      (or (when (eql xrrl '|where|)
-                            (when (consp xrrr)
-                              (let ((xrrrl (first xrrr)) (xrrrr (rest xrrr)))
-                                (when (eql xrrrr 'nil)
-                                  (return-from km-handler
-                                    (values (funcall #'(lambda (fmode target set test)
-                                                         (declare (ignore fmode target))
-                                                         (let ((answer
-                                                                (find-if #'(lambda (member) (km-int (subst member '|It| test)))
-                                                                         (km-int set))))
-                                                           (cond (answer (list answer)))))
-                                                     f-mode target xrl xrrrl)
-                                            '(|oneof| ?set |where| ?test)))))))
-                          (when (eql xrrl '|in|)
-                            (when (consp xrrr)
-                              (let ((xrrrl (first xrrr)) (xrrrr (rest xrrr)))
-                                (when (consp xrrrr)
-                                  (let ((xrrrrl (first xrrrr)) (xrrrrr (rest xrrrr)))
-                                    (when (eql xrrrrl '|where|)
-                                      (when (consp xrrrrr)
-                                        (let ((xrrrrrl (first xrrrrr)) (xrrrrrr (rest xrrrrr)))
-                                          (when (eql xrrrrrr 'nil)
-                                            (return-from km-handler
-                                              (values (funcall #'(lambda (fmode target var set test)
-                                                                   (declare (ignore fmode target))
-                                                                   (oneof-where var set test))
-                                                               f-mode target xrl xrrrl xrrrrrl)
-                                                      '(|oneof| ?var |in| ?set |where| ?test))))))))))))))))))
+              (when (consp xr) (h--oneof x xl xr f-mode target)
+                ))
             (when (eql xl '|theoneof|)
-              (when (consp xr)
-                (let ((xrl (first xr)) (xrr (rest xr)))
-                  (when (consp xrr)
-                    (let ((xrrl (first xrr)) (xrrr (rest xrr)))
-                      (or (when (eql xrrl '|where|)
-                            (when (consp xrrr)
-                              (let ((xrrrl (first xrrr)) (xrrrr (rest xrrr)))
-                                (when (eql xrrrr 'nil)
-                                  (return-from km-handler
-                                    (values (funcall #'(lambda (fmode target set test)
-                                                         (let ((val
-                                                                (km-unique-int `(|forall| ,set |where| ,test |It|)
-                                                                  :fail-mode fmode
-                                                                  :target target
-                                                                  :rewritep t)))
-                                                           (cond (val (list val)))))
-                                                     f-mode target xrl xrrrl)
-                                            '(|theoneof| ?set |where| ?test)))))))
-                          (when (eql xrrl '|in|)
-                            (when (consp xrrr)
-                              (let ((xrrrl (first xrrr)) (xrrrr (rest xrrr)))
-                                (when (consp xrrrr)
-                                  (let ((xrrrrl (first xrrrr)) (xrrrrr (rest xrrrr)))
-                                    (when (eql xrrrrl '|where|)
-                                      (when (consp xrrrrr)
-                                        (let ((xrrrrrl (first xrrrrr)) (xrrrrrr (rest xrrrrr)))
-                                          (when (eql xrrrrrr 'nil)
-                                            (return-from km-handler
-                                              (values (funcall #'(lambda (fmode target var set test)
-                                                                   (cond ((not (km-varp var))
-                                                                          (report-error 'user-error
-                                                                                        "~a: Second argument should be a variable (e.g., ?x)!~%"
-                                                                                        `(|theoneof| ,var |in| ,set |where| ,test)))
-                                                                         (t
-                                                                          (let ((val
-                                                                                 (km-unique-int
-                                                                                    `(|forall| ,var |in| ,set |where| ,test ,var)
-                                                                                   :fail-mode fmode
-                                                                                   :target target
-                                                                                   :rewritep t)))
-                                                                            (cond (val (list val)))))))
-                                                               f-mode target xrl xrrrl xrrrrrl)
-                                                      '(|theoneof| ?var |in| ?set |where| ?test))))))))))))))))))
+              (when (consp xr) (h--theoneof x xl xr f-mode target)
+                ))
             (when (eql xl '|forall|)
-              (when (consp xr) (h--forall x xl xr)
+              (when (consp xr) (h--forall x xl xr f-mode target)
                 ))
             (when (eql xl '|forall-seq|)
-              (when (consp xr) (h--forall-seq x xl xr)
+              (when (consp xr) (h--forall-seq x xl xr f-mode target)
                 ))
             (when (eql xl '|forall-bag|)
-              (when (consp xr) (h--forall-bag x xl xr)
+              (when (consp xr) (h--forall-bag x xl xr f-mode target)
                 ))
             (when (eql xl '|forall-seq2|)
-              (when (consp xr) (h--forall-seq2 x xl xr)
+              (when (consp xr) (h--forall-seq2 x xl xr f-mode target)
                 ))
             (when (eql xl '|forall-bag2|)
-              (when (consp xr) (h--forall-bag2 x xl xr)
+              (when (consp xr) (h--forall-bag2 x xl xr f-mode target)
                 ))
             (when (eql xl '|allof2|)
-              (when (consp xr) (h--allof2 x xl xr)
+              (when (consp xr) (h--allof2 x xl xr f-mode target)
                 ))
             (when (eql xl '|oneof2|)
-              (when (consp xr)
-                (let ((xrl (first xr)) (xrr (rest xr)))
-                  (when (consp xrr)
-                    (let ((xrrl (first xrr)) (xrrr (rest xrr)))
-                      (when (eql xrrl '|where|)
-                        (when (consp xrrr)
-                          (let ((xrrrl (first xrrr)) (xrrrr (rest xrrr)))
-                            (when (eql xrrrr 'nil)
-                              (return-from km-handler
-                                (values (funcall #'(lambda (fmode target set test)
-                                                     (declare (ignore fmode target))
-                                                     (let ((answer
-                                                            (find-if #'(lambda (member) (km-int (subst member '|It2| test)))
-                                                                     (km-int set))))
-                                                       (cond (answer (list answer)))))
-                                                 f-mode target xrl xrrrl)
-                                        '(|oneof2| ?set |where| ?test))))))))))))
+              (when (consp xr) (h--oneof2 x xl xr f-mode target)
+                ))
             (when (eql xl '|forall2|)
-              (when (consp xr) (h--forall2 x xl xr)
+              (when (consp xr) (h--forall2 x xl xr f-mode target)
                 ))
             (when (eql xl '|theoneof2|)
-              (when (consp xr) (h--theoneof2 x xl xr)
+              (when (consp xr) (h--theoneof2 x xl xr f-mode target)
                 ))
             (when (eql xl 'function)
               (when (consp xr)
@@ -3085,19 +3168,19 @@ instances, or :seq/:bag/:pair of instances), but instead returned:
                                        f-mode target xrl)
                               '#'?lispcode))))))
             (when (eql xl '|the1|)
-              (when (consp xr) (h--the1 x xl xr)
+              (when (consp xr) (h--the1 x xl xr f-mode target)
                 ))
             (when (eql xl '|the2|)
-              (when (consp xr) (h--the2 x xl xr)
+              (when (consp xr) (h--the2 x xl xr f-mode target)
                 ))
             (when (eql xl '|the3|)
-              (when (consp xr) (h--the3 x xl xr)
+              (when (consp xr) (h--the3 x xl xr f-mode target)
                 ))
             (when (eql xl '|theN|)
-              (when (consp xr) (h--theN x xl xr)
+              (when (consp xr) (h--theN x xl xr f-mode target)
                 ))
             (when (eql xl '|theNth|)
-              (when (consp xr) (h--theNth x xl xr)
+              (when (consp xr) (h--theNth x xl xr f-mode target)
                 ))
             (when (eql xl :|set|)
               (return-from km-handler
@@ -3143,7 +3226,7 @@ instances, or :seq/:bag/:pair of instances), but instead returned:
                                  f-mode target xr)
                         '(:|pair| &rest))))
             (when (eql xl :|triple|)
-              (when (consp xr) (h--triple x xl xr)
+              (when (consp xr) (h--triple x xl xr f-mode target)
                 ))
             (when (eql xl :|args|)
               (return-from km-handler
@@ -3154,7 +3237,7 @@ instances, or :seq/:bag/:pair of instances), but instead returned:
                                  f-mode target xr)
                         '(:|args| &rest))))
             (when (eql xl '|showme|)
-              (when (consp xr) (h--showme x xl xr)
+              (when (consp xr) (h--showme x xl xr f-mode target)
                 ))
             (when (eql xl '|showme-all|)
               (when (consp xr)
@@ -3183,71 +3266,14 @@ instances, or :seq/:bag/:pair of instances), but instead returned:
                                        f-mode target xrl)
                               '(|showme-here| ?km-expr)))))))
             (when (eql xl '|the-class|)
-              (when (consp xr)
-                (let ((xrl (first xr)) (xrr (rest xr)))
-                  (or (when (eql xrr 'nil)
-                        (return-from km-handler
-                          (values (funcall #'(lambda (fmode target class)
-                                               (declare (ignore fmode target))
-                                               (process-unquotes `((|the-class| ,class))))
-                                           f-mode target xrl)
-                                  '(|the-class| ?class))))
-                      (when (consp xrr)
-                        (let ((xrrl (first xrr)) (xrrr (rest xrr)))
-                          (when (eql xrrl '|with|)
-                            (return-from km-handler
-                              (values (funcall #'(lambda (fmode target class slotsvals)
-                                                   (declare (ignore fmode target))
-                                                   (cond ((are-slotsvals slotsvals)
-                                                          (process-unquotes `((|the-class| ,class |with| ,@slotsvals))))))
-                                               f-mode target xrl xrrr)
-                                      '(|the-class| ?class |with| &rest))))))))))
+              (when (consp xr) (h--the-class x xl xr f-mode target)
+                ))
             (when (eql xl '|constraints-for|)
-              (when (consp xr)
-                (let ((xrl (first xr)) (xrr (rest xr)))
-                  (when (consp xrl)
-                    (let ((xrll (first xrl)) (xrlr (rest xrl)))
-                      (when (eql xrll '|the|)
-                        (when (consp xrlr)
-                          (let ((xrlrl (first xrlr)) (xrlrr (rest xrlr)))
-                            (when (consp xrlrr)
-                              (let ((xrlrrl (first xrlrr)) (xrlrrr (rest xrlrr)))
-                                (when (eql xrlrrl '|of|)
-                                  (when (consp xrlrrr)
-                                    (let ((xrlrrrl (first xrlrrr)) (xrlrrrr (rest xrlrrr)))
-                                      (when (eql xrlrrrr 'nil)
-                                        (when (eql xrr 'nil)
-                                          (return-from km-handler
-                                            (values (funcall #'(lambda (fmode0 target slot frameadd)
-                                                                 (declare (ignore fmode0 target))
-                                                                 (let ((frame (km-unique-int frameadd :fail-mode 'error)))
-                                                                   (mapcar #'quotify (collect-constraints-on-instance frame slot))))
-                                                             f-mode target xrlrl xrlrrrl)
-                                                    '(|constraints-for| (|the| ?slot |of| ?frameadd)))))))))))))))))))
+              (when (consp xr) (h--constraints-for x xl xr f-mode target)
+                ))
             (when (eql xl '|rules-for|)
-              (when (consp xr)
-                (let ((xrl (first xr)) (xrr (rest xr)))
-                  (when (consp xrl)
-                    (let ((xrll (first xrl)) (xrlr (rest xrl)))
-                      (when (eql xrll '|the|)
-                        (when (consp xrlr)
-                          (let ((xrlrl (first xrlr)) (xrlrr (rest xrlr)))
-                            (when (consp xrlrr)
-                              (let ((xrlrrl (first xrlrr)) (xrlrrr (rest xrlrr)))
-                                (when (eql xrlrrl '|of|)
-                                  (when (consp xrlrrr)
-                                    (let ((xrlrrrl (first xrlrrr)) (xrlrrrr (rest xrlrrr)))
-                                      (when (eql xrlrrrr 'nil)
-                                        (when (eql xrr 'nil)
-                                          (return-from km-handler
-                                            (values (funcall #'(lambda (fmode0 target slot frameadd)
-                                                                 (declare (ignore fmode0 target))
-                                                                 (let ((rules (rules-for slot frameadd)))
-                                                                   (cond ((null rules) nil)
-                                                                         ((km-setp rules) (mapcar #'quotify (set-to-list rules)))
-                                                                         (t (list (quotify rules))))))
-                                                             f-mode target xrlrl xrlrrrl)
-                                                    '(|rules-for| (|the| ?slot |of| ?frameadd)))))))))))))))))))
+              (when (consp xr) (h--rules-for x xl xr f-mode target)
+                ))
             (when (eql xl '|why|)
               (or (when (eql xr 'nil)
                     (return-from km-handler
@@ -3295,7 +3321,7 @@ instances, or :seq/:bag/:pair of instances), but instead returned:
                                            f-mode target xrl)
                                   '(|get-justification| ?triple))))))))
             (when (eql xl '|explanation|)
-              (when (consp xr) (h--explanation x xl xr)
+              (when (consp xr) (h--explanation x xl xr f-mode target)
                 ))
             (when (eql xl '|explained-by|)
               (when (consp xr)
@@ -3565,7 +3591,7 @@ instances, or :seq/:bag/:pair of instances), but instead returned:
                   (values (funcall #'(lambda (fmode target) (declare (ignore fmode target)) (cond ((undo) '(|t|)))) f-mode target)
                           '(|undo|)))))
             (when (eql xl '|an|)
-              (when (consp xr) (h--an x xl xr)
+              (when (consp xr) (h--an x xl xr f-mode target)
                 ))
             (when (eql xl '|reverse|)
               (when (consp xr)
