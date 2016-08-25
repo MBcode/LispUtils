@@ -36,3 +36,7 @@ http://lisp-lang.org/
 @reddit_lisp #lisp "Stop Designing Languages. Write Libraries Instead."| https://www.reddit.com/r/lisp/comments/4m22ee/xpost_2411_stop_designing_languages_write
  me:in Lisp easy to build up a https://en.wikipedia.org/wiki/Domain-specific_language toword the problem&still beneit from the library/ecosystem
 /home/bobak/lsp/c/viz/prefuse-beta/data/zipcode.txt 
+
+KM: km_2-5-45.lisp &quicklisp: :KM both can crap out on: compiled-handlers.lisp, so starting to rework the file;need2get around return-from block ..
+    pulled out 26 handler blocks of code, and made seperate functions, it compiles, but need2test that ret vals all passed up properly
+    This finally allows a version of KM to be used on an old 32bit PPC Linux box I have sitting around.
