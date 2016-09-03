@@ -40,3 +40,5 @@ http://lisp-lang.org/
 KM: km_2-5-45.lisp &quicklisp: :KM both can crap out on: compiled-handlers.lisp, so starting to rework the file;need2get around return-from block ..
     pulled out 26 handler blocks of code, and made seperate functions, it compiles, but need2test that ret vals all passed up properly
     This finally allows a version of KM to be used on an old 32bit PPC Linux box I have sitting around.
+
+SBCL 1.3.9 finally allows for the compiling of any version of KM using standard settings!  Now if I can just get it to compile on the old mac.
