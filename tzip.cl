@@ -73,3 +73,5 @@
 ; as mentioned in: http://franz.com/support/tech_corner/usgs-011207.lhtml
 ; http://franz.com/support/tech_corner/usgs.tar.gz
 ;-well unless openstreetmap or similar incl street addresses
+
+;could probably just use: https://github.com/kraison/cl-geocode
