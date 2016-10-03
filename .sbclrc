@@ -56,6 +56,8 @@
 ;switched scl&scl- aliases, but s1,s2... isn't loading files now, have to run (l1),(l2)..
 ;I might go to having a fnc in sbclrc that explicitly loads le.lisp, so I can always start w/o it 
 (defun cut () (compile-file "/home/bobak/lsp/ts.lisp"))
+;(defun cuall () (cu) (cu2) (cu-) (cut) (cuq)(cu3))
+(defun cuall () (cu) (cu2)  (cuq)(cu3))
 (load "/home/bobak/lsp/ts") ;cwd (tsh str)
 ;(ql 'cl-cwd)
 ;(defun cwd (p) (cl-cwd:cwd p))
