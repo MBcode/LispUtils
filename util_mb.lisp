@@ -2341,22 +2341,29 @@ If HEADER-VALUE-PARSER return multiple values, they are concatenated together in
   (mapcar_ #'range-list2range (s2num s))
   )
 ;-
+;-from km: split-at1
+;;; Returns a single value = list of two elements, or NIL if no split is possible
+(defun split_at1 (string substring &key from-end)
+      (let ( (start0 (search substring string :from-end from-end)))
+                  (cond (start0 (list (subseq string 0 start0)
+                                      (subseq string (+ start0 (length substring))))))))
+;-
 (defgeneric split-at-dash (s))
 (defmethod split-at-dash ((sym SYMBOL))
   (split-at-dash (symbol-name sym)))
 (defmethod split-at-dash ((str STRING))
-  (let ((r (split-at1 str "-")))
+  (let ((r (split_at1 str "-")))
     (if r (range-list2range r)  ;check:want ret ranges expanded
       (list str) ;so can map over single or ranges
       )))
 ;defmethod split-at- ((str STRING))
 (defun split-at- (str)
-  (split-at1 str "-"))
+  (split_at1 str "-"))
 (defun split-at-2 (str &optional (by "-")) 
-  (let* ((fs (split-at1 str by)) 
+  (let* ((fs (split_at1 str by)) 
          (one (first fs)) 
          (dd (second fs)) 
-         (lt (split-at1 dd by))) 
+         (lt (split_at1 dd by))) 
     (cons one lt)))
 ;USER(15): (split-at-2 "2010-08-18") ("2010" "08" "18")
 (defun split-at-2nums (str &optional (by "-")) 
