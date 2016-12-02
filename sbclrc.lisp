@@ -51,6 +51,10 @@
 (defun ltb () (load "t")) 
 (defun lt2 () (load "t2.cl" :print t)) 
 (defun lu () (load "/home/bobak/lsp/util_mb"))
+(defun lh (fn) (load (str-cat "/home/bobak/lsp/" fn) :print t))
+(defun lhp (fn) (load (str-cat "/home/bobak/lsp/" fn ".lisp") :print t))
+(defun ch (fn) (compile-file (str-cat "/home/bobak/lsp/" fn)))
+(defun chp (fn) (compile-file (str-cat "/home/bobak/lsp/" fn ".lisp")))
 (defun lkm3 () (lu) (lkm2))
 (defun lq () "https://github.com/pnathan/cl-linq"
   (ql 'alexandria) (load "/home/bobak/lsp/cl-linq.lisp"))
