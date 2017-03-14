@@ -488,7 +488,7 @@ pathnames as well."
 ;(defun split-at (seq by) 
 ;  (let ((p (position by seq :test #'equal)))
 ;    (when p (list (subseq seq 0 p) (subseq seq (+ p 1))))))
-#+ignore-w-km
+;#+ignore-w-km
 (defun split-at (seq by) 
   (let ((p (position by seq :test #'equal)))
     (when p (values (list (subseq seq 0 p) (subseq seq (+ p 1))) p))))
@@ -2302,6 +2302,28 @@ If HEADER-VALUE-PARSER return multiple values, they are concatenated together in
   (mapcar_ #'(lambda (le) (cons le v)) l))
 ;-
 (defun dash-p (s) (search "-" s))
+;-from km:
+(defun number-stringp (string)  (string-to-number string))
+
+;;; [1] Avoid (string-to-number "9:00") -> Error: Package "9" not found. [file position = 2]
+(defun string-to-number (string &key (fail-mode 'fail))
+  (cond ((not (stringp string))
+	 (format t "; ERROR! (string-to-number ~s) should be given an ascii string as an argument!~%" string))
+	((string= string "") nil)
+	((let ((string0 (remove #\, string :test #'char=))) ; "3,000" -> "3000"
+	   (handler-case
+	     (multiple-value-bind
+		 (number unread-char-no)
+		 (read-from-string string0)
+	       (cond ((and (numberp number)
+			   (= unread-char-no (length string0)))
+		      number)))
+	   (error (error)			; [1]
+	     (declare (ignore error))))))
+	((eql fail-mode 'error)
+	 (format t "; ERROR! (string-to-number ~s) should be given an ascii string representation of a number!~%" 
+		 string))))
+
 ;-
 (defgeneric s2num (s))
 (defmethod s2num ((sym SYMBOL))
@@ -2863,3 +2885,12 @@ is replaced with replacement."
 ;(defun tpl (pkg &optional (skip '())) ;need to test
 ;  "trace pkg list" ;trying as can't apply the trace macro
 ;  (sb-debug::expand-trace (set-diff (pkg-symbols pkg) skip))) 
+
+(defun read-preserve (s) 
+  "keep capitalization of symbols in a sexpr that you read"
+  (let ((rtc (readtable-case *readtable*))) 
+    (setf (readtable-case *readtable*) :preserve) 
+    (let ((l (read s))) 
+      (setf (readtable-case *readtable*) rtc)
+      l)))
+ 
