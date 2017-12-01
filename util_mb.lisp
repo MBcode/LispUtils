@@ -2915,3 +2915,27 @@ is replaced with replacement."
       (setf (readtable-case *readtable*) rtc)
       l)))
  
+(defun read_preserve (s)
+  "keep capitalization of symbols in a sexpr that you read"
+  (let ((rtc (readtable-case *readtable*)))
+    (setf (readtable-case *readtable*) :preserve)
+    (let ((l (read s nil nil)))
+      (setf (readtable-case *readtable*) rtc)
+      l)))
+
+(defun write_preserve (o s)
+  "keep capitalization of symbols in a sexpr that you write"
+  (let ((rtc (readtable-case *readtable*)))
+    (setf (readtable-case *readtable*) :preserve)
+    (let ((l (write o :stream s)))
+      (setf (readtable-case *readtable*) rtc)
+      l)))
+
+(defun print_preserve (o s)
+  "keep capitalization of symbols in a sexpr that you print"
+  (let ((rtc (readtable-case *readtable*)))
+    (setf (readtable-case *readtable*) :preserve)
+    (let ((l (print o s)))
+      (setf (readtable-case *readtable*) rtc)
+      l)))
+ 
