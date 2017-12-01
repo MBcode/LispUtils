@@ -2278,6 +2278,15 @@ If HEADER-VALUE-PARSER return multiple values, they are concatenated together in
   "ls of .asd files"
   (collect-if #'asd-p (ls)))
 
+(defun qlsd ()
+  "ql a .asd by #"
+  (let* ((lsd (lsd))
+         (ll (len lsd))
+         (al (loop for i from 1 to ll collect (cons i (nth i lsd)))))
+    (loop for c in al do (format t "~%~a:~a" (car c) (cdr c)))
+    (let* ((n (progn (format t "~%enter#2load:") (read)))
+           (ds (when (numberp n) (rm-ext (cdr (nth (1- n) al))))))
+      (when (stringp ds) (ql ds)))))
 ;----
 ;-ut  ;how much better than ut/ fncs?
 (defun rfind_ (s tree) ;work on
