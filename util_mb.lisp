@@ -2258,6 +2258,27 @@ If HEADER-VALUE-PARSER return multiple values, they are concatenated together in
   (let ((n (position #\. s :from-end t)))
     (when n (subseq s 0 n))))
 ;----
+(defun get-ext (s)
+  "get extention or nil"
+  (let ((n (position #\. s :from-end t)))
+    (when n (subseq s n))))
+
+(defun get_ext (s)
+  "get extention or s"
+  (let ((n (position #\. s :from-end t)))
+    (if n (subseq s n)
+      s)))
+      
+(defun asd-p (fn)
+  "file ext=.asd"
+  (let ((ext (get_ext fn))) ;or get-ext
+    (equal ext ".asd")))
+
+(defun lsd ()
+  "ls of .asd files"
+  (collect-if #'asd-p (ls)))
+
+;----
 ;-ut  ;how much better than ut/ fncs?
 (defun rfind_ (s tree) ;work on
   (cond ((null tree) nil)
