@@ -1,4 +1,4 @@
-;bayes example bobak@balisp.org
+;bayes example bobak@balisp.org ;use: mike.bobak@gmail
 ;cl-bayesnet example asia(2).dne
 (time (defparameter *jt* (bn:use-join-tree *join-tree*))) 
 (format t "~%~a" (bn:node-order *join-tree*))

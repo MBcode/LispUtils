@@ -1,4 +1,4 @@
-;new use for km-utils, where want to step toward more generalized json->triples, bobak@balisp.org
+;new use for km-utils, where want to step toward more generalized json->triples, bobak@balisp.org ;use: mike.bobak@gmail
 
 ;- ;these bits ref my github, re:km/etc  ;&/or will be added soon to u2.lisp
 (defun sv_al_nn (i al)   ;SetValue s from aything ;no-nils   

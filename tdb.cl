@@ -1,4 +1,4 @@
-;;;a collection of some code using sqlite
+;;;a collection of some code using sqlite ;use: mike.bobak@gmail
 ;;;==> db.cl <==
 ;get a few base fncs into utils, eg. count-items/count-a
 ;==============> di2.cl <==

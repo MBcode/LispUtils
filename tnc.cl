@@ -1,4 +1,4 @@
-;parse/scrape  blog-posts bobak@balisp.org ;https://sites.google.com/site/mikebobak/ip
+;parse/scrape  blog-posts bobak@balisp.org ;https://sites.google.com/site/mikebobak/ip ;use: mike.bobak@gmail
 ; wish more bloggers used rdfa or similar ;thought experiment on how2add it, might help here/?
 (ql '(puri drakma chtml-matcher)) ;(use-package :puri)
 (lut) ;(load "~/lsp/util_mb")  ;https://github.com/MBcode/LispUtils

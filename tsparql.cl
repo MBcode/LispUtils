@@ -1,4 +1,4 @@
-;get&compile: https://github.com/tialaramex/sparql-query   ;bobak@balisp.org
+;get&compile: https://github.com/tialaramex/sparql-query   ;bobak@balisp.org ;use: mike.bobak@gmail
 (lu)
 (ql 's-xml)
 ;-had this, but trivial-shell is easier
