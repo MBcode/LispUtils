@@ -2278,6 +2278,10 @@ If HEADER-VALUE-PARSER return multiple values, they are concatenated together in
   "ls of .asd files"
   (collect-if #'asd-p (ls)))
 
+(defun lsd- () 
+  "asd file roots"
+  (mapcar #'(lambda (as) (car-lv (split-strs2at as "."))) (lsd)))
+
 (defun qlsd ()
   "ql a .asd by #"
   (let* ((lsd (lsd))
