@@ -258,7 +258,7 @@ def get_ns_file(fn):
     fp = open(fn, "r")
     rdr = csv.reader(fp, delimiter=' ')
     for row in rdr:
-        print row
+        print(row)
         l.append(row) 
     for p in l[1:]:
         p[1]=int(p[1]) 
@@ -271,14 +271,14 @@ fa=get_ns_file('files.txt')
 na=get_ns_file('nodes.txt')
 nf = len(fa)
 #then sort the files &write def distribute
-print 'now sort them'
-from operator import itemgetter, attrgetter
+print('now sort them')
+from operator import itemgetter #, attrgetter
 fs=sorted(fa,key=itemgetter(1))
 ns=sorted(na,key=itemgetter(1))
 for i in fs:
-    print i
+    print(i)
 for i in ns:
-    print i
+    print(i)
 
 #and write def distribute &finish assign
 # print('try ' + fi + ' in ' + ni)
@@ -324,17 +324,17 @@ def adapt_f2n_rec_pass(sf,sn,c):
 #give it a try
 cnt=adapt_f2n_pass(fs,ns)  #this works but missed one
 #cnt=adapt_f2n_rec_pass(fs,ns,0) #more like lisp version that works for all files
-#print cnt
+#print(cnt)
 #for i in assigned:
-#    print i
+#    print(i)
 #cnt += adapt_f2n_rec_pass(fs[cnt:],ns,0) #2nd pass #need2rm if not popping off front
-#print cnt
+#print(cnt)
 #for i in assigned:
-#    print i
+#    print(i)
 #cnt += adapt_f2n_rec_pass(fs[cnt:],ns,0) #2nd pass #need2rm if not popping off front
-#print cnt
+#print(cnt)
 #for i in assigned:
-#    print i
+#    print(i)
 #do not start later if popping off files
 
 def distrib(fs,ns,cnt,tries):
@@ -342,7 +342,7 @@ def distrib(fs,ns,cnt,tries):
    #cnt += adapt_f2n_rec_pass(fs[cnt:],ns,0) #take a pass at
     cnt += adapt_f2n_rec_pass(fs,ns,0) #take a pass at
     if(cnt==nf):
-        print 'got them all'
+        print('got them all')
     else:
         if(tries<4):
             tries += 1
@@ -354,17 +354,17 @@ def distrib(fs,ns,cnt,tries):
     cnt
 
 #cnt=distrib(fs,ns,0,0)
-print '----'
+print('----')
 print('set ' + str(cnt) + ' of ' + str(nf) + ' files')
 miss = nf - cnt
 if(cnt >= nf): 
-    print 'ok' 
+    print('ok')
 else: 
     print('missed ' + str(miss))
 
-print '----final answer'
+print('----final answer')
 for i in f2n:
-    print i
+    print(i)
 
 #output:
 ----
