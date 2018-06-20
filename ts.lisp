@@ -1,5 +1,5 @@
-(lu)
-;-
+(lu) ;mike.bobak@gmail
+;-from: git clone https://github.com/Inaimathi/cl-cwd.git
 ;(ql 'cl-cwd)
 (require 'cl-cwd)
 (defun cwd (p) (cl-cwd:cwd p))
