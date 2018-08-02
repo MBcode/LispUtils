@@ -544,6 +544,11 @@ pathnames as well."
   (if (fulll lv) (last lv) lv))
 (defun last_lv (lv) ;so not a list
   (first-lv (last-lv lv)))
+(defun last_lvr (l)
+  (let ((lv (last_lv l)))
+    (if (listp lv) (last_lvr lv)
+      lv)))
+
 (defun car_lv (lv) (when (consp lv) (car lv))) 
 (defun car-lv (lv) (if (consp lv) (car lv) lv))
 (defun car_eq (l v) (when (consp l) (when (eq (car l) v) l))) 
@@ -568,6 +573,14 @@ pathnames as well."
           l))
 (defun first_lv (lv)
   (if (fulll lv) (first (flat1onlys lv)) lv))
+;
+(defun first_lvr (l)
+  (let ((lv (first_lv l)))
+    (if (listp lv) (first_lvr lv)
+      lv)))
+
+(defun first-eqr (l e)
+  (when (listp l) (eq (first_lvr l) e)))
 ;
 (defun nn (n) (if (numberp n) n 0))
 (defun nn> (&rest args) (apply #'> (mapcar #'nn args)))
@@ -1182,6 +1195,9 @@ If HEADER-VALUE-PARSER return multiple values, they are concatenated together in
   (if (< a b) (subseq seq a b)
               (subseq seq b a)))
   ;check this!
+(defun subseq-- (s n1 n2)
+  (if (< n2 0) (subseq s n1 (+ (len s) n2))
+    (subseq s n1 n2)))
 ;defun convert-to-list (line) ;still finding problem w/this
 (defun convert-to-list (line &optional (sep *separator*))
    ;; convert  a  single  line with CSV into a list.  Empty items are
