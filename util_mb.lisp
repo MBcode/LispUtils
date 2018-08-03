@@ -2420,6 +2420,15 @@ If HEADER-VALUE-PARSER return multiple values, they are concatenated together in
                   (cond (start0 (list (subseq string 0 start0)
                                       (subseq string (+ start0 (length substring))))))))
 ;-
+(defun ssplit_at1 (str by) ;should replace other1
+    "safe split_at1"
+      (let ((pr (split_at1 str by)))
+            (if pr pr str)))
+(defun split-at-r (str by)  
+    (let ((pr (ssplit_at1 str by)))
+          (if (and pr (listp pr)) (cons (first-lv pr) (split-at-r (second-lv pr) by))
+                  (list pr))))
+;-
 (defgeneric split-at-dash (s))
 (defmethod split-at-dash ((sym SYMBOL))
   (split-at-dash (symbol-name sym)))
