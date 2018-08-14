@@ -146,6 +146,8 @@
   (show s)
   (show- s))
 ;
+(defun words-of (id) (gv id "words-of"))  ;probably get rid of
+;
 (defun show-all (s)
   (mapcar #'show (explode- s)))
 (defun show_all (s)
