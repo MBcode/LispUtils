@@ -2,6 +2,200 @@
 A Q from lbl.gov that I completely solved quickly in lisp &came very close in C & Python, 
  though now could redo just as well in Python (w/o having to use hy;)
 
+ I have a much more recent python3 coding challenge that I can share on request.
+   &in fact have already shared w/Bryan F from HR
+"""
+
+#If I did more writing than reading of Python I'd do a nice translation w/it
+# https://github.com/MBcode/LispUtils/blob/master/tlb.cl has all versions
+import csv
+def get_ns_file(fn):
+    l = []
+    fp = open(fn, "r")
+    rdr = csv.reader(fp, delimiter=' ')
+    for row in rdr:
+        print(row)
+        l.append(row) 
+    for p in l[1:]:
+        p[1]=int(p[1]) 
+    fp.close()
+    return l[1:]
+
+assigned = []
+f2n = []
+fa=get_ns_file('files.txt')
+na=get_ns_file('nodes.txt')
+nf = len(fa)
+#then sort the files &write def distribute
+print('now sort them')
+from operator import itemgetter #, attrgetter
+fs=sorted(fa,key=itemgetter(1))
+ns=sorted(na,key=itemgetter(1))
+for i in fs:
+    print(i)
+for i in ns:
+    print(i)
+
+#and write def distribute &finish assign
+# print('try ' + fi + ' in ' + ni)
+def assign_f2n(fi,ni):
+    assigned.append(fi)
+    f2n.append(str(fi[0]) + ' ' + str(ni[0]))
+    #need to decr size of node once assigned
+    ni[1] -= fi[1]  #decr node by size of file
+    print('try-file ' + str(fi) + ' in ' + str(ni))
+    #should just remove the file now
+
+def adapt_f2n_pass(sf,sn):
+    count = 0
+    for fi in sf: #should have already poped off fi's if assigned so don't loop over then in next pass
+        for ni in sn: #should also check that   not: fi in assigned
+            if(ni[0] > fi[0] and not(fi in assigned)):  
+                count += 1
+                assign_f2n(fi,ni)
+                #sf.remove(fi) #remove file once assigned
+    return count
+
+#mc=0 #if(len(sf)==0 or len(sn)==0):
+
+#more like the lisp version, to get that last file
+def adapt_f2n_rec_pass(sf,sn,c):
+    if(len(sf)==0 or len(sn)==0):
+        print(str(len(sf)) + ' files and ' + str(len(sn)) + ' nodes')
+        return c
+    if(sf[0][1] <= sn[0][1] and not(sf[0][1] in assigned)):
+        c += 1
+        assign_f2n(sf[0],sn[1])
+        #sf.remove(sf[0]) #remove file once assigned #pop from left sf.pop(0)
+        #print('popped off:' + str(sf[0])) 
+        print('popping off:' + str(sf.pop(0))) 
+        if(len(sf)>1):
+            adapt_f2n_rec_pass(sf[1:],sn,c)
+    else:
+        if(len(sn)>1):
+            adapt_f2n_rec_pass(sf,sn[1:],c)
+    return c #shouldn't need to get here/?
+
+
+#give it a try
+cnt=adapt_f2n_pass(fs,ns)  #this works but missed one
+#cnt=adapt_f2n_rec_pass(fs,ns,0) #more like lisp version that works for all files
+#print(cnt)
+#for i in assigned:
+#    print(i)
+#cnt += adapt_f2n_rec_pass(fs[cnt:],ns,0) #2nd pass #need2rm if not popping off front
+#print(cnt)
+#for i in assigned:
+#    print(i)
+#cnt += adapt_f2n_rec_pass(fs[cnt:],ns,0) #2nd pass #need2rm if not popping off front
+#print(cnt)
+#for i in assigned:
+#    print(i)
+#do not start later if popping off files
+
+def distrib(fs,ns,cnt,tries):
+    print(str(len(fs)) + ' files')
+   #cnt += adapt_f2n_rec_pass(fs[cnt:],ns,0) #take a pass at
+    cnt += adapt_f2n_rec_pass(fs,ns,0) #take a pass at
+    if(cnt==nf):
+        print('got them all')
+    else:
+        if(tries<4):
+            tries += 1
+            print('try again ' + str(tries))
+            #distrib(fs[cnt:],ns,cnt,tries) 
+            distrib(fs,ns,cnt,tries)
+        else: 
+            print('stop-at ' + str(tries))
+    cnt
+
+#cnt=distrib(fs,ns,0,0)
+print('----')
+print('set ' + str(cnt) + ' of ' + str(nf) + ' files')
+miss = nf - cnt
+if(cnt >= nf): 
+    print('ok')
+else: 
+    print('missed ' + str(miss))
+
+print('----final answer')
+for i in f2n:
+    print(i)
+"""
+#output:
+----
+set 24 of 24 files
+ok
+----final answer
+file8 node2
+file14 node2
+file17 node2
+file10 node2
+file9 node2
+file15 node2
+file11 node2
+file18 node2
+file5 node2
+file12 node2
+file22 node2
+file2 node2
+file19 node2
+file23 node2
+file7 node2
+file20 node2
+file4 node2
+file13 node2
+file1 node2
+file0 node2
+file3 node2
+file21 node2
+file6 node2
+file16 node2
+""" 
+"""You will have to break out these two files to run it:
+==> files.txt <==
+# filename size
+file0 34656959152
+file1 25232891343
+file2 15749300904
+file3 40239886027
+file4 23650076783
+file5 9295645353
+file6 42822363289
+file7 19043424466
+file8 170858581
+file9 4495356117
+file10 3118866364
+file11 6348867697
+file12 12835739361
+file13 23721335923
+file14 1293428979
+file15 5942107928
+file16 45264051186
+file17 2424678728
+file18 6609806629
+file19 16680091213
+file20 20496566233
+file21 42111644867
+file22 14448309360
+file23 17332335657
+
+==> nodes.txt <==
+# node avail
+node0 94524502533
+node1 19405881468
+node2 4691744190
+node3 9819857373
+node4 30962561208
+node5 100718892926
+node6 72343165238
+node7 51885044325
+node8 42484467910
+node9 61751021819
+""" 
+"""
+And now the other versions:
+
 ;test of distributing files among nodes, to be redone in C&maybe Python;  mike.bobak@gmail.com
 ;(load "util_mb") ;this is another test of the use of my util_mb.lisp but only uses a few fncs
 ;USE:  sbcl --eval '(progn (load "util_mb") (load "tbl.cl") (setf *dbg* nil) (tst))'
@@ -255,190 +449,3 @@ int i;
 	for(i=0; i<nf; i++) print_f2n(f2n[i]);
 }
 """
-#If I did more writing than reading of Python I'd do a nice translation w/it
-# https://github.com/MBcode/LispUtils/blob/master/tlb.cl has all versions
-import csv
-def get_ns_file(fn):
-    l = []
-    fp = open(fn, "r")
-    rdr = csv.reader(fp, delimiter=' ')
-    for row in rdr:
-        print(row)
-        l.append(row) 
-    for p in l[1:]:
-        p[1]=int(p[1]) 
-    fp.close()
-    return l[1:]
-
-assigned = []
-f2n = []
-fa=get_ns_file('files.txt')
-na=get_ns_file('nodes.txt')
-nf = len(fa)
-#then sort the files &write def distribute
-print('now sort them')
-from operator import itemgetter #, attrgetter
-fs=sorted(fa,key=itemgetter(1))
-ns=sorted(na,key=itemgetter(1))
-for i in fs:
-    print(i)
-for i in ns:
-    print(i)
-
-#and write def distribute &finish assign
-# print('try ' + fi + ' in ' + ni)
-def assign_f2n(fi,ni):
-    assigned.append(fi)
-    f2n.append(str(fi[0]) + ' ' + str(ni[0]))
-    #need to decr size of node once assigned
-    ni[1] -= fi[1]  #decr node by size of file
-    print('try-file ' + str(fi) + ' in ' + str(ni))
-    #should just remove the file now
-
-def adapt_f2n_pass(sf,sn):
-    count = 0
-    for fi in sf: #should have already poped off fi's if assigned so don't loop over then in next pass
-        for ni in sn: #should also check that   not: fi in assigned
-            if(ni[0] > fi[0] and not(fi in assigned)):  
-                count += 1
-                assign_f2n(fi,ni)
-                #sf.remove(fi) #remove file once assigned
-    return count
-
-#mc=0 #if(len(sf)==0 or len(sn)==0):
-
-#more like the lisp version, to get that last file
-def adapt_f2n_rec_pass(sf,sn,c):
-    if(len(sf)==0 or len(sn)==0):
-        print(str(len(sf)) + ' files and ' + str(len(sn)) + ' nodes')
-        return c
-    if(sf[0][1] <= sn[0][1] and not(sf[0][1] in assigned)):
-        c += 1
-        assign_f2n(sf[0],sn[1])
-        #sf.remove(sf[0]) #remove file once assigned #pop from left sf.pop(0)
-        #print('popped off:' + str(sf[0])) 
-        print('popping off:' + str(sf.pop(0))) 
-        if(len(sf)>1):
-            adapt_f2n_rec_pass(sf[1:],sn,c)
-    else:
-        if(len(sn)>1):
-            adapt_f2n_rec_pass(sf,sn[1:],c)
-    return c #shouldn't need to get here/?
-
-
-#give it a try
-cnt=adapt_f2n_pass(fs,ns)  #this works but missed one
-#cnt=adapt_f2n_rec_pass(fs,ns,0) #more like lisp version that works for all files
-#print(cnt)
-#for i in assigned:
-#    print(i)
-#cnt += adapt_f2n_rec_pass(fs[cnt:],ns,0) #2nd pass #need2rm if not popping off front
-#print(cnt)
-#for i in assigned:
-#    print(i)
-#cnt += adapt_f2n_rec_pass(fs[cnt:],ns,0) #2nd pass #need2rm if not popping off front
-#print(cnt)
-#for i in assigned:
-#    print(i)
-#do not start later if popping off files
-
-def distrib(fs,ns,cnt,tries):
-    print(str(len(fs)) + ' files')
-   #cnt += adapt_f2n_rec_pass(fs[cnt:],ns,0) #take a pass at
-    cnt += adapt_f2n_rec_pass(fs,ns,0) #take a pass at
-    if(cnt==nf):
-        print('got them all')
-    else:
-        if(tries<4):
-            tries += 1
-            print('try again ' + str(tries))
-            #distrib(fs[cnt:],ns,cnt,tries) 
-            distrib(fs,ns,cnt,tries)
-        else: 
-            print('stop-at ' + str(tries))
-    cnt
-
-#cnt=distrib(fs,ns,0,0)
-print('----')
-print('set ' + str(cnt) + ' of ' + str(nf) + ' files')
-miss = nf - cnt
-if(cnt >= nf): 
-    print('ok')
-else: 
-    print('missed ' + str(miss))
-
-print('----final answer')
-for i in f2n:
-    print(i)
-"""
-#output:
-----
-set 24 of 24 files
-ok
-----final answer
-file8 node2
-file14 node2
-file17 node2
-file10 node2
-file9 node2
-file15 node2
-file11 node2
-file18 node2
-file5 node2
-file12 node2
-file22 node2
-file2 node2
-file19 node2
-file23 node2
-file7 node2
-file20 node2
-file4 node2
-file13 node2
-file1 node2
-file0 node2
-file3 node2
-file21 node2
-file6 node2
-file16 node2
-""" 
-"""You will have to break out these two files to run it:
-==> files.txt <==
-# filename size
-file0 34656959152
-file1 25232891343
-file2 15749300904
-file3 40239886027
-file4 23650076783
-file5 9295645353
-file6 42822363289
-file7 19043424466
-file8 170858581
-file9 4495356117
-file10 3118866364
-file11 6348867697
-file12 12835739361
-file13 23721335923
-file14 1293428979
-file15 5942107928
-file16 45264051186
-file17 2424678728
-file18 6609806629
-file19 16680091213
-file20 20496566233
-file21 42111644867
-file22 14448309360
-file23 17332335657
-
-==> nodes.txt <==
-# node avail
-node0 94524502533
-node1 19405881468
-node2 4691744190
-node3 9819857373
-node4 30962561208
-node5 100718892926
-node6 72343165238
-node7 51885044325
-node8 42484467910
-node9 61751021819
-""" 
