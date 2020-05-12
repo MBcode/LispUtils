@@ -2823,7 +2823,17 @@ is replaced with replacement."
         while line
         collect line)) 
 
-(defun file2str (fn) (with-open-file (strm fn :direction :input) (stream_lines strm)))  
+(defun file2str (fn) 
+  "file as list of strings"
+  (with-open-file (strm fn :direction :input) (stream_lines strm)))  
+
+(defun file2string (fn)
+  "file as one strings"
+  (implode-l (file2str fn)))
+
+;(ql 's-xml)
+;(defun file2xml (fn)
+;  (s-xml:parse-xml-string (file2string fn)))
 
 (defun warn-nil (nv str1 val1)
   (if nv nv
