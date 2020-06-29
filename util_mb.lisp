@@ -2758,7 +2758,7 @@ If HEADER-VALUE-PARSER return multiple values, they are concatenated together in
 (defun explode-by-space (s) (collect-if #'full (explode- s))) ;1or more spaces treated as one  
 ;(defun explode-by-ctrl-a (s) (explode- s #\^A)) ;in mh2t will use csv-parse-str to get Tabs ;abcl has a problem w/this
  
-
+(defun ls-suffix (suf) (collect-if #'(lambda (f) (suffixp suf f)) (ls))) 
 (defun txt-p (s) (suffixp ".txt" s))
 ;defun txt-files2 (&optional (path nil)) 
 (defun files-of-p (&optional (path nil) (filetype-p #'txt-p))
