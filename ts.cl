@@ -1,20 +1,20 @@
-(defvar *dbg* nil)
-;-streaming:   ;can open file, but also useful for (hadoop)streaming
-(defun handle-stream (&optional (in *standard-input*))
-  (let ((tot 0))
-    (loop for line = (read-line in nil nil) while line  do
-          (let ((n (num-str line)))
-            (when (numberp n) (incf tot n))
-            (when *dbg* (format t "~%~a" n))))
-    (format t "~%tot=~a~%" tot)))
+(ql 'trivial-shell)
+(require :trivial-shell)
+;defun tshell-command (str)
+;defun tshell (str)
+;(lu)
+(defun tsh (str)
+ (trivial-shell:shell-command (to-str str)))
 
-(handle-stream) 
+(defun tshe (str)
+  (rm-nils (explode- (remove #\newline (tsh str)))))
 
-;could have used cl-json to parse out, but cut works during a streaming job as well
-;mongo> cat zips.json | cut -d',' -f5 | cut -d':' -f2 | sbcl --core km.core --script ts.cl 
-;tot=248709873 
+(defun pdfgrep (fstr fn)
+  (tshe (str-cat "pdfgrep " fstr " " fn)))
+
+       ;(rl (tshe (str-cat "pdfgrep " fstr " " fn)))
+(defun pdfgrep-val (fstr fn)
+  (let ((args (explode- fstr))
+        (rl (pdfgrep fstr  fn)))
+    (set-difference rl (append args (list (str-cat fn ":"))) :test #'equal)))
  
-;upcoming:
-;http://www.sbcl.org/manual/#sb_002dconcurrency
-;;use sb-concurrency:mailbox maybe something pregel like
-;&try http://storm-project.net/ about/multi-language.html 
