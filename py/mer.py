@@ -18,6 +18,14 @@ def os_system_(cs):
 
 import pyperclip as p
 
+#ialias pbpaste 'xclip -selection clipboard -o'
+#alias pbpaste='xsel --clipboard --output'
+def p_waitForPaste():
+    cs = f'xclip -selection clipboard -o '
+    n = os_system_(cs)
+    return n
+
+
 
 def get_ent(n=None): #could send in lex
     "run MER to get the concept tagging of the text"
@@ -26,6 +34,7 @@ def get_ent(n=None): #could send in lex
         lex="csLex"
     if n==None:
         ne = p.waitForPaste()
+   #    ne = p_waitForPaste()
     else:
         #ne = p.waitForNewPaste(45)
         ne=n #send in text now
@@ -98,6 +107,28 @@ def get_txtfile(fn):
     with open(fn, "r") as f:
         return f.read()
 
+def get_yes_no_input(prompt):
+    """
+    Prompts the user for a 'y' or 'n' input and validates the response.
+
+    Args:
+        prompt (str): The message displayed to the user.
+
+    Returns:
+        bool: True if the user enters 'y' or 'yes', False otherwise.
+    """
+    while True:
+        # Ask for input and convert to lowercase for easier comparison
+        user_input = input(f"{prompt} (y/n): ").lower().strip()
+
+        if user_input in ('y', 'yes'):
+            return True
+        elif user_input in ('n', 'no'):
+            return False
+        else:
+            # Inform the user of invalid input and loop again
+            print("Invalid input. Please enter 'y' or 'n'.")
+
 #consider ccli args, like --speak
 
 if __name__ == '__main__':
@@ -119,5 +150,6 @@ if __name__ == '__main__':
     else:
         r=get_ent()
         cccounts(r)
-        ccsay()
-    #print(r)
+        if get_yes_no_input("Do you want to hear it?"):
+            ccsay()
+    #print(r) 
