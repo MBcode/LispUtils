@@ -125,11 +125,23 @@ def get_yes_no_input(prompt):
             return True
         elif user_input in ('n', 'no'):
             return False
+        elif user_input in (' ', ''):
+            return ' '
         else:
             # Inform the user of invalid input and loop again
             print("Invalid input. Please enter 'y' or 'n'.")
 
 #consider ccli args, like --speak
+def run():
+    r=get_ent()
+    cccounts(r)
+    yn= get_yes_no_input("Do you want to hear it?")
+    if yn==True:
+        ccsay()
+    if yn==' ':
+        run()
+
+#now if you hit y/yes hear it, n/no don't, return and it will try again w/hopefully a new copy buffer
 
 if __name__ == '__main__':
     import sys
@@ -148,8 +160,9 @@ if __name__ == '__main__':
         cccounts(r)
         say(txt)
     else:
-        r=get_ent()
-        cccounts(r)
-        if get_yes_no_input("Do you want to hear it?"):
-            ccsay()
+        run()
+    #   r=get_ent()
+    #   cccounts(r)
+    #   if get_yes_no_input("Do you want to hear it?"):
+    #       ccsay()
     #print(r) 
